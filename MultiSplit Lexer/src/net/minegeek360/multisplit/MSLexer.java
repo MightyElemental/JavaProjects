@@ -43,6 +43,9 @@ public class MSLexer {
 			while (sb.toString().startsWith(" ")) {
 				sb.deleteCharAt(0);
 			}
+			while (sb.toString().endsWith(" ")) {
+				sb.deleteCharAt(sb.length()-1);
+			}
 			line = sb.toString();
 
 			if (!line.endsWith(";") && !line.startsWith("}") && !line.endsWith("{") && !line.startsWith("<COM>")) {
