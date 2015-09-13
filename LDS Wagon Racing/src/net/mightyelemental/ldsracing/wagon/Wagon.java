@@ -15,13 +15,13 @@ public class Wagon {
 
 	private Cart	cart;
 	private Cover	cover;
-	private Wheel	wheels;
+	private Wheel[]	wheels;
 	private Horse	horse;
 
-	public Wagon( Cart cart, Wheel wheels, Cover cover, Horse horse ) {
+	public Wagon( Cart cart, Wheel wheel, Cover cover, Horse horse ) {
 		this.cart = cart;
 		this.cover = cover;
-		this.wheels = wheels;
+		this.wheels = new Wheel[] { wheel, (Wheel) wheel.clone().setxRelativeToWagon(200) };
 		this.horse = horse;
 	}
 
@@ -29,8 +29,10 @@ public class Wagon {
 		float cartWidth = cart.getDisplayImage().getWidth();
 		float cartHeight = cart.getDisplayImage().getHeight();
 		g.drawImage(cart.getDisplayImage(), locationX, locationY);
-		g.drawImage(wheels.getDisplayImage().getScaledCopy(cartWidth / 400f), locationX + wheels.getScaledXToWagon(cartWidth / 490f),
-				locationY + wheels.getScaledYToWagon(cartHeight / 130f));
+		g.drawImage(wheels[0].getDisplayImage().getScaledCopy(cartWidth / 400f), locationX + wheels[0].getScaledXToWagon(cartWidth / 490f),
+				locationY + wheels[0].getScaledYToWagon(cartHeight / 130f));
+		g.drawImage(wheels[1].getDisplayImage().getScaledCopy(cartWidth / 400f), locationX + wheels[1].getScaledXToWagon(cartWidth / 490f),
+				locationY + wheels[1].getScaledYToWagon(cartHeight / 130f));
 	}
 
 	public float getLocationX() {
@@ -57,7 +59,7 @@ public class Wagon {
 		return cover;
 	}
 
-	public Wheel getWheels() {
+	public Wheel[] getWheels() {
 		return wheels;
 	}
 

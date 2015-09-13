@@ -13,8 +13,18 @@ public class WagonPart {
 		return displayImage;
 	}
 
+	public WagonPart clone() {
+		return new WagonPart().setDisplayImage(this.getDisplayImage()).setyRelativeToWagon(this.getyRelativeToWagon())
+				.setxRelativeToWagon(this.getxRelativeToWagon());
+	}
+
 	public WagonPart setDisplayImage(String location) {
 		this.displayImage = LDSRacing.resLoader.loadImage(location);
+		return this;
+	}
+
+	public WagonPart setDisplayImage(Image img) {
+		this.displayImage = img;
 		return this;
 	}
 

@@ -7,4 +7,9 @@ public class Wheel extends WagonPart {
 		this.setxRelativeToWagon(-20);
 	}
 
+	public Wheel clone() {
+		return (Wheel) new Wheel().setDisplayImage(this.getDisplayImage()).setyRelativeToWagon(this.getyRelativeToWagon())
+				.setxRelativeToWagon(this.getxRelativeToWagon());
+	}
+
 }
