@@ -32,6 +32,7 @@ public class Commands {
 	 * initGUI() - initGUI() [width] [height] [title];<br>
 	 * setGUIMode() - setGUIMode() [guiMode] - includes game/default<br>
 	 * drawRect() - drawRect() [x] [y] [width] [height];<br>
+	 * addScript() - addScript() [scriptName];<br>
 	 * <\COM> - Comment (Without the backslash)<br>
 	*/
 	private Commands() {
