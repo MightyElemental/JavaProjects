@@ -1,2 +1,3 @@
-addString() hi 100+1;
+addScript() test;
+addString()  @name;
 println();

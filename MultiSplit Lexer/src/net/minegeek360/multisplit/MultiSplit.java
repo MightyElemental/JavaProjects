@@ -5,29 +5,76 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+
+import net.minegeek360.multisplit.graphics.GamePanel;
 
 public class MultiSplit {
 
-	public ArrayList<ArrayList<String>> scripts = new ArrayList<ArrayList<String>>();
+	public static Map<String, ArrayList<String>> scripts = new HashMap<String, ArrayList<String>>();
+
+	/** Give it a var name and it will return a type and value of the var */
+	public static HashMap<String, Object[]> vars = new HashMap<String, Object[]>();
+
+	public static JFrame	frame;
+	public static JPanel	defaultPanel	= new JPanel();
+	public static GamePanel	gamePanel		= new GamePanel();
+
+	public static String	currentLine;
+	public static String	currentScript;
+	public static int		currentLineNum;
 
 	public MultiSplit() {
 		try {
-			this.loadScriptFileToString(new File("scripts/main.ms"));
+			loadScriptFileToString("main.ms");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		ArrayList<ArrayList<String>> temp = MSLexer.interpret(scripts.get(0));
-		MSLexer.handleTokens(temp);
+		ArrayList<ArrayList<String>> temp = MSLexer.interpret(scripts.get("main"));
+		// createNewInterprateThread(temp);
+		MSLexer lex = new MSLexer();
+		lex.handleTokens(temp);
 	}
 
+	private static int scriptNum = -1;
+
+	public static boolean pauseScript = false;
+
+	@Deprecated
+	public static synchronized void createNewInterprateThread(final ArrayList<ArrayList<String>> script) {
+		Thread thread = new Thread() {
+
+			@SuppressWarnings( "static-access" )
+			public void run() {
+				System.out.println("started " + this.getName());
+				MSLexer lex = new MSLexer();
+				lex.handleTokens(script);
+				try {
+					System.out.println("stopped " + this.getName());
+					this.join();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		};
+		thread.setName("THREAD_" + scriptNum + " " + script.get(0).get(0));
+		thread.start();
+	}
+
+	@SuppressWarnings( "static-access" )
 	public MultiSplit( String file ) {
 		try {
-			this.loadScriptFileToString(new File(file));
+			loadScriptFileToString(file);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		ArrayList<ArrayList<String>> temp = MSLexer.interpret(scripts.get(0));
-		MSLexer.handleTokens(temp);
+		ArrayList<ArrayList<String>> temp = MSLexer.interpret(scripts.get("file"));
+		MSLexer lex = new MSLexer();
+		lex.handleTokens(temp);
 	}
 
 	public static void main(String[] args) {
@@ -39,9 +86,11 @@ public class MultiSplit {
 		}
 	}
 
-	public void loadScriptFileToString(File file) throws IOException {
-		BufferedReader br = new BufferedReader(new FileReader(file));
+	public static void loadScriptFileToString(String file) throws IOException {
+		File file2 = new File("scripts/" + file);
+		BufferedReader br = new BufferedReader(new FileReader(file2));
 		ArrayList<String> lines = new ArrayList<String>();
+		String fileName = file2.getName();
 		try {
 			String line = br.readLine();
 
@@ -49,7 +98,8 @@ public class MultiSplit {
 				lines.add(line);
 				line = br.readLine();
 			}
-			scripts.add(lines);
+			scripts.put(fileName.replace(".ms", ""), lines);
+			scriptNum++;
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {

@@ -2,38 +2,30 @@ package net.minegeek360.multisplit;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-
-import net.minegeek360.multisplit.graphics.GamePanel;
 
 public class MSLexer {
 
 	public static String	string			= "";
-	public static int		currentLine		= 0;
-	public static int		returnToLine	= -1;
+	public int				currentLine		= 0;
+	public int				returnToLine	= -1;
 
-	public static JFrame	frame;
-	public static JPanel	defaultPanel	= new JPanel();
-	public static GamePanel	gamePanel		= new GamePanel();
+	public static String scriptName = "NULL";
 
 	public static ScriptEngineManager	manager	= new ScriptEngineManager();
 	public static ScriptEngine			engine	= manager.getEngineByName("js");
 
 	public static final int VARNAME_LIMIT = (int) Math.pow(2, 7);
 
-	public static ArrayList<ArrayList<String>> scriptLines = new ArrayList<ArrayList<String>>();
-
-	/** Give it a var name and it will return a type and value of the var */
-	public static HashMap<String, Object[]> vars = new HashMap<String, Object[]>();
+	public ArrayList<ArrayList<String>> scriptLines = new ArrayList<ArrayList<String>>();
 
 	/** Splits the lines and args up and compiles it into an ArrayList<ArrayList<String>> */
 	public static ArrayList<ArrayList<String>> interpret(ArrayList<String> script) {
 		ArrayList<ArrayList<String>> commands = new ArrayList<ArrayList<String>>();
+
+		int currL = 0;
 
 		for (String line : script) {
 			if (line.length() < 1) {
@@ -44,12 +36,12 @@ public class MSLexer {
 				sb.deleteCharAt(0);
 			}
 			while (sb.toString().endsWith(" ")) {
-				sb.deleteCharAt(sb.length()-1);
+				sb.deleteCharAt(sb.length() - 1);
 			}
 			line = sb.toString();
 
 			if (!line.endsWith(";") && !line.startsWith("}") && !line.endsWith("{") && !line.startsWith("<COM>")) {
-				Exceptions.expectedSymbol("';' expected at line " + (currentLine + 1) + " char " + line.length());
+				Exceptions.expectedSymbol("';' expected at line " + (currL + 1) + " char " + line.length());
 			}
 
 			String[] coms = line.split(";");
@@ -62,24 +54,23 @@ public class MSLexer {
 			if (coms.length > 1) {
 				Exceptions.multiCommandLine();
 			}
-			currentLine++;
+			currL++;
 		}
 
 		// for (ArrayList<String> temp : commands) {
 		// System.out.println(temp);
 		// }
-		currentLine = 0;
 		return commands;
 	}
 
 	private static boolean skipLine = false;
 
-	private static boolean skipLine(ArrayList<String> arr) {
+	private boolean skipLine(ArrayList<String> arr) {
 		if (arr.get(0).equals("}")) {
 			skipLine = false;
 		}
 		try {
-			ArrayList<String> lastLine = MSLexer.scriptLines.get(MSLexer.currentLine - 1);
+			ArrayList<String> lastLine = scriptLines.get(currentLine - 1);
 			if (lastLine.get(lastLine.size() - 1).equals("{") && returnToLine < 0) {
 				skipLine = true;
 			}
@@ -90,7 +81,7 @@ public class MSLexer {
 	}
 
 	/** This goes through every line (unless something in the code tells it to loop, skip ect) and runs the functions */
-	public static void handleTokens(ArrayList<ArrayList<String>> args) {
+	public void handleTokens(ArrayList<ArrayList<String>> args) {
 		if (args == null) { return; }
 		if (args.size() <= 0) { return; }
 		if (args.get(0).size() <= 0) { return; }
@@ -98,6 +89,9 @@ public class MSLexer {
 
 		forLoop: for (currentLine = 0; currentLine < args.size(); currentLine++) {
 			ArrayList<String> arr = args.get(currentLine);
+			MultiSplit.currentLineNum = currentLine;
+			MultiSplit.currentScript = scriptName;
+			MultiSplit.currentLine = arr.toString();
 			if (skipLine(arr)) {
 				continue forLoop;
 			}
@@ -121,13 +115,13 @@ public class MSLexer {
 					Commands.clearString();
 					break;
 				case "setVar()":
-					Commands.setVar(arr);
+					Commands.setVar(arr, this);
 					break;
 				case "getInput()":
-					Commands.getInput(arr);
+					Commands.getInput(arr, this);
 					break;
 				case "goto()":
-					Commands.gotoLine(arr);
+					Commands.gotoLine(arr, this);
 					break;
 				case "sleep()":
 					Commands.sleep(arr);
@@ -139,13 +133,13 @@ public class MSLexer {
 					Commands.exit();
 					break;
 				case "if()":
-					Commands.ifStatement(arr);
+					Commands.ifStatement(arr, this);
 					break;
 				case "popup()":
 					Commands.popup(arr);
 					break;
 				case "exec()":
-					Commands.executeFunction(arr);
+					Commands.executeFunction(arr, this);
 					break;
 				case "}":
 					if (returnToLine > 0) {
@@ -166,10 +160,13 @@ public class MSLexer {
 					Commands.setGUIMode(arr);
 					break;
 				case "drawGUI()":
-					Commands.drawGUI();
+					Commands.drawGUI(this);
 					break;
 				case "drawRect()":
 					Commands.drawRect(arr);
+					break;
+				case "addScript()":
+					Commands.addScript(arr);
 					break;
 				default:
 					Exceptions.functionNotRecognised();

@@ -77,21 +77,21 @@ public class Commands {
 	}
 
 	public static Object getVarValue(String var) {
-		if (MSLexer.vars.get(var) == null) {
+		if (MultiSplit.vars.get(var) == null) {
 			Exceptions.varDoesNotExist();
 		}
-		return MSLexer.vars.get(var)[1];
+		return MultiSplit.vars.get(var)[1];
 	}
 
 	public static String getVarType(String var) {
-		if (MSLexer.vars.get(var) == null) {
+		if (MultiSplit.vars.get(var) == null) {
 			Exceptions.varDoesNotExist();
 		}
-		return MSLexer.vars.get(var)[0].toString();
+		return MultiSplit.vars.get(var)[0].toString();
 	}
 
 	private static boolean varExists(String var) {
-		return MSLexer.vars.get(var) != null;
+		return MultiSplit.vars.get(var) != null;
 	}
 
 	private static Object[] wordCases(ArrayList<String> arr, int i) {
@@ -115,7 +115,7 @@ public class Commands {
 	}
 
 	/** getInput() - getInput() @[varName] [message text]; */
-	public static void getInput(ArrayList<String> args) {
+	public static void getInput(ArrayList<String> args, MSLexer lex) {
 		if (args.size() < 3) {
 			Exceptions.wrongArgs("There are too few arguments!\n\tUsage: getInput() @[varName] [message text];");
 		}
@@ -133,7 +133,7 @@ public class Commands {
 		var.add(args.get(1));
 		var.add("string");
 		var.add("<read>");
-		setVar(var);
+		setVar(var, lex);
 	}
 
 	/** setVar() - setVar() @[varName] [type] [value]; <br>
@@ -142,7 +142,7 @@ public class Commands {
 	 * number<br>
 	 * string<br>
 	*/
-	public static void setVar(ArrayList<String> arr) {
+	public static void setVar(ArrayList<String> arr, MSLexer lex) {
 		if (arr.size() < 4) {
 			Exceptions.wrongArgs("There are too few arguments!\n\tUsage: setVar() @[varName] [type] [value];");
 		}
@@ -172,7 +172,7 @@ public class Commands {
 				if (!arr.get(3).equals("{")) {
 					Exceptions.expectedSymbol("'{' expected!");
 				}
-				value = defineFunction(arr);
+				value = defineFunction(arr, lex);
 				break;
 			default:
 				value = arr.get(3);
@@ -181,28 +181,28 @@ public class Commands {
 
 		Object[] args = new Object[] { arr.get(2), value };
 
-		MSLexer.vars.put(arr.get(1), args);
+		MultiSplit.vars.put(arr.get(1), args);
 
 	}
 
-	private static Object defineFunction(ArrayList<String> args) {
+	private static Object defineFunction(ArrayList<String> args, MSLexer lex) {
 		int[] startEnd = new int[2];
 
-		startEnd[0] = MSLexer.currentLine + 2;
+		startEnd[0] = lex.currentLine + 2;
 
-		for (int i = MSLexer.currentLine + 1; i < MSLexer.scriptLines.size(); i++) {
-			if (MSLexer.scriptLines.get(i).get(0).startsWith("}")) {
+		for (int i = lex.currentLine + 1; i < lex.scriptLines.size(); i++) {
+			if (lex.scriptLines.get(i).get(0).startsWith("}")) {
 				break;
 			}
-			MSLexer.currentLine++;
+			lex.currentLine++;
 		}
-		startEnd[1] = MSLexer.currentLine - 1;
+		startEnd[1] = lex.currentLine - 1;
 
 		return startEnd;
 	}
 
 	/** goto() - goto() [integer number]; */
-	public static void gotoLine(ArrayList<String> args) {
+	public static void gotoLine(ArrayList<String> args, MSLexer lex) {
 		if (args.size() < 2) {
 			Exceptions.wrongArgs("There are too few arguments!\n\tUsage: goto() [integer];");
 		}
@@ -212,10 +212,10 @@ public class Commands {
 		} catch (Exception e) {
 			Exceptions.wrongArgs("Can only accept an integer.\n\tUsage: goto() [integer];");
 		}
-		if (tempNum > MSLexer.scriptLines.size()) {
+		if (tempNum > lex.scriptLines.size()) {
 			Exceptions.intOutOfBounds("Cannot go to a line that does not exist!");
 		}
-		MSLexer.currentLine = tempNum - 2;
+		lex.currentLine = tempNum - 2;
 	}
 
 	public static void sleep(ArrayList<String> args) {
@@ -271,7 +271,7 @@ public class Commands {
 		frame.setVisible(true);
 		frame.requestFocus();
 		Object[] value = new Object[] { "gui", frame };
-		MSLexer.vars.put(args.get(1), value);
+		MultiSplit.vars.put(args.get(1), value);
 	}
 
 	public static void exit() {
@@ -279,7 +279,7 @@ public class Commands {
 	}
 
 	/** if() @[varName] [== > < !=] @[varName] [lineIfFalse]; */
-	public static void ifStatement(ArrayList<String> args) {
+	public static void ifStatement(ArrayList<String> args, MSLexer lex) {
 		if (args.size() < 5) {
 			Exceptions.wrongArgs("There are too few arguments!\n\tUsage: if() @[varName] [== > < !=] @[varName] [lineIfTrue];");
 		}
@@ -294,12 +294,12 @@ public class Commands {
 		switch (args.get(2)) {
 			case "==":
 				if (!var1.equals(var2)) {
-					gotoLine(gotoArgs);
+					gotoLine(gotoArgs, lex);
 				}
 				break;
 			case "!=":
 				if (var1.equals(var2)) {
-					gotoLine(gotoArgs);
+					gotoLine(gotoArgs, lex);
 				}
 				break;
 			case ">":
@@ -308,7 +308,7 @@ public class Commands {
 						double temp1 = Double.parseDouble(var1);
 						double temp2 = Double.parseDouble(var2);
 						if (!(temp1 > temp2)) {
-							gotoLine(gotoArgs);
+							gotoLine(gotoArgs, lex);
 						}
 					} catch (Exception e) {
 						Exceptions.invalidNumber(
@@ -324,7 +324,7 @@ public class Commands {
 						double temp1 = Double.parseDouble(var1);
 						double temp2 = Double.parseDouble(var2);
 						if (!(temp1 < temp2)) {
-							gotoLine(gotoArgs);
+							gotoLine(gotoArgs, lex);
 						}
 					} catch (Exception e) {
 						Exceptions.invalidNumber(
@@ -364,7 +364,7 @@ public class Commands {
 	}
 
 	/** exec() @[funcName]; */
-	public static void executeFunction(ArrayList<String> args) {
+	public static void executeFunction(ArrayList<String> args, MSLexer lex) {
 		if (args.size() < 2) {
 			Exceptions.wrongArgs("There are too few arguments!\n\tUsage: exec() @[funcName];");
 		}
@@ -372,11 +372,11 @@ public class Commands {
 			Exceptions.varWrongType("Expected 'function' variable, got " + getVarType(args.get(1)) + "!");
 		}
 		int[] startEnd = (int[]) getVarValue(args.get(1));
-		MSLexer.returnToLine = MSLexer.currentLine;
+		lex.returnToLine = lex.currentLine;
 		ArrayList<String> gotoCom = new ArrayList<String>();
 		gotoCom.add("goto()");
 		gotoCom.add(startEnd[0] + "");
-		gotoLine(gotoCom);
+		gotoLine(gotoCom, lex);
 	}
 
 	private static float evalMaths(String string) {
@@ -389,6 +389,21 @@ public class Commands {
 		return temp;
 	}
 
+	/** addScript() [scriptName]; */
+	public static void addScript(ArrayList<String> args) {
+		if (args.size() < 2) {
+			Exceptions.wrongArgs("There are too few arguments!\n\tUsage: addScript() [scriptName];");
+		}
+		try {
+			MultiSplit.loadScriptFileToString(args.get(1) + ".ms");
+		} catch (IOException e) {
+			Exceptions.scriptDoesNotExist();
+		}
+		ArrayList<ArrayList<String>> script = MSLexer.interpret(MultiSplit.scripts.get(args.get(1)));
+		MSLexer lex = new MSLexer();
+		lex.handleTokens(script);
+	}
+
 	/* GUI */
 
 	/** initGUI() [width] [height] [title]; */
@@ -396,8 +411,8 @@ public class Commands {
 		if (args.size() < 4) {
 			Exceptions.wrongArgs("There are too few arguments!\n\tUsage: initGUI() [width] [height] [title];");
 		}
-		if (MSLexer.frame == null) {
-			MSLexer.frame = new JFrame();
+		if (MultiSplit.frame == null) {
+			MultiSplit.frame = new JFrame();
 		}
 		int width = 0;
 		int height = 0;
@@ -416,26 +431,26 @@ public class Commands {
 		}
 		sb.deleteCharAt(sb.length() - 1);
 		String title = sb.toString();
-		MSLexer.frame.setSize(width, height);
-		MSLexer.frame.setTitle(title);
-		MSLexer.frame.setLocationRelativeTo(null);
-		MSLexer.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		MultiSplit.frame.setSize(width, height);
+		MultiSplit.frame.setTitle(title);
+		MultiSplit.frame.setLocationRelativeTo(null);
+		MultiSplit.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 
 	/** showGUI(); */
 	public static void showGUI() {
-		if (MSLexer.frame == null) {
+		if (MultiSplit.frame == null) {
 			Exceptions.noInitGUI();
 		}
-		MSLexer.frame.setVisible(true);
+		MultiSplit.frame.setVisible(true);
 	}
 
 	/** hideGUI(); */
 	public static void hideGUI() {
-		if (MSLexer.frame == null) {
+		if (MultiSplit.frame == null) {
 			Exceptions.noInitGUI();
 		}
-		MSLexer.frame.setVisible(false);
+		MultiSplit.frame.setVisible(false);
 	}
 
 	/** setGUIMode() [guiMode]; - includes game/default */
@@ -445,12 +460,12 @@ public class Commands {
 		}
 		switch (args.get(1)) {
 			case "default":
-				MSLexer.frame.remove(MSLexer.gamePanel);
-				MSLexer.frame.add(MSLexer.defaultPanel);
+				MultiSplit.frame.remove(MultiSplit.gamePanel);
+				MultiSplit.frame.add(MultiSplit.defaultPanel);
 				break;
 			case "game":
-				MSLexer.frame.remove(MSLexer.defaultPanel);
-				MSLexer.frame.add(MSLexer.gamePanel);
+				MultiSplit.frame.remove(MultiSplit.defaultPanel);
+				MultiSplit.frame.add(MultiSplit.gamePanel);
 				break;
 			default:
 				Exceptions.wrongArgs("You can only use'game' or 'default' mode!");
@@ -475,19 +490,19 @@ public class Commands {
 		} catch (Exception e) {
 			Exceptions.wrongArgs("Can only accept an integer.\n\tUsage: drawRect() [x] [y] [width] [height];");
 		}
-		MSLexer.gamePanel.addRect(x, y, width, height);
+		MultiSplit.gamePanel.addRect(x, y, width, height);
 	}
 
 	/** drawGUI(); */
-	public static void drawGUI() {
+	public static void drawGUI(MSLexer lex) {
 		ArrayList<String> execFunc = new ArrayList<String>();
 		execFunc.add("execFunc()");
 		execFunc.add("@draw");
-		executeFunction(execFunc);
-		MSLexer.gamePanel.repaint();
-		MSLexer.frame.repaint();
-		MSLexer.defaultPanel.repaint();
-		MSLexer.gamePanel.objects.clear();
+		executeFunction(execFunc, lex);
+		MultiSplit.gamePanel.repaint();
+		MultiSplit.frame.repaint();
+		MultiSplit.defaultPanel.repaint();
+		MultiSplit.gamePanel.objects.clear();
 	}
 
 }
