@@ -12,7 +12,7 @@ public class MSLexer {
 	public int				currentLine		= 0;
 	public int				returnToLine	= -1;
 
-	public static String scriptName = "NULL";
+	public String scriptName = "NULL";
 
 	public static ScriptEngineManager	manager	= new ScriptEngineManager();
 	public static ScriptEngine			engine	= manager.getEngineByName("js");
@@ -20,6 +20,14 @@ public class MSLexer {
 	public static final int VARNAME_LIMIT = (int) Math.pow(2, 7);
 
 	public ArrayList<ArrayList<String>> scriptLines = new ArrayList<ArrayList<String>>();
+
+	public MSLexer( String name ) {
+		this.scriptName = name;
+	}
+
+	public MSLexer() {
+
+	}
 
 	/** Splits the lines and args up and compiles it into an ArrayList<ArrayList<String>> */
 	public static ArrayList<ArrayList<String>> interpret(ArrayList<String> script) {

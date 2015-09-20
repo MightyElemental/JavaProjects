@@ -36,7 +36,7 @@ public class MultiSplit {
 		}
 		ArrayList<ArrayList<String>> temp = MSLexer.interpret(scripts.get("main"));
 		// createNewInterprateThread(temp);
-		MSLexer lex = new MSLexer();
+		MSLexer lex = new MSLexer("main");
 		lex.handleTokens(temp);
 	}
 

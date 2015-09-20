@@ -1,3 +1,3 @@
 addScript() test;
-addString()  @name;
+addString()  @ame;
 println();

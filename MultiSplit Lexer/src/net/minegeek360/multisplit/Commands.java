@@ -401,7 +401,7 @@ public class Commands {
 			Exceptions.scriptDoesNotExist();
 		}
 		ArrayList<ArrayList<String>> script = MSLexer.interpret(MultiSplit.scripts.get(args.get(1)));
-		MSLexer lex = new MSLexer();
+		MSLexer lex = new MSLexer(args.get(1));
 		lex.handleTokens(script);
 	}
 

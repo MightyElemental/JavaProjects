@@ -67,7 +67,7 @@ public class Exceptions {
 
 	private static void exception(String type, String message, boolean stop) {
 		try {
-			System.err.println(" " + type + "Exception in " + MultiSplit.currentScript + "on line " + (MultiSplit.currentLineNum + 1)
+			System.err.println(" " + type + "Exception in script '" + MultiSplit.currentScript + "' on line " + (MultiSplit.currentLineNum + 1)
 					+ ": \n\t" + MultiSplit.currentLine + "\n\t" + message);
 		} catch (Exception e) {
 			System.err.println(" " + type + "Exception on line " + (MultiSplit.currentLineNum + 1) + ": \n\t" + message);

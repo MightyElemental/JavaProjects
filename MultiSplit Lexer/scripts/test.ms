@@ -1,2 +1,2 @@
 addString() hello;
-setVar() @name string James Burnell;
+setVar() @ame string James Burnell;
