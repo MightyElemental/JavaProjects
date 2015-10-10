@@ -65,7 +65,6 @@ public class MultiSplit {
 		thread.start();
 	}
 
-	@SuppressWarnings( "static-access" )
 	public MultiSplit( String file ) {
 		try {
 			loadScriptFileToString(file);
