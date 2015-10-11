@@ -138,4 +138,9 @@ public class Server {
 		}
 		return "0.0.0.0";
 	}
+
+	/** @return the attachedClients */
+	public Map<String, List<Object>> getAttachedClients() {
+		return attachedClients;
+	}
 }
