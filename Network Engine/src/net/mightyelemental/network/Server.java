@@ -14,11 +14,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import net.mightyelemental.network.listener.Initiater;
+
 public class Server {
 
 	private int		port;
 	public boolean	running;
-	public Parser	parser;
 
 	public static Random random = new Random();
 
@@ -60,7 +61,7 @@ public class Server {
 					}
 
 					String message = sb.toString();
-					String sender = dataArray[0];
+					// String sender = dataArray[0];
 					if (lastMessage.equals(message)) {
 						parse = false;
 					} else {
@@ -69,8 +70,9 @@ public class Server {
 					}
 
 					if (parse) {
+						Initiater.onMessageRecieved(message);
+						Initiater.onCientRecieved(IPAddress);
 						handleMessage(IPAddress, port);
-						parser.parseMessage(message, sender, IPAddress, port);
 					}
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -87,20 +89,22 @@ public class Server {
 
 	public Server( int port ) {
 		this.port = port;
-		this.running = true;
-		parser = new Parser(this, this.port);
 	}
 
+	/** @return the port the server is running on */
 	public int getPort() {
 		return this.port;
 	}
 
+	/** This is required to start the server thread & to create a new socket */
 	public void setupServer() {
+
 		try {
 			serverSocket = new DatagramSocket(port);
 		} catch (SocketException e1) {
 			e1.printStackTrace();
 		}
+		this.running = true;
 
 		serverTick.start();
 	}
