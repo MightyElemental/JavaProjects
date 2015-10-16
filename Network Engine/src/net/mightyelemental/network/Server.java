@@ -14,7 +14,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import net.mightyelemental.network.listener.Initiater;
+import net.mightyelemental.network.listener.MessageListenerServer;
+import net.mightyelemental.network.listener.ServerInitiater;
 
 public class Server {
 
@@ -29,6 +30,8 @@ public class Server {
 
 	public byte[]	receiveData;
 	public byte[]	sendData;
+
+	private ServerInitiater initiater = new ServerInitiater();
 
 	private String	lastMessage	= "";
 	private boolean	parse		= true;
@@ -70,8 +73,7 @@ public class Server {
 					}
 
 					if (parse) {
-						Initiater.onMessageRecieved(message);
-						Initiater.onCientRecieved(IPAddress);
+						initiater.onMessageRecieved(message, IPAddress);
 						handleMessage(IPAddress, port);
 					}
 				} catch (IOException e) {
@@ -113,6 +115,7 @@ public class Server {
 	/** Checks to see if the client was connected before. If not, it will add the client with a new UID */
 	private void handleMessage(InetAddress ip, int port) {
 		if (attachedClients.containsValue(Arrays.asList(new Object[] { ip, port }))) { return; }
+		initiater.onNewClientAdded(ip, port);// notifies all listeners about new client
 		generateClientInfo(ip, port, random);
 	}
 
@@ -153,5 +156,13 @@ public class Server {
 	 *         Uses ClientUID as key. The List it gives is an 'InetAddress' and an 'int', in that order. */
 	public Map<String, List<Object>> getAttachedClients() {
 		return attachedClients;
+	}
+
+	/** Adds listener to initiater
+	 * 
+	 * @param mls
+	 *            the MessageListenerServer instance */
+	public void addListener(MessageListenerServer mls) {
+		initiater.addListener(mls);
 	}
 }

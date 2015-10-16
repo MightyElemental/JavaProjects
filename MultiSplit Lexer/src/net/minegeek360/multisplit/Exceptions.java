@@ -6,10 +6,14 @@ public class Exceptions {
 		exception("VariableCreation", message, true);
 	}
 
+	/** Says:<br>
+	 * Your variable name is too long! Make sure it is # or less! */
 	public static void varNameTooLong() {
 		exception("VarNameOverLimit", "Your variable name is too long! Make sure it is " + MSLexer.VARNAME_LIMIT + " or less!", true);
 	}
 
+	/** Says:<br>
+	 * Advanced Variable already exists! Cannot overwrite! */
 	public static void varExistsException() {
 		exception("AdvancedVariableAlreadyExists", "Advanced Variable already exists! Cannot overwrite!", false);
 	}
@@ -18,6 +22,8 @@ public class Exceptions {
 		exception("WrongVariableType", message, false);
 	}
 
+	/** Says:<br>
+	 * Make sure you have spelt the script correctly and WITHOUT '.ms' at the end. */
 	public static void scriptDoesNotExist() {
 		exception("ScriptDoesNotExist", "Make sure you have spelt the script correctly and WITHOUT '.ms' at the end."
 				+ "\n\tAlso make sure that you have the file in the correct location", true);
@@ -67,8 +73,8 @@ public class Exceptions {
 
 	private static void exception(String type, String message, boolean stop) {
 		try {
-			System.err.println(" " + type + "Exception in script '" + MultiSplit.currentScript + "' on line " + (MultiSplit.currentLineNum + 1)
-					+ ": \n\t" + MultiSplit.currentLine + "\n\t" + message);
+			System.err.println(" " + type + "Exception in script '" + MultiSplit.currentScript + "' on line "
+					+ (MultiSplit.currentLineNum + 1) + ": \n\t" + MultiSplit.currentLine + "\n\t" + message);
 		} catch (Exception e) {
 			System.err.println(" " + type + "Exception on line " + (MultiSplit.currentLineNum + 1) + ": \n\t" + message);
 		}

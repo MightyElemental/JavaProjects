@@ -54,6 +54,12 @@ public class Client {
 		}
 	};
 
+	/** @param name
+	 *            the name of the client
+	 * @param address
+	 *            the IP address in String form
+	 * @param port
+	 *            the port for the client to send messages through */
 	public Client( String name, String address, int port ) {
 		this.userName = name;
 		this.address = address;
@@ -62,14 +68,17 @@ public class Client {
 		this.setup();
 	}
 
+	/** @return the clients name */
 	public String getName() {
 		return this.userName;
 	}
 
+	/** @return the IP address in the form of String */
 	public String getAddress() {
 		return this.address;
 	}
 
+	/** @return the port the client is running on */
 	public int getPort() {
 		return port;
 	}
@@ -88,6 +97,10 @@ public class Client {
 		receiveThread.start();
 	}
 
+	/** Sends a message to the connected server
+	 * 
+	 * @param message
+	 *            the message to send to the server */
 	public void sendMessage(String message) {
 		sendData = null;
 		String messageOut = this.userName + " : " + message;
