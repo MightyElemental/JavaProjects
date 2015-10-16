@@ -100,7 +100,7 @@ public class Server {
 	}
 
 	/** This is required to start the server thread & to create a new socket */
-	public void setupServer() {
+	public synchronized void setupServer() {
 
 		try {
 			serverSocket = new DatagramSocket(port);

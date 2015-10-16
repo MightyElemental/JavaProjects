@@ -64,8 +64,6 @@ public class Client {
 		this.userName = name;
 		this.address = address;
 		this.port = port;
-
-		this.setup();
 	}
 
 	/** @return the clients name */
@@ -83,7 +81,7 @@ public class Client {
 		return port;
 	}
 
-	public void setup() {
+	public synchronized void setup() {
 		try {
 			clientSocket = new DatagramSocket();
 			IPAddress = InetAddress.getByName(getAddress());
