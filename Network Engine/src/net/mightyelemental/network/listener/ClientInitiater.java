@@ -6,25 +6,24 @@ import java.util.List;
 
 public class ClientInitiater {
 
-	private ClientInitiater() {
-	}
+	private List<MessageListenerClient> listeners = new ArrayList<MessageListenerClient>();
 
-	private static List<MessageListenerServer> listeners = new ArrayList<MessageListenerServer>();
-
-	public static void addListener(MessageListenerServer toAdd) {
+	public void addListener(MessageListenerClient toAdd) {
 		listeners.add(toAdd);
 	}
 
-	public static void onMessageRecieved(String message) {
+	public void onMessageRecieved(String message) {
 		// Notify everybody that may be interested.
-		for (MessageListenerServer hl : listeners)
-			hl.onMessageRecieved(message);
+		for (MessageListenerClient hl : listeners) {
+			// hl.onMessageRecieved(message);
+		}
 	}
 
-	public static void onCientRecieved(InetAddress ip) {
+	public void onCientRecieved(InetAddress ip) {
 		// Notify everybody that may be interested.
-		for (MessageListenerServer hl : listeners)
-			hl.onClientIPRecieved(ip);
+		for (MessageListenerClient hl : listeners) {
+			// hl.onClientIPRecieved(ip);
+		}
 	}
 
 }
