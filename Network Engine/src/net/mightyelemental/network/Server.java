@@ -87,6 +87,7 @@ public class Server {
 
 	};
 
+	/** UDP Server */
 	public Server( int port ) {
 		this.port = port;
 	}
@@ -109,11 +110,13 @@ public class Server {
 		serverTick.start();
 	}
 
+	/** Checks to see if the client was connected before. If not, it will add the client with a new UID */
 	private void handleMessage(InetAddress ip, int port) {
 		if (attachedClients.containsValue(Arrays.asList(new Object[] { ip, port }))) { return; }
 		generateClientInfo(ip, port, random);
 	}
 
+	/** Adds client UID to array and makes sure its unique */
 	private void generateClientInfo(InetAddress ip, int port, Random rand) {
 		String chars = generateClientUID(rand);
 		while (attachedClients.containsKey(chars)) {
@@ -123,6 +126,7 @@ public class Server {
 		attachedClients.put(chars, Arrays.asList(new Object[] { ip, port }));
 	}
 
+	/** Creates a UID for a new IP/Port */
 	private String generateClientUID(Random rand) {
 		String chars = "";
 
@@ -132,6 +136,8 @@ public class Server {
 		return chars;
 	}
 
+	/** Gets the servers External IP Address. <br>
+	 * It uses <a href="http://checkip.amazonaws.com">'http://checkip.amazonaws.com'</a> to do so. */
 	public static String getExternalIPAddress() {
 		try {
 			URL whatismyip = new URL("http://checkip.amazonaws.com");
@@ -143,7 +149,8 @@ public class Server {
 		return "0.0.0.0";
 	}
 
-	/** @return the attachedClients */
+	/** @return the attachedClients<br>
+	 *         Uses ClientUID as key. The List it gives is an 'InetAddress' and an 'int', in that order. */
 	public Map<String, List<Object>> getAttachedClients() {
 		return attachedClients;
 	}
