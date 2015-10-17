@@ -197,7 +197,8 @@ public class Server {
 		Object[] keys = this.getAttachedClients().keySet().toArray();
 		for (Object key : keys) {
 			InetAddress ip = (InetAddress) this.getAttachedClients().get(key).toArray()[0];
-			sendMessage(message, ip, this.port);
+			int port = Integer.parseInt(this.getAttachedClients().get(key).toArray()[1] + "");
+			sendMessage(message, ip, port);
 		}
 	}
 }
