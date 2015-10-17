@@ -115,18 +115,21 @@ public class Server {
 	/** Checks to see if the client was connected before. If not, it will add the client with a new UID */
 	private void handleMessage(InetAddress ip, int port) {
 		if (attachedClients.containsValue(Arrays.asList(new Object[] { ip, port }))) { return; }
-		initiater.onNewClientAdded(ip, port);// notifies all listeners about new client
-		generateClientInfo(ip, port, random);
+		String UID = generateClientInfo(ip, port, random);
+		initiater.onNewClientAdded(ip, port, UID);// notifies all listeners about new client
 	}
 
-	/** Adds client UID to array and makes sure its unique */
-	private void generateClientInfo(InetAddress ip, int port, Random rand) {
+	/** Adds client UID to array and makes sure its unique
+	 * 
+	 * @return uid the client's UID */
+	private String generateClientInfo(InetAddress ip, int port, Random rand) {
 		String chars = generateClientUID(rand);
 		while (attachedClients.containsKey(chars)) {
 			chars = generateClientUID(rand);
 		}
 		System.out.println("New client! " + chars + " | IP: " + ip.getHostAddress() + ":" + port);
 		attachedClients.put(chars, Arrays.asList(new Object[] { ip, port }));
+		return chars;
 	}
 
 	/** Creates a UID for a new IP/Port */

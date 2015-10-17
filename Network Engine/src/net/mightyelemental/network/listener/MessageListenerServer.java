@@ -14,6 +14,6 @@ public interface MessageListenerServer {
 	 *            the client's IP address
 	 * @param port
 	 *            the client's port */
-	public void onNewClientAdded(InetAddress ip, int port);
+	public void onNewClientAdded(InetAddress ip, int port, String uid);
 
 }
