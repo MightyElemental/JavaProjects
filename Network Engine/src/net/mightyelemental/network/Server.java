@@ -127,7 +127,7 @@ public class Server {
 		while (attachedClients.containsKey(chars)) {
 			chars = generateClientUID(rand);
 		}
-		System.out.println("New client! " + chars + " | IP: " + ip.getHostAddress() + ":" + port);
+		// System.out.println("New client! " + chars + " | IP: " + ip.getHostAddress() + ":" + port);
 		attachedClients.put(chars, Arrays.asList(new Object[] { ip, port }));
 		return chars;
 	}
@@ -194,8 +194,8 @@ public class Server {
 	 * @param message
 	 *            the message to be sent */
 	public void broadcastmessage(String message) {
-		String[] keys = (String[]) this.getAttachedClients().keySet().toArray();
-		for (String key : keys) {
+		Object[] keys = this.getAttachedClients().keySet().toArray();
+		for (Object key : keys) {
 			InetAddress ip = (InetAddress) this.getAttachedClients().get(key).toArray()[0];
 			sendMessage(message, ip, this.port);
 		}
