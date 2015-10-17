@@ -1,6 +1,5 @@
 package net.mightyelemental.network.listener;
 
-import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,15 +13,8 @@ public class ClientInitiater {
 
 	public void onMessageRecieved(String message) {
 		// Notify everybody that may be interested.
-		for (MessageListenerClient hl : listeners) {
-			// hl.onMessageRecieved(message);
-		}
-	}
-
-	public void onCientRecieved(InetAddress ip) {
-		// Notify everybody that may be interested.
-		for (MessageListenerClient hl : listeners) {
-			// hl.onClientIPRecieved(ip);
+		for (MessageListenerClient mlc : listeners) {
+			mlc.onMessageRecievedFromServer(message);
 		}
 	}
 

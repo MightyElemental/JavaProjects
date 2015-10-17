@@ -1,8 +1,9 @@
 package net.mightyelemental.network.listener;
 
-
 public interface MessageListenerClient {
-	
-	public void onMessageRecieved(String message);
+
+	/** @param message
+	 *            the message received from server */
+	public void onMessageRecievedFromServer(String message);
 
 }

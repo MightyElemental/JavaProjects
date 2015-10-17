@@ -8,7 +8,7 @@ public interface MessageListenerServer {
 	 *            the message from the client
 	 * @param ip
 	 *            the IP address of the client */
-	public void onMessageRecieved(String message, InetAddress ip);
+	public void onMessageRecievedFromClient(String message, InetAddress ip);
 
 	/** @param ip
 	 *            the client's IP address

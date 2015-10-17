@@ -15,7 +15,7 @@ public class ServerInitiater {
 	public void onMessageRecieved(String message, InetAddress ip) {
 		// Notify everybody that may be interested.
 		for (MessageListenerServer mls : listeners)
-			mls.onMessageRecieved(message, ip);
+			mls.onMessageRecievedFromClient(message, ip);
 	}
 
 	public void onNewClientAdded(InetAddress ip, int port) {

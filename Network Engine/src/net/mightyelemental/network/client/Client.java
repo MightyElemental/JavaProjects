@@ -8,6 +8,10 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 
+import net.mightyelemental.network.listener.ClientInitiater;
+import net.mightyelemental.network.listener.MessageListenerClient;
+import net.mightyelemental.network.listener.MessageListenerServer;
+
 public class Client {
 
 	private String	userName;
@@ -22,6 +26,8 @@ public class Client {
 	private DatagramSocket clientSocket;
 
 	private InetAddress IPAddress;
+
+	private ClientInitiater initiater = new ClientInitiater();
 
 	private byte[]	receiveData;
 	private byte[]	sendData;
@@ -41,6 +47,7 @@ public class Client {
 					System.out.println(receiveData.toString());
 					lastRecievedMessage = receiveData.toString();
 					recievedMessages.add(lastRecievedMessage);
+					initiater.onMessageRecieved(lastRecievedMessage);
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -81,6 +88,7 @@ public class Client {
 		return port;
 	}
 
+	/** Used to connect the client to server as well as setting up the data pipes. */
 	public synchronized void setup() {
 		try {
 			clientSocket = new DatagramSocket();
@@ -111,6 +119,7 @@ public class Client {
 		}
 	}
 
+	/** @return lastRecievedMessage - the message the the client last recieved */
 	public String getLastRecievedMessage() {
 		return lastRecievedMessage;
 	}
@@ -118,6 +127,14 @@ public class Client {
 	/** @return the recievedMessages */
 	public ArrayList<String> getRecievedMessages() {
 		return recievedMessages;
+	}
+
+	/** Adds listener to initiater
+	 * 
+	 * @param mlc
+	 *            the MessageListenerClient instance */
+	public void addListener(MessageListenerClient mlc) {
+		initiater.addListener(mlc);
 	}
 
 }

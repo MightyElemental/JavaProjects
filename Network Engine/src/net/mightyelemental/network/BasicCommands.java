@@ -21,7 +21,7 @@ public class BasicCommands {
 	 *            the port to be sending the message through
 	 * @throws UnknownHostException
 	 *             if the IP address does not exist or is not valid */
-	public static void messageUser(Server server, String message, InetAddress clientIP, InetAddress hostIP, int port)
+	public static void cToSToCMessage(Server server, String message, InetAddress clientIP, InetAddress hostIP, int port)
 			throws UnknownHostException {
 		String sendMessage = hostIP.getHostAddress() + "> " + message;
 		try {
