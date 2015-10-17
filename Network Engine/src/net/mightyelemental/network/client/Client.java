@@ -43,7 +43,7 @@ public class Client {
 					clientSocket.receive(receivePacket);
 					String receiveData = new String(receivePacket.getData()).trim();
 
-					System.out.println(receiveData.toString());
+					// System.out.println(receiveData.toString());
 					lastRecievedMessage = receiveData.toString();
 					recievedMessages.add(lastRecievedMessage);
 					initiater.onMessageRecieved(lastRecievedMessage);
