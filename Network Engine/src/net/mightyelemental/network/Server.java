@@ -165,4 +165,36 @@ public class Server {
 	public void addListener(MessageListenerServer mls) {
 		initiater.addListener(mls);
 	}
+
+	/** Sends a message to a client
+	 * 
+	 * @param message
+	 *            the message to send
+	 * @param ip
+	 *            the IP address of the client
+	 * @param port
+	 *            the port of the client */
+	public void sendMessage(String message, InetAddress ip, int port) {
+		String sendMessage = message;
+
+		try {
+			sendData = (sendMessage.toString()).getBytes("UTF-8");
+			DatagramPacket sendPacket = new DatagramPacket(this.sendData, this.sendData.length, ip, port);
+			this.serverSocket.send(sendPacket);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/** Broadcast a message to every client
+	 * 
+	 * @param message
+	 *            the message to be sent */
+	public void broadcastmessage(String message) {
+		String[] keys = (String[]) this.getAttachedClients().keySet().toArray();
+		for (String key : keys) {
+			InetAddress ip = (InetAddress) this.getAttachedClients().get(key).toArray()[0];
+			sendMessage(message, ip, this.port);
+		}
+	}
 }
