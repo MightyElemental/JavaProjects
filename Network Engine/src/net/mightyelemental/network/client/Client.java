@@ -10,7 +10,6 @@ import java.util.ArrayList;
 
 import net.mightyelemental.network.listener.ClientInitiater;
 import net.mightyelemental.network.listener.MessageListenerClient;
-import net.mightyelemental.network.listener.MessageListenerServer;
 
 public class Client {
 
