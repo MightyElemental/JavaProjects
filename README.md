@@ -1,3 +1,1 @@
-# multisplit
-My own programming language
-tg
+A bunch of my projects on eclipse
