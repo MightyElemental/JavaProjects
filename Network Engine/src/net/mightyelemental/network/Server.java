@@ -79,7 +79,7 @@ public class Server {
 					if (parse) {
 						initiater.onMessageRecieved(message, IPAddress);
 						checkIfNewClient(IPAddress, port);
-						addGUICommand(message);
+						serverGUI.addCommand(getClientUIDFromIP(IPAddress, port) + ": " + message);
 					}
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -105,11 +105,6 @@ public class Server {
 	/** UDP Server */
 	public Server( int port ) {
 		this.port = port;
-	}
-
-	/** Adds a command to the GUI command list */
-	private void addGUICommand(String message) {
-		serverGUI.addCommand(this, message);
 	}
 
 	/** @return the port the server is running on */

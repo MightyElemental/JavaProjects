@@ -20,10 +20,10 @@ public class ServerGUI extends JFrame {
 
 	private JPanel contentPane;
 
-	private List		list	= new List();
+	private List		list		= new List();
 	private Server		server;
 	private JTextField	textField;
-	List commands = new List();
+	List				commands	= new List();
 
 	/** Create the frame. */
 	public ServerGUI( String title, Server server, String IPAddress ) {
@@ -74,16 +74,16 @@ public class ServerGUI extends JFrame {
 		textField.setEditable(false);
 		textField.setText(IPAddress);
 		textField.setColumns(10);
-		
+
 		JPanel panel_2 = new JPanel();
 		panel_2.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
 		panel_2.setBounds(10, 11, 449, 155);
 		contentPane.add(panel_2);
 		panel_2.setLayout(null);
-		
+
 		commands.setBounds(10, 23, 429, 121);
 		panel_2.add(commands);
-		
+
 		JLabel lblClientCommands = new JLabel("Client Commands");
 		lblClientCommands.setHorizontalAlignment(SwingConstants.CENTER);
 		lblClientCommands.setBounds(10, 2, 429, 14);
@@ -99,9 +99,11 @@ public class ServerGUI extends JFrame {
 			String temp = "IP:" + ip.toString().replace('/', '\0') + ":" + port + " (" + key.toString() + ")";
 			list.add(temp);
 		}
+		this.repaint();
 	}
-	
-	public void addCommand(Server server, String command){
+
+	public void addCommand(String command) {
 		commands.add(command);
+		this.repaint();
 	}
 }
