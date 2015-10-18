@@ -78,7 +78,8 @@ public class Server {
 
 					if (parse) {
 						initiater.onMessageRecieved(message, IPAddress);
-						handleMessage(IPAddress, port);
+						checkIfNewClient(IPAddress, port);
+						addGUICommand(message);
 					}
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -106,6 +107,11 @@ public class Server {
 		this.port = port;
 	}
 
+	/** Adds a command to the GUI command list */
+	private void addGUICommand(String message) {
+		serverGUI.addCommand(this, message);
+	}
+
 	/** @return the port the server is running on */
 	public int getPort() {
 		return this.port;
@@ -125,10 +131,20 @@ public class Server {
 	}
 
 	/** Checks to see if the client was connected before. If not, it will add the client with a new UID */
-	private void handleMessage(InetAddress ip, int port) {
+	private void checkIfNewClient(InetAddress ip, int port) {
 		if (attachedClients.containsValue(Arrays.asList(new Object[] { ip, port }))) { return; }
 		String UID = generateClientInfo(ip, port, random);
 		initiater.onNewClientAdded(ip, port, UID);// notifies all listeners about new client
+	}
+
+	/** Return the client UID associated with the given IP and port */
+	public String getClientUIDFromIP(InetAddress ip, int port) {
+		List<Object> tester = Arrays.asList(new Object[] { ip, port });
+		if (!attachedClients.containsValue(tester)) { return null; }
+		for (String key : attachedClients.keySet()) {
+			if (attachedClients.get(key).equals(tester)) { return key; }
+		}
+		return null;
 	}
 
 	/** Adds client UID to array and makes sure its unique
