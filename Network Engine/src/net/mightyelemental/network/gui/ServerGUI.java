@@ -12,6 +12,7 @@ import javax.swing.border.EmptyBorder;
 
 import net.mightyelemental.network.Server;
 import javax.swing.border.EtchedBorder;
+import javax.swing.JTextField;
 
 @SuppressWarnings( "serial" )
 public class ServerGUI extends JFrame {
@@ -20,15 +21,16 @@ public class ServerGUI extends JFrame {
 
 	private List	list	= new List();
 	private Server	server;
+	private JTextField textField;
 
 	/** Create the frame. */
-	public ServerGUI( String title, Server server ) {
+	public ServerGUI( String title, Server server, String IPAddress ) {
 		this.server = server;
 		setResizable(false);
 		setVisible(true);
 		setTitle(title);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 450, 300);
+		setBounds(100, 100, 475, 300);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -47,6 +49,26 @@ public class ServerGUI extends JFrame {
 		lblClients.setHorizontalAlignment(SwingConstants.CENTER);
 		lblClients.setBounds(0, 4, 233, 14);
 		panel.add(lblClients);
+		
+		JPanel panel_1 = new JPanel();
+		panel_1.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
+		panel_1.setBounds(253, 90, 206, 171);
+		contentPane.add(panel_1);
+		panel_1.setLayout(null);
+		
+		JLabel lblServerDetails = new JLabel("Server Details");
+		lblServerDetails.setHorizontalAlignment(SwingConstants.CENTER);
+		lblServerDetails.setBounds(0, 0, 206, 21);
+		panel_1.add(lblServerDetails);
+		
+		JLabel lblServerIp = new JLabel("Server IP: ");
+		lblServerIp.setBounds(10, 32, 52, 21);
+		panel_1.add(lblServerIp);
+		
+		textField = new JTextField();
+		textField.setBounds(61, 32, 135, 21);
+		panel_1.add(textField);
+		textField.setColumns(10);
 	}
 
 	public void updateClients(Map<String, java.util.List<Object>> map) {

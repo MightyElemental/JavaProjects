@@ -175,7 +175,7 @@ public class Server {
 
 	/** Setup the built in GUI */
 	public void initGUI(String title) {
-		serverGUI = new ServerGUI(title, this);
+		serverGUI = new ServerGUI(title, this, getExternalIPAddress() + ":" + this.getPort());
 		this.hasGUI = true;
 	}
 
