@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import net.mightyelemental.network.gui.ServerGUI;
 import net.mightyelemental.network.listener.MessageListenerServer;
 import net.mightyelemental.network.listener.ServerInitiater;
 
@@ -35,6 +36,9 @@ public class Server {
 
 	private String	lastMessage	= "";
 	private boolean	parse		= true;
+
+	private boolean		hasGUI;
+	private ServerGUI	serverGUI;
 
 	private Thread serverTick = new Thread("ServerThread") {
 
@@ -79,7 +83,15 @@ public class Server {
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
+
+				if (hasGUI) {
+					if (serverGUI != null) {
+						serverGUI.updateClients(getAttachedClients());
+					}
+				}
+
 			}
+
 			try {
 				this.join();
 			} catch (InterruptedException e) {
@@ -159,6 +171,12 @@ public class Server {
 	 *         Uses ClientUID as key. The List it gives is an 'InetAddress' and an 'int', in that order. */
 	public Map<String, List<Object>> getAttachedClients() {
 		return attachedClients;
+	}
+
+	/** Setup the built in GUI */
+	public void initGUI(String title) {
+		serverGUI = new ServerGUI(title, this);
+		this.hasGUI = true;
 	}
 
 	/** Adds listener to initiater
