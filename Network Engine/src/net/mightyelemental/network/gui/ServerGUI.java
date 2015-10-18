@@ -13,6 +13,7 @@ import javax.swing.border.EmptyBorder;
 import net.mightyelemental.network.Server;
 import javax.swing.border.EtchedBorder;
 import javax.swing.JTextField;
+import java.awt.Font;
 
 @SuppressWarnings( "serial" )
 public class ServerGUI extends JFrame {
@@ -62,12 +63,14 @@ public class ServerGUI extends JFrame {
 		panel_1.add(lblServerDetails);
 		
 		JLabel lblServerIp = new JLabel("Server IP: ");
-		lblServerIp.setBounds(10, 32, 52, 21);
+		lblServerIp.setBounds(10, 32, 62, 21);
 		panel_1.add(lblServerIp);
 		
 		textField = new JTextField();
-		textField.setBounds(61, 32, 135, 21);
+		textField.setFont(new Font("Tahoma", Font.PLAIN, 10));
+		textField.setBounds(72, 32, 124, 21);
 		panel_1.add(textField);
+		textField.setText(IPAddress);
 		textField.setColumns(10);
 	}
 
