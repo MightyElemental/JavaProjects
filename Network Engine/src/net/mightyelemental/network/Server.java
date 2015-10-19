@@ -44,11 +44,11 @@ public class Server {
 
 		public void run() {
 
-			receiveData = new byte[1024];
-			sendData = new byte[1024];
+			receiveData = new byte[2 ^ 12];
+			sendData = new byte[2 ^ 12];
 
 			while (running) {
-				receiveData = new byte[1024];
+				receiveData = new byte[2 ^ 12];
 				DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
 				try {
 

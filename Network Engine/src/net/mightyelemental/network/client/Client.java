@@ -8,6 +8,7 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 
+import net.mightyelemental.network.BasicCommands;
 import net.mightyelemental.network.listener.ClientInitiater;
 import net.mightyelemental.network.listener.MessageListenerClient;
 
@@ -38,10 +39,11 @@ public class Client {
 
 			while (isRunning) {
 				try {
-					receiveData = new byte[1024];
+					receiveData = new byte[2 ^ 12];
 					DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
 					clientSocket.receive(receivePacket);
 					String receiveData = new String(receivePacket.getData()).trim();
+					receiveData = BasicCommands.decryptMessageBase64(receiveData);
 
 					// System.out.println(receiveData.toString());
 					lastRecievedMessage = receiveData.toString();
@@ -107,6 +109,7 @@ public class Client {
 	 * @param message
 	 *            the message to send to the server */
 	public void sendMessage(String message) {
+		message = BasicCommands.encryptMessageBase64(message);
 		sendData = null;
 		String messageOut = this.userName + " : " + message;
 		sendData = messageOut.getBytes();
