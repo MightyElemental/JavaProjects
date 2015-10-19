@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import javax.xml.bind.DatatypeConverter;
+
 import net.mightyelemental.network.gui.ServerGUI;
 import net.mightyelemental.network.listener.MessageListenerServer;
 import net.mightyelemental.network.listener.ServerInitiater;
@@ -67,7 +69,7 @@ public class Server {
 						sb.append(dataArray[i]);
 					}
 
-					String message = sb.toString();
+					String message = BasicCommands.decryptMessageBase64(sb.toString());
 					// String sender = dataArray[0];
 					if (lastMessage.equals(message)) {
 						parse = false;
@@ -152,6 +154,7 @@ public class Server {
 		}
 		// System.out.println("New client! " + chars + " | IP: " + ip.getHostAddress() + ":" + port);
 		attachedClients.put(chars, Arrays.asList(new Object[] { ip, port }));
+		this.sendMessage(chars, ip, port);
 		return chars;
 	}
 
@@ -207,7 +210,7 @@ public class Server {
 	 * @param port
 	 *            the port of the client */
 	public void sendMessage(String message, InetAddress ip, int port) {
-		String sendMessage = message;
+		String sendMessage = BasicCommands.encryptMessageBase64(message);
 
 		try {
 			sendData = (sendMessage.toString()).getBytes("UTF-8");

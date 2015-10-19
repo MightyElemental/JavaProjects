@@ -5,6 +5,8 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import javax.xml.bind.DatatypeConverter;
+
 public class BasicCommands {
 
 	/** Send a message to a client
@@ -31,5 +33,29 @@ public class BasicCommands {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	/** Used to encrypt messages using Base64
+	 * 
+	 * @param message
+	 *            the message to be encrypted */
+	public static String encryptMessageBase64(String message) {
+		String temp = DatatypeConverter.printBase64Binary(message.getBytes());
+		return temp;
+	}
+
+	/** Used to decrypt messages using Base64
+	 * 
+	 * @param message
+	 *            the encrypted message to be decrypted */
+	public static String decryptMessageBase64(String message) {
+		String temp = "";
+		byte[] rawData = DatatypeConverter.parseBase64Binary(message);
+
+		for (byte b : rawData) {
+			temp += Byte.toString(b);
+		}
+
+		return temp;
 	}
 }
