@@ -54,6 +54,7 @@ public class Server {
 
 					serverSocket.receive(receivePacket);
 					String data = new String(receivePacket.getData()).trim();
+					data = BasicCommands.decryptMessageBase64(data);
 
 					InetAddress IPAddress = receivePacket.getAddress();
 
@@ -67,7 +68,7 @@ public class Server {
 						sb.append(dataArray[i]);
 					}
 
-					String message = BasicCommands.decryptMessageBase64(sb.toString());
+					String message = sb.toString();
 					// String sender = dataArray[0];
 					if (lastMessage.equals(message)) {
 						parse = false;
