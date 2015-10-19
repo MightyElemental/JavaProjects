@@ -21,9 +21,9 @@ import net.mightyelemental.network.listener.ServerInitiater;
 public class Server {
 
 	private int		port;
-	public boolean	running;
+	private boolean	running;
 
-	public static Random random = new Random();
+	private static Random random = new Random();
 
 	public DatagramSocket serverSocket;
 
@@ -229,5 +229,10 @@ public class Server {
 			int port = Integer.parseInt(this.getAttachedClients().get(key).toArray()[1] + "");
 			sendMessage(message, ip, port);
 		}
+	}
+
+	/** Is the server thread running? */
+	public boolean isRunning() {
+		return running;
 	}
 }
