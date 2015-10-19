@@ -80,7 +80,11 @@ public class Server {
 					if (parse) {
 						initiater.onMessageRecieved(message, IPAddress);
 						checkIfNewClient(IPAddress, port);
-						serverGUI.addCommand(getClientUIDFromIP(IPAddress, port) + ": " + message);
+						if (message.contains("JLB1F0_TEST_CONNECTION RETURN_UID")) {
+							sendMessage("JLB1F0_CLIENT_UID " + getClientUIDFromIP(IPAddress, port), IPAddress, port);
+						} else {
+							serverGUI.addCommand(getClientUIDFromIP(IPAddress, port) + " : " + message);
+						}
 					}
 				} catch (IOException e) {
 					e.printStackTrace();

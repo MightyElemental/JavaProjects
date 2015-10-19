@@ -14,7 +14,7 @@ import net.mightyelemental.network.listener.MessageListenerClient;
 
 public class Client {
 
-	private String	clientUID;
+	private String	clientUID	= "UNASIGNED";
 	private String	address;
 	private int		port;
 
@@ -46,9 +46,13 @@ public class Client {
 					receiveData = BasicCommands.decryptMessageBase64(receiveData);
 
 					// System.out.println(receiveData.toString());
-					lastRecievedMessage = receiveData.toString();
-					recievedMessages.add(lastRecievedMessage);
-					initiater.onMessageRecieved(lastRecievedMessage);
+					if (!receiveData.toString().contains("JLB1F0_CLIENT_UID")) {
+						lastRecievedMessage = receiveData.toString();
+						recievedMessages.add(lastRecievedMessage);
+						initiater.onMessageRecieved(lastRecievedMessage);
+					} else {
+						clientUID = receiveData.toString().replace("JLB1F0_CLIENT_UID ", "");
+					}
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -104,8 +108,8 @@ public class Client {
 		} catch (SocketException | UnknownHostException e) {
 			e.printStackTrace();
 		}
-
 		receiveThread.start();
+		sendMessage("JLB1F0_TEST_CONNECTION RETURN_UID");
 	}
 
 	/** Sends a message to the connected server
