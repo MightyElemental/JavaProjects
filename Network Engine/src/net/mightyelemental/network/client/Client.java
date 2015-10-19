@@ -121,7 +121,7 @@ public class Client {
 		}
 	}
 
-	/** @return lastRecievedMessage - the message the the client last recieved */
+	/** @return lastRecievedMessage - the message the the client last received */
 	public String getLastRecievedMessage() {
 		return lastRecievedMessage;
 	}
