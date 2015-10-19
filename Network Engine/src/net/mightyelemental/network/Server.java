@@ -44,17 +44,19 @@ public class Server {
 
 		public void run() {
 
-			receiveData = new byte[2 ^ 12];
-			sendData = new byte[2 ^ 12];
+			receiveData = new byte[1024];
+			sendData = new byte[1024];
 
 			while (running) {
-				receiveData = new byte[2 ^ 12];
+				receiveData = new byte[1024];
 				DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
 				try {
 
 					serverSocket.receive(receivePacket);
 					String data = new String(receivePacket.getData()).trim();
+					System.out.println(data);
 					data = BasicCommands.decryptMessageBase64(data);
+					System.out.println(data);
 
 					InetAddress IPAddress = receivePacket.getAddress();
 
@@ -209,10 +211,10 @@ public class Server {
 	 * @param port
 	 *            the port of the client */
 	public void sendMessage(String message, InetAddress ip, int port) {
-		String sendMessage = BasicCommands.encryptMessageBase64(message);
+		message = BasicCommands.encryptMessageBase64(message);
 
 		try {
-			sendData = (sendMessage.toString()).getBytes("UTF-8");
+			sendData = (message.toString()).getBytes("UTF-8");
 			DatagramPacket sendPacket = new DatagramPacket(this.sendData, this.sendData.length, ip, port);
 			this.serverSocket.send(sendPacket);
 		} catch (IOException e) {

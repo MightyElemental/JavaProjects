@@ -53,7 +53,7 @@ public class BasicCommands {
 		byte[] rawData = DatatypeConverter.parseBase64Binary(message);
 
 		for (byte b : rawData) {
-			temp += Byte.toString(b);
+			temp += (char) b;
 		}
 
 		return temp;

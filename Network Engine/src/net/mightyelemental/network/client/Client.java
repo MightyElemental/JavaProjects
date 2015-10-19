@@ -14,7 +14,7 @@ import net.mightyelemental.network.listener.MessageListenerClient;
 
 public class Client {
 
-	private String	userName;
+	private String	username;
 	private String	address;
 	private int		port;
 
@@ -39,7 +39,7 @@ public class Client {
 
 			while (isRunning) {
 				try {
-					receiveData = new byte[2 ^ 12];
+					receiveData = new byte[1024];
 					DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
 					clientSocket.receive(receivePacket);
 					String receiveData = new String(receivePacket.getData()).trim();
@@ -69,14 +69,14 @@ public class Client {
 	 * @param port
 	 *            the port for the client to send messages through */
 	public Client( String name, String address, int port ) {
-		this.userName = name;
+		this.username = name;
 		this.address = address;
 		this.port = port;
 	}
 
 	/** @return the clients name */
 	public String getName() {
-		return this.userName;
+		return this.username;
 	}
 
 	/** @return the IP address in the form of String */
@@ -109,9 +109,9 @@ public class Client {
 	 * @param message
 	 *            the message to send to the server */
 	public void sendMessage(String message) {
-		message = BasicCommands.encryptMessageBase64(message);
 		sendData = null;
-		String messageOut = this.userName + " : " + message;
+		String messageOut = this.username + " : " + message;
+		messageOut = BasicCommands.encryptMessageBase64(messageOut);
 		sendData = messageOut.getBytes();
 
 		try {
