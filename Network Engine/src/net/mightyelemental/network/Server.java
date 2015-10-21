@@ -78,13 +78,13 @@ public class Server {
 					// }
 
 					// if (parse) {
-					initiater.onMessageRecieved(message, IPAddress, port);
 					checkIfNewClient(IPAddress, port);
 					if (message.contains("JLB1F0_TEST_CONNECTION RETURN_UID")) {
 						sendMessage("JLB1F0_CLIENT_UID " + getClientUIDFromIP(IPAddress, port), IPAddress, port);
 					} else {
 						serverGUI.addCommand(getClientUIDFromIP(IPAddress, port) + " : " + message);
 					}
+					initiater.onMessageRecieved(message, IPAddress, port);
 					// }
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -213,11 +213,14 @@ public class Server {
 	 * @param port
 	 *            the port of the client */
 	public void sendMessage(String message, InetAddress ip, int port) {
-		message = BasicCommands.encryptMessageBase64(message);
 
 		String cUID = getClientUIDFromIP(ip, port);
 
-		serverGUI.addCommand("Console > " + cUID + " : " + message);
+		if (!message.contains("JLB1F0") && !message.contains("JLB1F0_CLIENT_UID")) {
+			serverGUI.addCommand("Console > " + cUID + " : " + message);
+		}
+
+		message = BasicCommands.encryptMessageBase64(message);
 
 		try {
 			sendData = (message.toString()).getBytes("UTF-8");
