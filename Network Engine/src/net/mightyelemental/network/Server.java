@@ -34,8 +34,8 @@ public class Server {
 
 	private ServerInitiater initiater = new ServerInitiater();
 
-	private String	lastMessage	= "";
-	private boolean	parse		= true;
+	private String lastMessage = "";
+	// private boolean parse = true;
 
 	private boolean		hasGUI;
 	private ServerGUI	serverGUI;
@@ -70,22 +70,22 @@ public class Server {
 
 					String message = sb.toString();
 					// String sender = dataArray[0];
-					if (lastMessage.equals(message)) {
-						parse = false;
-					} else {
-						lastMessage = message;
-						parse = true;
-					}
+					// if (lastMessage.equals(message)) {
+					// parse = false;
+					// } else {
+					lastMessage = message;
+					// parse = true;
+					// }
 
-					if (parse) {
-						initiater.onMessageRecieved(message, IPAddress, port);
-						checkIfNewClient(IPAddress, port);
-						if (message.contains("JLB1F0_TEST_CONNECTION RETURN_UID")) {
-							sendMessage("JLB1F0_CLIENT_UID " + getClientUIDFromIP(IPAddress, port), IPAddress, port);
-						} else {
-							serverGUI.addCommand(getClientUIDFromIP(IPAddress, port) + " : " + message);
-						}
+					// if (parse) {
+					initiater.onMessageRecieved(message, IPAddress, port);
+					checkIfNewClient(IPAddress, port);
+					if (message.contains("JLB1F0_TEST_CONNECTION RETURN_UID")) {
+						sendMessage("JLB1F0_CLIENT_UID " + getClientUIDFromIP(IPAddress, port), IPAddress, port);
+					} else {
+						serverGUI.addCommand(getClientUIDFromIP(IPAddress, port) + " : " + message);
 					}
+					// }
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -240,5 +240,10 @@ public class Server {
 	/** Is the server thread running? */
 	public boolean isRunning() {
 		return running;
+	}
+
+	/** @return the lastMessage */
+	public String getLastMessage() {
+		return lastMessage;
 	}
 }
