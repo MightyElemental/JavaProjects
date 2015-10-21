@@ -215,6 +215,10 @@ public class Server {
 	public void sendMessage(String message, InetAddress ip, int port) {
 		message = BasicCommands.encryptMessageBase64(message);
 
+		String cUID = getClientUIDFromIP(ip, port);
+
+		serverGUI.addCommand("Console > " + cUID + " : " + message);
+
 		try {
 			sendData = (message.toString()).getBytes("UTF-8");
 			DatagramPacket sendPacket = new DatagramPacket(this.sendData, this.sendData.length, ip, port);
