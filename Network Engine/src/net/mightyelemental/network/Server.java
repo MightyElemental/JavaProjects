@@ -78,7 +78,7 @@ public class Server {
 					}
 
 					if (parse) {
-						initiater.onMessageRecieved(message, IPAddress);
+						initiater.onMessageRecieved(message, IPAddress, port);
 						checkIfNewClient(IPAddress, port);
 						if (message.contains("JLB1F0_TEST_CONNECTION RETURN_UID")) {
 							sendMessage("JLB1F0_CLIENT_UID " + getClientUIDFromIP(IPAddress, port), IPAddress, port);

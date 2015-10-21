@@ -12,10 +12,10 @@ public class ServerInitiater {
 		listeners.add(toAdd);
 	}
 
-	public void onMessageRecieved(String message, InetAddress ip) {
+	public void onMessageRecieved(String message, InetAddress ip, int port) {
 		// Notify everybody that may be interested.
 		for (MessageListenerServer mls : listeners)
-			mls.onMessageRecievedFromClient(message, ip);
+			mls.onMessageRecievedFromClient(message, ip, port);
 	}
 
 	public void onNewClientAdded(InetAddress ip, int port, String uid) {
