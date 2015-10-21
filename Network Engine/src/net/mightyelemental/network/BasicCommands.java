@@ -1,7 +1,5 @@
 package net.mightyelemental.network;
 
-import java.io.IOException;
-import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
@@ -23,16 +21,10 @@ public class BasicCommands {
 	 *            the port to be sending the message through
 	 * @throws UnknownHostException
 	 *             if the IP address does not exist or is not valid */
-	public static void cToSToCMessage(Server server, String message, InetAddress clientIP, InetAddress hostIP, int port)
+	public static void cToSToCMessage(Server server, String message, InetAddress clientSendIP, InetAddress clientReceivceIP, int cliRecPort)
 			throws UnknownHostException {
-		String sendMessage = hostIP.getHostAddress() + "> " + message;
-		try {
-			server.sendData = (sendMessage.toString()).getBytes("UTF-8");
-			DatagramPacket sendPacket = new DatagramPacket(server.sendData, server.sendData.length, clientIP, port);
-			server.serverSocket.send(sendPacket);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		String sendMessage = clientSendIP.getHostAddress() + "> " + message;
+		server.sendMessage(sendMessage, clientReceivceIP, cliRecPort);
 	}
 
 	/** Used to encrypt messages using Base64
