@@ -117,6 +117,11 @@ public class Server {
 		return this.port;
 	}
 
+	/** Adds a message to the server GUI */
+	public void addMessageToConsole(String message) {
+		serverGUI.addCommand(message);
+	}
+
 	/** This is required to start the server thread & to create a new socket */
 	public synchronized void setupServer() {
 
