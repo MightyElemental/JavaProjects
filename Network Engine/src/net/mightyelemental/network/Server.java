@@ -86,7 +86,7 @@ public class Server {
 					}
 					initiater.onMessageRecieved(message, IPAddress, port);
 					// }
-				} catch (IOException e) {
+				} catch (IOException | InterruptedException e) {
 					e.printStackTrace();
 				}
 
@@ -162,7 +162,11 @@ public class Server {
 		}
 		// System.out.println("New client! " + chars + " | IP: " + ip.getHostAddress() + ":" + port);
 		attachedClients.put(chars, Arrays.asList(new Object[] { ip, port }));
-		this.sendMessage(chars, ip, port);
+		try {
+			this.sendMessage(chars, ip, port);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		return chars;
 	}
 
@@ -209,7 +213,7 @@ public class Server {
 		initiater.addListener(mls);
 	}
 
-	/** Sends a message to a client
+	/** Sends a message, instantly, to a client
 	 * 
 	 * @param message
 	 *            the message to send
@@ -217,7 +221,7 @@ public class Server {
 	 *            the IP address of the client
 	 * @param port
 	 *            the port of the client */
-	public void sendMessage(String message, InetAddress ip, int port) {
+	public void sendInstantMessage(String message, InetAddress ip, int port) {
 
 		String cUID = getClientUIDFromIP(ip, port);
 
@@ -236,6 +240,19 @@ public class Server {
 		}
 	}
 
+	/** Waits 100ms then sends a message to a client
+	 * 
+	 * @param message
+	 *            the message to send
+	 * @param ip
+	 *            the IP address of the client
+	 * @param port
+	 *            the port of the client */
+	public synchronized void sendMessage(String message, InetAddress ip, int port) throws InterruptedException {
+		Thread.sleep(100);
+		sendInstantMessage(message, ip, port);
+	}
+
 	/** Broadcast a message to every client
 	 * 
 	 * @param message
@@ -245,7 +262,7 @@ public class Server {
 		for (Object key : keys) {
 			InetAddress ip = (InetAddress) this.getAttachedClients().get(key).toArray()[0];
 			int port = Integer.parseInt(this.getAttachedClients().get(key).toArray()[1] + "");
-			sendMessage(message, ip, port);
+			sendInstantMessage(message, ip, port);
 		}
 	}
 

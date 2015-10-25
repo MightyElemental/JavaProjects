@@ -1,7 +1,6 @@
 package net.mightyelemental.network;
 
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 
 import javax.xml.bind.DatatypeConverter;
 
@@ -19,10 +18,10 @@ public class BasicCommands {
 	 *            the IP address of the connection sending the message
 	 * @param port
 	 *            the port to be sending the message through
-	 * @throws UnknownHostException
-	 *             if the IP address does not exist or is not valid */
+	 * @throws InterruptedException
+	 *             if the sleep is interrupted */
 	public static void cToSToCMessage(Server server, String message, InetAddress clientSendIP, int clientSendPort,
-			InetAddress clientReceivceIP, int cliRecPort) {
+			InetAddress clientReceivceIP, int cliRecPort) throws InterruptedException {
 		String sendMessage = server.getClientUIDFromIP(clientSendIP, clientSendPort) + "> " + message;
 		server.sendMessage(sendMessage, clientReceivceIP, cliRecPort);
 	}
