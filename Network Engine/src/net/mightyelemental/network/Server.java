@@ -281,5 +281,10 @@ public class Server {
 	/** Returns a clients ping request */
 	private void returnPingRequest(InetAddress ip, int port) {
 		sendInstantMessage("JLB1F0_RETURN_PING", ip, port);
+		try {
+			sendMessage("JLB1F0_CLIENT_UID " + getClientUIDFromIP(ip,port), ip, port);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 }
