@@ -119,7 +119,7 @@ public class Client {
 			e.printStackTrace();
 		}
 		receiveThread.start();
-		// sendMessage("JLB1F0_TEST_CONNECTION RETURN_UID");
+		sendMessage("JLB1F0_TEST_CONNECTION RETURN_UID");
 	}
 
 	/** Sends a message to the connected server
