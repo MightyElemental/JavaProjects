@@ -81,6 +81,8 @@ public class Server {
 					checkIfNewClient(IPAddress, port);
 					if (message.contains("JLB1F0_TEST_CONNECTION RETURN_UID")) {
 						sendMessage("JLB1F0_CLIENT_UID " + getClientUIDFromIP(IPAddress, port), IPAddress, port);
+					} else if (message.contains("JLB1F0_PING_SERVER")) {
+						returnPingRequest(IPAddress, port);
 					} else {
 						serverGUI.addCommand(getClientUIDFromIP(IPAddress, port) + " : " + message);
 					}
@@ -274,5 +276,10 @@ public class Server {
 	/** @return the lastMessage */
 	public String getLastMessage() {
 		return lastMessage;
+	}
+
+	/** Returns a clients ping request */
+	private void returnPingRequest(InetAddress ip, int port) {
+		sendInstantMessage("JLB1F0_RETURN_PING", ip, port);
 	}
 }

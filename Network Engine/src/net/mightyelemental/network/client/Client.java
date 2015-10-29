@@ -18,7 +18,13 @@ public class Client {
 	private String	address;
 	private int		port;
 
-	public boolean running;
+	private long	timeOfPingRequest	= 0l;
+	private long	timeOfPingResponse	= 0l;
+	private long	pingTime			= 0l;
+
+	public boolean	running;
+	public long		timeStarted	= System.currentTimeMillis();
+	public long		timeRunning	= 0l;
 
 	private String				lastRecievedMessage	= "";
 	private ArrayList<String>	recievedMessages	= new ArrayList<String>();
@@ -38,6 +44,7 @@ public class Client {
 			running = true;
 
 			while (running) {
+				timeRunning = System.currentTimeMillis() - timeStarted;
 				try {
 					receiveData = new byte[1024];
 					DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
@@ -46,12 +53,15 @@ public class Client {
 					receiveData = BasicCommands.decryptMessageBase64(receiveData);
 
 					// System.out.println(receiveData.toString());
-					if (!receiveData.toString().contains("JLB1F0_CLIENT_UID")) {
+					if (receiveData.toString().contains("JLB1F0_CLIENT_UID")) {
+						clientUID = receiveData.toString().replace("JLB1F0_CLIENT_UID ", "");
+					} else if (receiveData.toString().contains("JLB1F0_RETURN_PING")) {
+						timeOfPingResponse = System.currentTimeMillis();
+						pingTime = timeOfPingResponse - timeOfPingRequest;
+					} else {
 						lastRecievedMessage = receiveData.toString();
 						recievedMessages.add(lastRecievedMessage);
 						initiater.onMessageRecieved(lastRecievedMessage);
-					} else {
-						clientUID = receiveData.toString().replace("JLB1F0_CLIENT_UID ", "");
 					}
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -109,7 +119,7 @@ public class Client {
 			e.printStackTrace();
 		}
 		receiveThread.start();
-		sendMessage("JLB1F0_TEST_CONNECTION RETURN_UID");
+		// sendMessage("JLB1F0_TEST_CONNECTION RETURN_UID");
 	}
 
 	/** Sends a message to the connected server
@@ -152,6 +162,17 @@ public class Client {
 		this.running = false;
 		sendData = null;
 		receiveData = null;
+	}
+
+	/** Pings the server */
+	public void sendPingRequest() {
+		timeOfPingRequest = System.currentTimeMillis();
+		sendMessage("JLB1F0_PING_SERVER");
+	}
+
+	/** @return the time it took to ping the server */
+	public long getPingTime() {
+		return pingTime;
 	}
 
 }
