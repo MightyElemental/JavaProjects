@@ -91,7 +91,7 @@ public class UDPServer {
 
 				if (hasGUI) {
 					if (serverGUI != null) {
-						serverGUI.updateClients(getAttachedClients());
+						serverGUI.updateUDPClients(getAttachedClients());
 					}
 				}
 

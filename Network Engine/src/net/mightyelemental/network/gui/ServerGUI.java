@@ -13,6 +13,7 @@ import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 
+import net.mightyelemental.network.TCPConnection;
 import net.mightyelemental.network.UDPServer;
 
 @SuppressWarnings( "serial" )
@@ -21,7 +22,7 @@ public class ServerGUI extends JFrame {
 	private JPanel contentPane;
 
 	private List		list		= new List();
-	private UDPServer		server;
+	private UDPServer	server;
 	private JTextField	textField;
 	List				commands	= new List();
 
@@ -90,12 +91,24 @@ public class ServerGUI extends JFrame {
 		panel_2.add(lblClientCommands);
 	}
 
-	public void updateClients(Map<String, java.util.List<Object>> map) {
+	public void updateUDPClients(Map<String, java.util.List<Object>> map) {
 		list.removeAll();
 		Object[] keys = server.getAttachedClients().keySet().toArray();
 		for (Object key : keys) {
 			InetAddress ip = (InetAddress) server.getAttachedClients().get(key).toArray()[0];
 			int port = Integer.parseInt(server.getAttachedClients().get(key).toArray()[1] + "");
+			String temp = "IP:" + ip.toString().replace('/', '\0') + ":" + port + " (" + key.toString() + ")";
+			list.add(temp);
+		}
+		this.repaint();
+	}
+
+	public void updateTCPClients(Map<String, TCPConnection> map) {
+		list.removeAll();
+		Object[] keys = server.getAttachedClients().keySet().toArray();
+		for (Object key : keys) {
+			InetAddress ip = map.get(key).getIp();
+			int port = map.get(key).getPort();
 			String temp = "IP:" + ip.toString().replace('/', '\0') + ":" + port + " (" + key.toString() + ")";
 			list.add(temp);
 		}

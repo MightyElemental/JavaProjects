@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.Socket;
 
+import net.mightyelemental.network.gui.ServerGUI;
 import net.mightyelemental.network.listener.ServerInitiater;
 
 public class TCPConnection {
@@ -19,8 +20,7 @@ public class TCPConnection {
 	public BufferedReader	in;
 	public DataOutputStream	out;
 
-	@SuppressWarnings( "unused" )
-	private TCPServer tcpServer;
+	private ServerGUI serverGUI;
 
 	private ServerInitiater SI;
 
@@ -31,24 +31,41 @@ public class TCPConnection {
 				String message = in.readLine();
 				message = BasicCommands.decryptMessageBase64(message);
 				SI.onMessageRecieved(message, ip, port);
+				if (message.contains("JLB1F0_TEST_CONNECTION RETURN_UID")) {
+					sendMessage("JLB1F0_CLIENT_UID " + UID);
+				} else if (message.contains("JLB1F0_PING_SERVER")) {
+					returnPingRequest(ip, port);
+				} else {
+					serverGUI.addCommand(UID + " : " + message);
+				}
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
 	};
 
-	public TCPConnection( Socket client, ServerInitiater initiater, TCPServer tcpServer ) {
+	/** Returns a clients ping request */
+	private void returnPingRequest(InetAddress ip, int port) {
+		try {
+			sendMessage("JLB1F0_RETURN_PING");
+			sendMessage("JLB1F0_CLIENT_UID " + UID);
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+	}
+
+	public TCPConnection( Socket client, ServerInitiater initiater, ServerGUI serverGUI ) {
 		this.client = client;
 		this.ip = client.getInetAddress();
 		this.port = client.getPort();
 		this.SI = initiater;
+		this.serverGUI = serverGUI;
 		try {
 			this.in = new BufferedReader(new InputStreamReader(client.getInputStream()));
 			this.out = new DataOutputStream(client.getOutputStream());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		this.tcpServer = tcpServer;
 	}
 
 	/** Send a message to the client */

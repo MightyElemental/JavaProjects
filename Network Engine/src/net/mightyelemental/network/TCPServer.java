@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
+import net.mightyelemental.network.gui.ServerGUI;
 import net.mightyelemental.network.listener.MessageListenerServer;
 import net.mightyelemental.network.listener.ServerInitiater;
 
@@ -24,8 +25,8 @@ public class TCPServer {
 
 	ServerSocket welcomeSocket;
 
-	// This instance of the server
-	private TCPServer thisServer = this;
+	private boolean		hasGUI;
+	private ServerGUI	serverGUI;
 
 	private Thread serverTick = new Thread("ServerThread") {
 
@@ -33,12 +34,18 @@ public class TCPServer {
 			while (running) {
 				try {
 					Socket newClientSocket = welcomeSocket.accept();
-					TCPConnection newTcpClient = new TCPConnection(newClientSocket, initiater, thisServer);
+					TCPConnection newTcpClient = new TCPConnection(newClientSocket, initiater, serverGUI);
 					String UID = generateClientInfo(newTcpClient, random);
 					newTcpClient.setUID(UID);
 					tcpConnections.put(UID, newTcpClient);
 
 					initiater.onNewClientAdded(newClientSocket.getInetAddress(), newClientSocket.getPort(), UID);
+
+					if (hasGUI) {
+						if (serverGUI != null) {
+							serverGUI.updateTCPClients(tcpConnections);
+						}
+					}
 
 					// lastMessage = inFromClient.readLine();
 					// lastMessage = BasicCommands.decryptMessageBase64(lastMessage);
