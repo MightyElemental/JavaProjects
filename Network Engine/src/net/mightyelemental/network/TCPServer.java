@@ -27,8 +27,6 @@ public class TCPServer {
 	// This instance of the server
 	private TCPServer thisServer = this;
 
-	private String lastMessage = "";
-
 	private Thread serverTick = new Thread("ServerThread") {
 
 		public void run() {
@@ -132,11 +130,6 @@ public class TCPServer {
 	/** @return the tcpConnections */
 	public Map<String, TCPConnection> getTcpConnections() {
 		return tcpConnections;
-	}
-
-	/** @return the lastMessage */
-	public String getLastMessage() {
-		return lastMessage;
 	}
 
 }
