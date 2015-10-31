@@ -7,6 +7,8 @@ import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.Socket;
 
+import net.mightyelemental.network.listener.ServerInitiater;
+
 public class TCPConnection {
 
 	private Socket		client;
@@ -17,13 +19,29 @@ public class TCPConnection {
 	public BufferedReader	in;
 	public DataOutputStream	out;
 
-	private TCPServer	tcpServer;
-	private Thread		run;
+	@SuppressWarnings( "unused" )
+	private TCPServer tcpServer;
 
-	public TCPConnection( Socket client, TCPServer tcpServer ) {
+	private ServerInitiater SI;
+
+	private Thread run = new Thread("TCPConnection_Undef") {
+
+		public void run() {
+			try {
+				String message = in.readLine();
+				message = BasicCommands.decryptMessageBase64(message);
+				SI.onMessageRecieved(message, ip, port);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	};
+
+	public TCPConnection( Socket client, ServerInitiater initiater, TCPServer tcpServer ) {
 		this.client = client;
 		this.ip = client.getInetAddress();
 		this.port = client.getPort();
+		this.SI = initiater;
 		try {
 			this.in = new BufferedReader(new InputStreamReader(client.getInputStream()));
 			this.out = new DataOutputStream(client.getOutputStream());
@@ -31,7 +49,12 @@ public class TCPConnection {
 			e.printStackTrace();
 		}
 		this.tcpServer = tcpServer;
-		run = new Thread("TCPConnection_Undef");
+	}
+
+	/** Send a message to the client */
+	public synchronized void sendMessage(String message) throws IOException {
+		message = BasicCommands.encryptMessageBase64(message);
+		out.writeChars(message);
 	}
 
 	/** Start the clients thread */

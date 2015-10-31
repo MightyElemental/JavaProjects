@@ -11,7 +11,7 @@ import java.util.Random;
 import net.mightyelemental.network.listener.MessageListenerServer;
 import net.mightyelemental.network.listener.ServerInitiater;
 
-public class TCPServer implements MessageListenerServer {
+public class TCPServer {
 
 	private int		port;
 	private boolean	running;
@@ -35,7 +35,7 @@ public class TCPServer implements MessageListenerServer {
 			while (running) {
 				try {
 					Socket newClientSocket = welcomeSocket.accept();
-					TCPConnection newTcpClient = new TCPConnection(newClientSocket, thisServer);
+					TCPConnection newTcpClient = new TCPConnection(newClientSocket, initiater, thisServer);
 					String UID = generateClientInfo(newTcpClient, random);
 					newTcpClient.setUID(UID);
 					tcpConnections.put(UID, newTcpClient);
@@ -82,8 +82,33 @@ public class TCPServer implements MessageListenerServer {
 		serverTick.start();
 	}
 
-	public synchronized void sendMessage(String message, InetAddress ip, int port) throws InterruptedException {
+	/** Get the TCP Connection for the specified UID */
+	public TCPConnection getTCPConnectionFromUID(String UID) {
+		return tcpConnections.get(UID);
+	}
 
+	/** Get the TCP Connection for the specified IP */
+	public TCPConnection getTCPConnectionFromIP(InetAddress ip, int port) {
+		for (TCPConnection tcp : tcpConnections.values()) {
+			if (ip.equals(tcp.getIp()) && port == tcp.getPort()) { return tcp; }
+		}
+		return null;
+	}
+
+	/** Sends a message to a client
+	 * 
+	 * @param message
+	 *            the message to send
+	 * @param ip
+	 *            the IP address of the client
+	 * @param port
+	 *            the port of the client */
+	public synchronized void sendMessage(String message, InetAddress ip, int port) throws InterruptedException {
+		try {
+			getTCPConnectionFromIP(ip, port).sendMessage(message);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/** Adds client UID to array and makes sure its unique
@@ -112,16 +137,6 @@ public class TCPServer implements MessageListenerServer {
 	/** @return the lastMessage */
 	public String getLastMessage() {
 		return lastMessage;
-	}
-
-	@Override
-	public void onMessageRecievedFromClient(String message, InetAddress ip, int port) {
-
-	}
-
-	@Override
-	public void onNewClientAdded(InetAddress ip, int port, String uid) {
-
 	}
 
 }
