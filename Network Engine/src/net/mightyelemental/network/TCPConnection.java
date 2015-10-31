@@ -66,12 +66,17 @@ public class TCPConnection {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		try {
+			sendMessage("Welcome");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/** Send a message to the client */
 	public synchronized void sendMessage(String message) throws IOException {
 		message = BasicCommands.encryptMessageBase64(message);
-		out.writeChars(message);
+		out.writeChars(message);// Socket closed issue
 	}
 
 	/** Start the clients thread */

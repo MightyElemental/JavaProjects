@@ -18,8 +18,6 @@ public class UDPServer extends Server {
 	private int		port;
 	private boolean	running;
 
-	private Random random = new Random();
-
 	public DatagramSocket serverSocket;
 
 	public Map<String, List<Object>> attachedClients = new HashMap<String, List<Object>>();

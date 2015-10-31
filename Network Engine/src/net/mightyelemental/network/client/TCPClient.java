@@ -56,6 +56,13 @@ public class TCPClient extends Client {
 	public synchronized void setup() {
 		try {
 			clientSocket = new Socket(address, port);
+
+		} catch (IOException e) {
+			System.err.println("Could not connect to server!");
+			stopClient();
+			System.exit(1);
+		}
+		try {
 			outToServer = new DataOutputStream(clientSocket.getOutputStream());
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -67,7 +74,7 @@ public class TCPClient extends Client {
 		message = message + '\n';
 		message = BasicCommands.encryptMessageBase64(message);
 		try {
-			outToServer.writeBytes(message);
+			outToServer.writeChars(message);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

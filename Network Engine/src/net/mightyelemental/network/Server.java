@@ -1,6 +1,7 @@
 package net.mightyelemental.network;
 
 import java.net.InetAddress;
+import java.util.Random;
 
 import net.mightyelemental.network.gui.ServerGUI;
 import net.mightyelemental.network.listener.MessageListenerServer;
@@ -13,6 +14,8 @@ public abstract class Server {
 
 	protected boolean	hasGUI;
 	protected ServerGUI	serverGUI;
+
+	protected static Random random = new Random();
 
 	protected ServerInitiater initiater = new ServerInitiater();
 

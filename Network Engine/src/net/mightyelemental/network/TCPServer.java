@@ -8,13 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
-import net.mightyelemental.network.listener.ServerInitiater;
-
 public class TCPServer extends Server {
-
-	private static Random random = new Random();
-
-	private ServerInitiater initiater = new ServerInitiater();
 
 	private Map<String, TCPConnection> tcpConnections = new HashMap<String, TCPConnection>();
 
