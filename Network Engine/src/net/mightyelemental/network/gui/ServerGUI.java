@@ -13,7 +13,7 @@ import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 
-import net.mightyelemental.network.Server;
+import net.mightyelemental.network.UDPServer;
 
 @SuppressWarnings( "serial" )
 public class ServerGUI extends JFrame {
@@ -21,12 +21,12 @@ public class ServerGUI extends JFrame {
 	private JPanel contentPane;
 
 	private List		list		= new List();
-	private Server		server;
+	private UDPServer		server;
 	private JTextField	textField;
 	List				commands	= new List();
 
 	/** Create the frame. */
-	public ServerGUI( String title, Server server, String IPAddress ) {
+	public ServerGUI( String title, UDPServer server, String IPAddress ) {
 		this.server = server;
 		setResizable(false);
 		setVisible(true);

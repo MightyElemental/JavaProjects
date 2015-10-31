@@ -1,13 +1,10 @@
 package net.mightyelemental.network;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
-import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -18,19 +15,19 @@ import net.mightyelemental.network.gui.ServerGUI;
 import net.mightyelemental.network.listener.MessageListenerServer;
 import net.mightyelemental.network.listener.ServerInitiater;
 
-public class Server {
+public class UDPServer {
 
 	private int		port;
 	private boolean	running;
 
-	private static Random random = new Random();
+	private Random random = new Random();
 
 	public DatagramSocket serverSocket;
 
 	public Map<String, List<Object>> attachedClients = new HashMap<String, List<Object>>();
 
-	public byte[]	receiveData;
-	public byte[]	sendData;
+	private byte[]	receiveData;
+	private byte[]	sendData;
 
 	private ServerInitiater initiater = new ServerInitiater();
 
@@ -110,7 +107,7 @@ public class Server {
 	};
 
 	/** UDP Server */
-	public Server( int port ) {
+	public UDPServer( int port ) {
 		this.port = port;
 	}
 
@@ -158,9 +155,9 @@ public class Server {
 	 * 
 	 * @return uid the client's UID */
 	private String generateClientInfo(InetAddress ip, int port, Random rand) {
-		String chars = generateClientUID(rand);
+		String chars = BasicCommands.generateClientUID(rand);
 		while (attachedClients.containsKey(chars)) {
-			chars = generateClientUID(rand);
+			chars = BasicCommands.generateClientUID(rand);
 		}
 		// System.out.println("New client! " + chars + " | IP: " + ip.getHostAddress() + ":" + port);
 		attachedClients.put(chars, Arrays.asList(new Object[] { ip, port }));
@@ -172,29 +169,6 @@ public class Server {
 		return chars;
 	}
 
-	/** Creates a UID for a new IP/Port */
-	private String generateClientUID(Random rand) {
-		String chars = "";
-
-		for (int i = 0; i < 6; i++) {
-			chars += (char) (rand.nextInt(26) + 'a');
-		}
-		return chars;
-	}
-
-	/** Gets the servers External IP Address. <br>
-	 * It uses <a href="http://checkip.amazonaws.com">'http://checkip.amazonaws.com'</a> to do so. */
-	public static String getExternalIPAddress() {
-		try {
-			URL whatismyip = new URL("http://checkip.amazonaws.com");
-			BufferedReader in = new BufferedReader(new InputStreamReader(whatismyip.openStream()));
-			String ip = in.readLine(); // you get the IP as a String
-			return ip;
-		} catch (Exception e) {
-		}
-		return "0.0.0.0";
-	}
-
 	/** @return the attachedClients<br>
 	 *         Uses ClientUID as key. The List it gives is an 'InetAddress' and an 'int', in that order. */
 	public Map<String, List<Object>> getAttachedClients() {
@@ -203,7 +177,7 @@ public class Server {
 
 	/** Setup the built in GUI */
 	public void initGUI(String title) {
-		serverGUI = new ServerGUI(title, this, getExternalIPAddress() + ":" + this.getPort());
+		serverGUI = new ServerGUI(title, this, BasicCommands.getExternalIPAddress() + ":" + this.getPort());
 		this.hasGUI = true;
 	}
 
@@ -282,7 +256,7 @@ public class Server {
 	private void returnPingRequest(InetAddress ip, int port) {
 		sendInstantMessage("JLB1F0_RETURN_PING", ip, port);
 		try {
-			sendMessage("JLB1F0_CLIENT_UID " + getClientUIDFromIP(ip,port), ip, port);
+			sendMessage("JLB1F0_CLIENT_UID " + getClientUIDFromIP(ip, port), ip, port);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}

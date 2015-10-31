@@ -12,7 +12,7 @@ import net.mightyelemental.network.BasicCommands;
 import net.mightyelemental.network.listener.ClientInitiater;
 import net.mightyelemental.network.listener.MessageListenerClient;
 
-public class Client {
+public class UDPClient {
 
 	private String	clientUID	= "UNASIGNED";
 	private String	address;
@@ -26,7 +26,7 @@ public class Client {
 	public long		timeStarted	= System.currentTimeMillis();
 	public long		timeRunning	= 0l;
 
-	private String				lastRecievedMessage	= "";
+	private String				lastMessage	= "";
 	private ArrayList<String>	recievedMessages	= new ArrayList<String>();
 
 	private DatagramSocket clientSocket;
@@ -38,7 +38,7 @@ public class Client {
 	private byte[]	receiveData;
 	private byte[]	sendData;
 
-	private Thread receiveThread = new Thread("ClientReceiveThread") {
+	private Thread clientTick = new Thread("ClientReceiveThread") {
 
 		public void run() {
 			running = true;
@@ -59,9 +59,9 @@ public class Client {
 						timeOfPingResponse = System.currentTimeMillis();
 						pingTime = timeOfPingResponse - timeOfPingRequest;
 					} else {
-						lastRecievedMessage = receiveData.toString();
-						recievedMessages.add(lastRecievedMessage);
-						initiater.onMessageRecieved(lastRecievedMessage);
+						lastMessage = receiveData.toString();
+						recievedMessages.add(lastMessage);
+						initiater.onMessageRecieved(lastMessage);
 					}
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -82,7 +82,7 @@ public class Client {
 	 *            the IP address in String form
 	 * @param port
 	 *            the port for the client to send messages through */
-	public Client( String address, int port ) {
+	public UDPClient( String address, int port ) {
 		this.address = address;
 		this.port = port;
 	}
@@ -118,7 +118,7 @@ public class Client {
 		} catch (SocketException | UnknownHostException e) {
 			e.printStackTrace();
 		}
-		receiveThread.start();
+		clientTick.start();
 		sendMessage("JLB1F0_TEST_CONNECTION RETURN_UID");
 	}
 
@@ -141,7 +141,7 @@ public class Client {
 
 	/** @return lastRecievedMessage - the message the the client last received */
 	public String getLastRecievedMessage() {
-		return lastRecievedMessage;
+		return lastMessage;
 	}
 
 	/** @return the recievedMessages */
