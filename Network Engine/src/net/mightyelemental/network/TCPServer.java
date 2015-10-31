@@ -8,14 +8,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
-import net.mightyelemental.network.gui.ServerGUI;
-import net.mightyelemental.network.listener.MessageListenerServer;
 import net.mightyelemental.network.listener.ServerInitiater;
 
-public class TCPServer implements Server {
-
-	private int		port;
-	private boolean	running;
+public class TCPServer extends Server {
 
 	private static Random random = new Random();
 
@@ -24,9 +19,6 @@ public class TCPServer implements Server {
 	private Map<String, TCPConnection> tcpConnections = new HashMap<String, TCPConnection>();
 
 	ServerSocket welcomeSocket;
-
-	private boolean		hasGUI;
-	private ServerGUI	serverGUI;
 
 	private Thread serverTick = new Thread("ServerThread") {
 
@@ -43,7 +35,7 @@ public class TCPServer implements Server {
 
 					if (hasGUI) {
 						if (serverGUI != null) {
-							serverGUI.updateTCPClients(tcpConnections);
+							serverGUI.updateClients();
 						}
 					}
 
@@ -65,14 +57,6 @@ public class TCPServer implements Server {
 	/** TCP Server */
 	public TCPServer( int port ) {
 		this.port = port;
-	}
-
-	/** Adds listener to initiater
-	 * 
-	 * @param mls
-	 *            the MessageListenerServer instance */
-	public void addListener(MessageListenerServer mls) {
-		initiater.addListener(mls);
 	}
 
 	public synchronized void setupServer() {
@@ -133,6 +117,17 @@ public class TCPServer implements Server {
 	/** @return the tcpConnections */
 	public Map<String, TCPConnection> getTcpConnections() {
 		return tcpConnections;
+	}
+
+	@Override
+	public void broadcastmessage(String message) {
+		for (String key : getTcpConnections().keySet()) {
+			try {
+				getTcpConnections().get(key).sendMessage(message);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 }

@@ -12,10 +12,8 @@ import java.util.Map;
 import java.util.Random;
 
 import net.mightyelemental.network.gui.ServerGUI;
-import net.mightyelemental.network.listener.MessageListenerServer;
-import net.mightyelemental.network.listener.ServerInitiater;
 
-public class UDPServer implements Server {
+public class UDPServer extends Server {
 
 	private int		port;
 	private boolean	running;
@@ -29,13 +27,8 @@ public class UDPServer implements Server {
 	private byte[]	receiveData;
 	private byte[]	sendData;
 
-	private ServerInitiater initiater = new ServerInitiater();
-
 	private String lastMessage = "";
 	// private boolean parse = true;
-
-	private boolean		hasGUI;
-	private ServerGUI	serverGUI;
 
 	private Thread serverTick = new Thread("ServerThread") {
 
@@ -91,7 +84,7 @@ public class UDPServer implements Server {
 
 				if (hasGUI) {
 					if (serverGUI != null) {
-						serverGUI.updateUDPClients(getAttachedClients());
+						serverGUI.updateClients();
 					}
 				}
 
@@ -109,11 +102,6 @@ public class UDPServer implements Server {
 	/** UDP Server */
 	public UDPServer( int port ) {
 		this.port = port;
-	}
-
-	/** @return the port the server is running on */
-	public int getPort() {
-		return this.port;
 	}
 
 	/** Adds a message to the server GUI */
@@ -175,14 +163,6 @@ public class UDPServer implements Server {
 	public void initGUI(String title) {
 		serverGUI = new ServerGUI(title, this, BasicCommands.getExternalIPAddress() + ":" + this.getPort());
 		this.hasGUI = true;
-	}
-
-	/** Adds listener to initiater
-	 * 
-	 * @param mls
-	 *            the MessageListenerServer instance */
-	public void addListener(MessageListenerServer mls) {
-		initiater.addListener(mls);
 	}
 
 	/** Sends a message, instantly, to a client
