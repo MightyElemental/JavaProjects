@@ -15,7 +15,7 @@ import net.mightyelemental.network.gui.ServerGUI;
 import net.mightyelemental.network.listener.MessageListenerServer;
 import net.mightyelemental.network.listener.ServerInitiater;
 
-public class UDPServer {
+public class UDPServer implements Server {
 
 	private int		port;
 	private boolean	running;
@@ -85,7 +85,7 @@ public class UDPServer {
 					}
 					initiater.onMessageRecieved(message, IPAddress, port);
 					// }
-				} catch (IOException | InterruptedException e) {
+				} catch (IOException e) {
 					e.printStackTrace();
 				}
 
@@ -161,11 +161,7 @@ public class UDPServer {
 		}
 		// System.out.println("New client! " + chars + " | IP: " + ip.getHostAddress() + ":" + port);
 		attachedClients.put(chars, Arrays.asList(new Object[] { ip, port }));
-		try {
-			this.sendMessage(chars, ip, port);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+		this.sendMessage(chars, ip, port);
 		return chars;
 	}
 
@@ -224,8 +220,12 @@ public class UDPServer {
 	 *            the IP address of the client
 	 * @param port
 	 *            the port of the client */
-	public synchronized void sendMessage(String message, InetAddress ip, int port) throws InterruptedException {
-		Thread.sleep(100);
+	public synchronized void sendMessage(String message, InetAddress ip, int port) {
+		try {
+			Thread.sleep(100);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		sendInstantMessage(message, ip, port);
 	}
 
@@ -255,10 +255,6 @@ public class UDPServer {
 	/** Returns a clients ping request */
 	private void returnPingRequest(InetAddress ip, int port) {
 		sendInstantMessage("JLB1F0_RETURN_PING", ip, port);
-		try {
-			sendMessage("JLB1F0_CLIENT_UID " + getClientUIDFromIP(ip, port), ip, port);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+		sendMessage("JLB1F0_CLIENT_UID " + getClientUIDFromIP(ip, port), ip, port);
 	}
 }

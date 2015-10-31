@@ -12,7 +12,7 @@ import net.mightyelemental.network.gui.ServerGUI;
 import net.mightyelemental.network.listener.MessageListenerServer;
 import net.mightyelemental.network.listener.ServerInitiater;
 
-public class TCPServer {
+public class TCPServer implements Server {
 
 	private int		port;
 	private boolean	running;
@@ -108,7 +108,7 @@ public class TCPServer {
 	 *            the IP address of the client
 	 * @param port
 	 *            the port of the client */
-	public synchronized void sendMessage(String message, InetAddress ip, int port) throws InterruptedException {
+	public synchronized void sendMessage(String message, InetAddress ip, int port) {
 		try {
 			getTCPConnectionFromIP(ip, port).sendMessage(message);
 		} catch (IOException e) {
@@ -119,18 +119,14 @@ public class TCPServer {
 	/** Adds client UID to array and makes sure its unique
 	 * 
 	 * @return uid the client's UID */
-	private String generateClientInfo(TCPConnection tcpCon, Random rand) {
+	public String generateClientInfo(TCPConnection tcpCon, Random rand) {
 		String chars = BasicCommands.generateClientUID(rand);
 		while (tcpConnections.containsKey(chars)) {
 			chars = BasicCommands.generateClientUID(rand);
 		}
 		// System.out.println("New client! " + chars + " | IP: " + ip.getHostAddress() + ":" + port);
 		tcpConnections.put(chars, tcpCon);
-		try {
-			this.sendMessage(chars, tcpCon.getIp(), tcpCon.getPort());
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+		sendMessage(chars, tcpCon.getIp(), tcpCon.getPort());
 		return chars;
 	}
 

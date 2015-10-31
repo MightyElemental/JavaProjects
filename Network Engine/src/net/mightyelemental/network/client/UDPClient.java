@@ -6,34 +6,18 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
 
 import net.mightyelemental.network.BasicCommands;
-import net.mightyelemental.network.listener.ClientInitiater;
-import net.mightyelemental.network.listener.MessageListenerClient;
 
-public class UDPClient {
-
-	private String	clientUID	= "UNASIGNED";
-	private String	address;
-	private int		port;
-
-	private long	timeOfPingRequest	= 0l;
-	private long	timeOfPingResponse	= 0l;
-	private long	pingTime			= 0l;
+public class UDPClient extends Client {
 
 	public boolean	running;
 	public long		timeStarted	= System.currentTimeMillis();
 	public long		timeRunning	= 0l;
 
-	private String				lastMessage	= "";
-	private ArrayList<String>	recievedMessages	= new ArrayList<String>();
-
 	private DatagramSocket clientSocket;
 
 	private InetAddress IPAddress;
-
-	private ClientInitiater initiater = new ClientInitiater();
 
 	private byte[]	receiveData;
 	private byte[]	sendData;
@@ -137,24 +121,6 @@ public class UDPClient {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	}
-
-	/** @return lastRecievedMessage - the message the the client last received */
-	public String getLastRecievedMessage() {
-		return lastMessage;
-	}
-
-	/** @return the recievedMessages */
-	public ArrayList<String> getRecievedMessages() {
-		return recievedMessages;
-	}
-
-	/** Adds listener to initiater
-	 * 
-	 * @param mlc
-	 *            the MessageListenerClient instance */
-	public void addListener(MessageListenerClient mlc) {
-		initiater.addListener(mlc);
 	}
 
 	/** Used to stop the client thread */

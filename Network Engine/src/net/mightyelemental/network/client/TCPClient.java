@@ -5,32 +5,15 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
-import java.util.ArrayList;
 
 import net.mightyelemental.network.BasicCommands;
-import net.mightyelemental.network.listener.ClientInitiater;
-import net.mightyelemental.network.listener.MessageListenerClient;
 
-public class TCPClient {
+public class TCPClient extends Client {
 
 	Socket				clientSocket;
 	DataOutputStream	outToServer;
 
-	private String clientUID = "UNASIGNED";
-
 	public boolean running;
-
-	private String	address;
-	private int		port;
-
-	private ClientInitiater initiater = new ClientInitiater();
-
-	private long	timeOfPingRequest	= 0l;
-	private long	timeOfPingResponse	= 0l;
-	private long	pingTime			= 0l;
-
-	private String				lastMessage			= "";
-	private ArrayList<String>	recievedMessages	= new ArrayList<String>();
 
 	private Thread clientTick = new Thread("ClientReceiveThread") {
 
@@ -80,14 +63,6 @@ public class TCPClient {
 		clientTick.start();
 	}
 
-	/** Adds listener to initiater
-	 * 
-	 * @param mlc
-	 *            the MessageListenerClient instance */
-	public void addListener(MessageListenerClient mlc) {
-		initiater.addListener(mlc);
-	}
-
 	public void sendMessage(String message) {
 		message = message + '\n';
 		message = BasicCommands.encryptMessageBase64(message);
@@ -122,6 +97,26 @@ public class TCPClient {
 	/** @return the time it took to ping the server */
 	public long getPingTime() {
 		return pingTime;
+	}
+
+	/** @return the port the client is running on */
+	public int getPort() {
+		return port;
+	}
+
+	/** @return the IP address in the form of String */
+	public String getAddress() {
+		return this.address;
+	}
+
+	/** @return the full IP address */
+	public String getFullIPAddress() {
+		return getAddress() + ":" + getPort();
+	}
+
+	/** @return the clients name */
+	public String getUID() {
+		return this.clientUID;
 	}
 
 }
