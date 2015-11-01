@@ -29,7 +29,7 @@ public abstract class Client {
 
 	/** @return the time it took to ping the server */
 	public long getPingTime() {
-		return pingTime;
+		return timeOfPingResponse - timeOfPingRequest;
 	}
 
 	/** @return the port the client is running on */

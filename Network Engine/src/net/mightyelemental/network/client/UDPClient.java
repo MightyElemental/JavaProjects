@@ -60,9 +60,7 @@ public class UDPClient extends Client {
 		}
 	};
 
-	/** @param name
-	 *            the name of the client
-	 * @param address
+	/** @param address
 	 *            the IP address in String form
 	 * @param port
 	 *            the port for the client to send messages through */

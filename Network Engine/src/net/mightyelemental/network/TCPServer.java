@@ -12,17 +12,18 @@ public class TCPServer extends Server {
 
 	private Map<String, TCPConnection> tcpConnections = new HashMap<String, TCPConnection>();
 
-	ServerSocket welcomeSocket;
+	private ServerSocket serverSocket;
 
 	private Thread serverTick = new Thread("ServerThread") {
 
 		public void run() {
 			while (running) {
 				try {
-					Socket newClientSocket = welcomeSocket.accept();
+					Socket newClientSocket = serverSocket.accept();
 					TCPConnection newTcpClient = new TCPConnection(newClientSocket, initiater, serverGUI);
 					String UID = generateClientInfo(newTcpClient, random);
 					newTcpClient.setUID(UID);
+					newTcpClient.startThread();
 					tcpConnections.put(UID, newTcpClient);
 
 					initiater.onNewClientAdded(newClientSocket.getInetAddress(), newClientSocket.getPort(), UID);
@@ -56,7 +57,7 @@ public class TCPServer extends Server {
 	public synchronized void setupServer() {
 
 		try {
-			welcomeSocket = new ServerSocket(port);
+			serverSocket = new ServerSocket(port);
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
@@ -104,7 +105,6 @@ public class TCPServer extends Server {
 		}
 		// System.out.println("New client! " + chars + " | IP: " + ip.getHostAddress() + ":" + port);
 		tcpConnections.put(chars, tcpCon);
-		sendMessage(chars, tcpCon.getIp(), tcpCon.getPort());
 		return chars;
 	}
 

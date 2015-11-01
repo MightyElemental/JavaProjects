@@ -10,34 +10,40 @@ import net.mightyelemental.network.BasicCommands;
 
 public class TCPClient extends Client {
 
-	Socket				clientSocket;
-	DataOutputStream	outToServer;
+	private Socket				clientSocket;
+	private DataOutputStream	out;
+	private BufferedReader		in;
 
-	public boolean running;
+	private boolean running;
 
 	private Thread clientTick = new Thread("ClientReceiveThread") {
 
 		public void run() {
+			running = true;
 			while (running) {
+
+				System.out.println("temp");
+				String tempMessage = null;
 				try {
-					BufferedReader inFromServer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-					String tempMessage = inFromServer.readLine();
-					tempMessage = BasicCommands.decryptMessageBase64(tempMessage);
-
-					if (tempMessage.contains("JLB1F0_CLIENT_UID")) {
-						clientUID = tempMessage.replace("JLB1F0_CLIENT_UID ", "");
-					} else if (tempMessage.contains("JLB1F0_RETURN_PING")) {
-						timeOfPingResponse = System.currentTimeMillis();
-						pingTime = timeOfPingResponse - timeOfPingRequest;
-					} else {
-						lastMessage = tempMessage;
-						recievedMessages.add(lastMessage);
-						initiater.onMessageRecieved(lastMessage);
-					}
-
+					tempMessage = in.readLine();
 				} catch (IOException e) {
-					e.printStackTrace();
+					System.err.println("Server has been closed");
+					stopClient();
 				}
+				System.out.println(tempMessage);
+				tempMessage = BasicCommands.decryptMessageBase64(tempMessage);
+
+				if (tempMessage.contains("JLB1F0_CLIENT_UID")) {
+					clientUID = tempMessage.replace("JLB1F0_CLIENT_UID ", "");
+				} else if (tempMessage.contains("JLB1F0_RETURN_PING")) {
+					timeOfPingResponse = System.currentTimeMillis();
+					pingTime = timeOfPingResponse - timeOfPingRequest;
+				} else {
+					lastMessage = tempMessage;
+					recievedMessages.add(lastMessage);
+					initiater.onMessageRecieved(lastMessage);
+				}
+
 				initiater.onMessageRecieved(lastMessage);
 			}
 			try {
@@ -56,14 +62,16 @@ public class TCPClient extends Client {
 	public synchronized void setup() {
 		try {
 			clientSocket = new Socket(address, port);
-
 		} catch (IOException e) {
 			System.err.println("Could not connect to server!");
 			stopClient();
-			System.exit(1);
 		}
 		try {
-			outToServer = new DataOutputStream(clientSocket.getOutputStream());
+			clientSocket.setReceiveBufferSize(2 ^ 9);
+			clientSocket.setSendBufferSize(2 ^ 9);
+			clientSocket.setKeepAlive(true);
+			in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+			out = new DataOutputStream(clientSocket.getOutputStream());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -74,7 +82,7 @@ public class TCPClient extends Client {
 		message = message + '\n';
 		message = BasicCommands.encryptMessageBase64(message);
 		try {
-			outToServer.writeChars(message);
+			out.writeChars(message);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -86,13 +94,14 @@ public class TCPClient extends Client {
 	}
 
 	/** Used to stop the client thread */
-	public synchronized void stopClient() {
+	public synchronized void stopClient() {// make a listener method instead of this
 		running = false;
 		try {
-			clientTick.join();
+			clientTick.join(2000);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+		System.exit(0);
 	}
 
 	/** Pings the server */

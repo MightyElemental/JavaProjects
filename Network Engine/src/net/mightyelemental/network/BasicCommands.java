@@ -12,22 +12,24 @@ public class BasicCommands {
 
 	/** Send a message to a client
 	 * 
-	 * @param server
-	 *            is the server instance
+	 * @param udpServer
+	 *            is the UDPServer instance
 	 * @param message
 	 *            the message to be sent
-	 * @param clientIP
-	 *            the IP address of the client to send the message to
-	 * @param hostIP
-	 *            the IP address of the connection sending the message
-	 * @param port
-	 *            the port to be sending the message through
+	 * @param clientSendIP
+	 *            the IP address of the client that is sending the message
+	 * @param clientSendPort
+	 *            the port of the client that is sending the message
+	 * @param clientReceivceIP
+	 *            the IP of the client that receives the message
+	 * @param cliRecPort
+	 *            the port of the client that receives the message
 	 * @throws InterruptedException
 	 *             if the sleep is interrupted */
-	public static void cToSToCMessage(UDPServer server, String message, InetAddress clientSendIP, int clientSendPort,
+	public static void cToSToCMessage(UDPServer udpServer, String message, InetAddress clientSendIP, int clientSendPort,
 			InetAddress clientReceivceIP, int cliRecPort) throws InterruptedException {
-		String sendMessage = server.getClientUIDFromIP(clientSendIP, clientSendPort) + "> " + message;
-		server.sendMessage(sendMessage, clientReceivceIP, cliRecPort);
+		String sendMessage = udpServer.getClientUIDFromIP(clientSendIP, clientSendPort) + "> " + message;
+		udpServer.sendMessage(sendMessage, clientReceivceIP, cliRecPort);
 	}
 
 	/** Used to encrypt messages using Base64
@@ -45,6 +47,7 @@ public class BasicCommands {
 	 *            the encrypted message to be decrypted */
 	public static String decryptMessageBase64(String message) {
 		String temp = "";
+		if (message == null) { return "null"; }
 		byte[] rawData = DatatypeConverter.parseBase64Binary(message);
 
 		for (byte b : rawData) {
