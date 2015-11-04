@@ -13,7 +13,7 @@ public class BasicCommands {
 	/** Send a message to a client
 	 * 
 	 * @param udpServer
-	 *            is the UDPServer instance
+	 *            is the Server instance
 	 * @param message
 	 *            the message to be sent
 	 * @param clientSendIP
@@ -26,10 +26,16 @@ public class BasicCommands {
 	 *            the port of the client that receives the message
 	 * @throws InterruptedException
 	 *             if the sleep is interrupted */
-	public static void cToSToCMessage(UDPServer udpServer, String message, InetAddress clientSendIP, int clientSendPort,
+	public static void cToSToCMessage(Server server, String message, InetAddress clientSendIP, int clientSendPort,
 			InetAddress clientReceivceIP, int cliRecPort) throws InterruptedException {
-		String sendMessage = udpServer.getClientUIDFromIP(clientSendIP, clientSendPort) + "> " + message;
-		udpServer.sendMessage(sendMessage, clientReceivceIP, cliRecPort);
+		String sendMessage = "";
+		if (server instanceof UDPServer) {
+			sendMessage = ((UDPServer) server).getClientUIDFromIP(clientSendIP, clientSendPort);
+		} else {
+			sendMessage = ((TCPServer) server).getTCPConnectionFromIP(clientSendIP, clientSendPort).getUID();
+		}
+		sendMessage += "> " + message;
+		server.sendMessage(sendMessage, clientReceivceIP, cliRecPort);
 	}
 
 	/** Used to encrypt messages using Base64
