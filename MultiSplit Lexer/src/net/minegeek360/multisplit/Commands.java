@@ -491,8 +491,8 @@ public class Commands {
 		int width = 0;
 		int height = 0;
 		try {
-			x = Integer.parseInt(args.get(1));
-			y = Integer.parseInt(args.get(2));
+			x = Integer.parseInt(wordCases(args, 1)[0] + "");
+			y = Integer.parseInt(wordCases(args, 2)[0] + "");
 			width = Integer.parseInt(args.get(3));
 			height = Integer.parseInt(args.get(4));
 		} catch (Exception e) {
