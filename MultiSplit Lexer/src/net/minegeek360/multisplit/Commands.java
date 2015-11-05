@@ -486,19 +486,19 @@ public class Commands {
 		if (args.size() < 5) {
 			Exceptions.wrongArgs("There are too few arguments!\n\tUsage: drawRect() [x] [y] [width] [height];");
 		}
-		int x = 0;
-		int y = 0;
+		float x = 0;
+		float y = 0;
 		int width = 0;
 		int height = 0;
 		try {
-			x = Integer.parseInt(wordCases(args, 1)[0] + "");
-			y = Integer.parseInt(wordCases(args, 2)[0] + "");
+			x = Float.parseFloat(wordCases(args, 1)[0] + "");
+			y = Float.parseFloat(wordCases(args, 2)[0] + "");
 			width = Integer.parseInt(args.get(3));
 			height = Integer.parseInt(args.get(4));
 		} catch (Exception e) {
 			Exceptions.wrongArgs("Can only accept an integer.\n\tUsage: drawRect() [x] [y] [width] [height];");
 		}
-		MultiSplit.gamePanel.addRect(x, y, width, height);
+		MultiSplit.gamePanel.addRect((int) x, (int) y, width, height);
 	}
 
 	/** drawGUI(); */
