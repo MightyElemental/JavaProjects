@@ -372,14 +372,14 @@ public class Commands {
 		if (!getVarType(args.get(1)).equals("function")) {
 			Exceptions.varWrongType("Expected 'function' variable, got " + getVarType(args.get(1)) + "!");
 		}
-		try{
-		int[] startEnd = (int[]) getVarValue(args.get(1));
-		lex.returnToLine = lex.currentLine;
-		ArrayList<String> gotoCom = new ArrayList<String>();
-		gotoCom.add("goto()");
-		gotoCom.add(startEnd[0] + "");
-		gotoLine(gotoCom, lex);
-		}catch(Exception e){
+		try {
+			int[] startEnd = (int[]) getVarValue(args.get(1));
+			lex.returnToLine = lex.currentLine;
+			ArrayList<String> gotoCom = new ArrayList<String>();
+			gotoCom.add("goto()");
+			gotoCom.add(startEnd[0] + "");
+			gotoLine(gotoCom, lex);
+		} catch (Exception e) {
 			Exceptions.varDoesNotExist();
 		}
 	}
@@ -469,7 +469,10 @@ public class Commands {
 				MultiSplit.frame.add(MultiSplit.defaultPanel);
 				break;
 			case "game":
-				MultiSplit.frame.remove(MultiSplit.defaultPanel);
+				try {
+					MultiSplit.frame.remove(MultiSplit.defaultPanel);
+				} catch (Exception e) {
+				}
 				MultiSplit.frame.add(MultiSplit.gamePanel);
 				break;
 			default:
