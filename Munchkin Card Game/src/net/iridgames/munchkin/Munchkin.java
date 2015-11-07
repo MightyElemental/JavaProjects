@@ -71,7 +71,7 @@ public class Munchkin extends StateBasedGame {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		this.getState(STATE_MENU).init(gc, this);
+		//this.getState(STATE_MENU).init(gc, this);
 		this.getState(STATE_GAME).init(gc, this);
 		this.getState(STATE_PROFILE).init(gc, this);
 		this.enterState(STATE_MENU);

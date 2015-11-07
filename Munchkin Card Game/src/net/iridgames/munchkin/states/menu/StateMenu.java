@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
@@ -32,8 +31,10 @@ public class StateMenu extends BasicGameState {
 	public void init(GameContainer gc, StateBasedGame sbg) throws SlickException {
 		buttons.add(new Button(10, 50, 100, 100).setText("Play"));
 		buttons.add(new Button(110, 50, 100, 100).setText("Exit"));
-		floatingImages.add(new BackgroundImage(Munchkin.loader.loadImage("menu.munchkin-original"), 10, rand));
-		floatingImages.add(new BackgroundImage(Munchkin.loader.loadImage("menu.munchkin-original"), 10, rand));
+		floatingImages.add(new BackgroundImage(Munchkin.loader.loadImage("menu.axe-cop"), 4, rand));
+		floatingImages.add(new BackgroundImage(Munchkin.loader.loadImage("menu.munchkin-logo"), 10, rand));
+		floatingImages.add(new BackgroundImage(Munchkin.loader.loadImage("menu.munchkin-original"), 8, rand));
+		floatingImages.add(new BackgroundImage(Munchkin.loader.loadImage("cardVers.axeCop.lev1-duck"), 8, rand));
 	}
 
 	@Override
@@ -62,9 +63,17 @@ public class StateMenu extends BasicGameState {
 	}
 
 	public void updateBackgroundImages(GameContainer gc, StateBasedGame sbg, int delta) throws SlickException {
-		System.out.println(floatingImages.size());
-		for (BackgroundImage b : floatingImages) {
+		// System.out.println(floatingImages.size());
+		for (int i = 0; i < floatingImages.size(); i++) {
+			BackgroundImage b = floatingImages.get(i);
+			if (b == null) {
+				continue;
+			}
 			b.update(gc, sbg, delta);
+			if (b.isDead()) {
+				floatingImages.remove(b);
+				System.out.println("AS");
+			}
 		}
 	}
 
