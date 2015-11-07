@@ -13,8 +13,9 @@ import org.newdawn.slick.state.StateBasedGame;
 
 import net.iridgames.munchkin.Munchkin;
 import net.iridgames.munchkin.gui.Button;
+import net.iridgames.munchkin.gui.ButtonListener;
 
-public class StateMenu extends BasicGameState {
+public class StateMenu extends BasicGameState implements ButtonListener {
 
 	private final int ID;
 
@@ -22,16 +23,22 @@ public class StateMenu extends BasicGameState {
 
 	private Random rand = new Random();
 
+	private Button	playButton;
+	private Button	exitButton;
+
 	private List<BackgroundImage> floatingImages = new ArrayList<BackgroundImage>();
 
 	public StateMenu( int id ) {
 		this.ID = id;
+		Munchkin.buttonHandler.addListener(this);
 	}
 
 	@Override
 	public void init(GameContainer gc, StateBasedGame sbg) throws SlickException {
-		buttons.add(new Button(10, 50, 100, 100).setText("Play"));
-		buttons.add(new Button(110, 50, 100, 100).setText("Exit"));
+		playButton = new Button(10, 50, 150, 100).setText("Play");
+		buttons.add(playButton);
+		exitButton = new Button(300, 50, 150, 100).setText("Exit");
+		buttons.add(exitButton);
 	}
 
 	@Override
@@ -81,6 +88,30 @@ public class StateMenu extends BasicGameState {
 	@Override
 	public int getID() {
 		return ID;
+	}
+
+	@Override
+	public void mouseClicked(int button, int x, int y, int clickCount) {
+		super.mouseClicked(button, x, y, clickCount);
+	}
+
+	@Override
+	public void mousePressed(int button, int x, int y) {
+		for (Button b : buttons) {
+			if (b.contains(x, y)) {
+				Munchkin.buttonHandler.onButtonPushed(b, button);
+			}
+		}
+	}
+
+	@Override
+	public void onButtonPushed(Button b, int button) {
+		if (b.equals(playButton)) {
+			System.out.println("Play! " + button);
+		}
+		if (b.equals(exitButton)) {
+			System.exit(0);
+		}
 	}
 
 }

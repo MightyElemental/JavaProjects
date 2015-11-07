@@ -9,6 +9,10 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="lib/jars/slick.jar"/>
-	<classpathentry kind="lib" path="lib/jars/network_engine.jar"/>
+	<classpathentry kind="lib" path="lib/jars/network_engine.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:/EclipseWorkspace/JavaProjects/Munchkin%20Card%20Game/lib/jars/network_engine.jar!/doc"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -6,9 +6,29 @@ import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 
+import net.mightyelemental.network.UDPServer;
+import net.mightyelemental.network.client.UDPClient;
+
 public class StateGame extends BasicGameState {
 
 	private final int ID;
+
+	public UDPClient client;
+
+	public UDPServer server;
+	
+	
+
+	public boolean connectToServer(String ipAddress, int port) {
+		client = new UDPClient(ipAddress, port);
+		client.setup();
+		return client.running;
+	}
+
+	public void createServer(int port) {
+		server = new UDPServer(port);
+		server.setupServer();
+	}
 
 	public StateGame( int id ) {
 		this.ID = id;
@@ -28,7 +48,6 @@ public class StateGame extends BasicGameState {
 
 	@Override
 	public void update(GameContainer gc, StateBasedGame sbg, int delta) throws SlickException {
-		// TODO Auto-generated method stub
 
 	}
 
