@@ -3,6 +3,7 @@ package net.iridgames.munchkin;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 import org.newdawn.slick.Image;
 import org.newdawn.slick.Music;
@@ -12,7 +13,7 @@ import org.newdawn.slick.Sound;
  * @since 28/10/2014 */
 public class ResourceLoader {
 
-	private Map<String, Image>	mapLoads	= new HashMap<String, Image>();
+	private Map<String, Image>	imageLoads	= new HashMap<String, Image>();
 	private Map<String, Sound>	soundLoads	= new HashMap<String, Sound>();
 	private Map<String, Music>	musicLoads	= new HashMap<String, Music>();
 
@@ -29,8 +30,8 @@ public class ResourceLoader {
 		String location = imagePath.replaceAll("[.]", "/");
 		location += ".png";
 		location = "assets/" + location;
-		if (mapLoads.get(location) != null) {
-			return mapLoads.get(location);
+		if (imageLoads.get(location) != null) {
+			return imageLoads.get(location);
 		} else {
 			try {
 				// loadedImage = new Image(location);
@@ -45,7 +46,7 @@ public class ResourceLoader {
 			} catch (Exception e) {
 				System.err.println("Missing texture\t'" + location + "'");
 			}
-			mapLoads.put(location, loadedImage);
+			imageLoads.put(location, loadedImage);
 		}
 
 		return loadedImage;
@@ -64,7 +65,7 @@ public class ResourceLoader {
 		String location = musicPath.replaceAll("[.]", "/");
 		location += ".ogg";
 		location = "assets/sounds/music/" + location;
-		if (mapLoads.get(location) != null) {
+		if (musicLoads.get(location) != null) {
 			return musicLoads.get(location);
 		} else {
 			try {
@@ -98,7 +99,7 @@ public class ResourceLoader {
 		String location = soundPath.replaceAll("[.]", "/");
 		location += ".ogg";
 		location = "assets/sounds/" + location;
-		if (mapLoads.get(location) != null) {
+		if (soundLoads.get(location) != null) {
 			return soundLoads.get(location);
 		} else {
 			try {
@@ -122,9 +123,9 @@ public class ResourceLoader {
 		String location = imagePath.replaceAll("[.]", "/");
 		Image temp = Munchkin.NULL_IMAGE;
 		try {
-			if (mapLoads.get(location) != null) {
+			if (imageLoads.get(location) != null) {
 				// System.out.println("LOADED ORIGIONAL IMAGE");
-				return mapLoads.get(location);
+				return imageLoads.get(location);
 			} else {
 				temp = new Image(location);
 				// System.out.println("LOADED NEW IMAGE");
@@ -133,6 +134,14 @@ public class ResourceLoader {
 			e.printStackTrace();
 		}
 		return temp;
+	}
+
+	public Image getRandomImage(Random rand) {
+		Image img = imageLoads.get(imageLoads.keySet().toArray()[rand.nextInt(imageLoads.keySet().size())]);
+		while (img.equals(Munchkin.NULL_IMAGE)) {
+			img = imageLoads.get(imageLoads.keySet().toArray()[rand.nextInt(imageLoads.keySet().size())]);
+		}
+		return img;
 	}
 
 }
