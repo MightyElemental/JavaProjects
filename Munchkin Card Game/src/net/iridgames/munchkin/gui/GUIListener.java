@@ -1,7 +1,9 @@
 package net.iridgames.munchkin.gui;
 
-public interface ButtonListener {
+public interface GUIListener {
 
 	public void onButtonPushed(Button b, int button);
+
+	public void onCheckBoxClicked(CheckBox cb);
 
 }

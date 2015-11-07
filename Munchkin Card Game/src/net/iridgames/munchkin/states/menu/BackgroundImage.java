@@ -54,7 +54,7 @@ public class BackgroundImage {
 	public void update(GameContainer gc, StateBasedGame sbg, int delta) throws SlickException {
 		if (dead == true) { return; }
 		posX += 0.7f * (delta / 17);
-		if (alpha >= 1) {
+		if (alpha >= 0.2) {
 			alphaPeaked = true;
 		}
 		if (alphaPeaked) {

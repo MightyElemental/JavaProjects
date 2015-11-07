@@ -10,7 +10,7 @@ import org.newdawn.slick.SlickException;
 import org.newdawn.slick.TrueTypeFont;
 import org.newdawn.slick.state.StateBasedGame;
 
-import net.iridgames.munchkin.gui.ButtonListenerHandler;
+import net.iridgames.munchkin.gui.GUIListenerHandler;
 import net.iridgames.munchkin.states.StateGame;
 import net.iridgames.munchkin.states.StateLoading;
 import net.iridgames.munchkin.states.StateProfile;
@@ -28,7 +28,7 @@ public class Munchkin extends StateBasedGame {
 	public static final int	STATE_GAME		= 2;
 	public static final int	STATE_PROFILE	= 3;
 
-	public static ButtonListenerHandler buttonHandler = new ButtonListenerHandler();
+	public static GUIListenerHandler buttonHandler = new GUIListenerHandler();
 
 	public static Image NULL_IMAGE;
 
