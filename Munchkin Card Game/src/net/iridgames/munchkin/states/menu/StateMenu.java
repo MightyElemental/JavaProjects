@@ -16,6 +16,7 @@ import net.iridgames.munchkin.gui.Button;
 import net.iridgames.munchkin.gui.CheckBox;
 import net.iridgames.munchkin.gui.GUIListener;
 import net.iridgames.munchkin.gui.GUIObject;
+import net.iridgames.munchkin.gui.ScrollBar;
 
 public class StateMenu extends BasicGameState implements GUIListener {
 
@@ -24,18 +25,21 @@ public class StateMenu extends BasicGameState implements GUIListener {
 	private List<GUIObject>	mainButtons	= new ArrayList<GUIObject>();
 	private List<GUIObject>	playButtons	= new ArrayList<GUIObject>();
 	private List<GUIObject>	hostButtons	= new ArrayList<GUIObject>();
+	private List<GUIObject>	optiButtons	= new ArrayList<GUIObject>();
 
 	private Random rand = new Random();
 
-	private static final int	MAIN_MODE	= 0;
-	private static final int	PLAY_MODE	= 1;
-	private static final int	HOST_MODE	= 2;
+	private static final int	MAIN_MODE		= 0;
+	private static final int	PLAY_MODE		= 1;
+	private static final int	HOST_MODE		= 2;
+	private static final int	OPTIONS_MODE	= 3;
 
 	private int mode = MAIN_MODE;
 
 	// main buttons
 	private Button	playButton;
 	private Button	exitButton;
+	private Button	optionsButton;
 
 	// play buttons
 	private Button	hostButton;
@@ -43,7 +47,14 @@ public class StateMenu extends BasicGameState implements GUIListener {
 	private Button	backButton;
 
 	// host buttons
-	private CheckBox test;
+	private CheckBox useAddons;
+	// private TextBox portBox;
+
+	// option buttons
+	private Button		credits;
+	private ScrollBar	musicVolume;
+	private ScrollBar	soundVolume;
+	private Button		backButton2;
 
 	// join
 
@@ -64,20 +75,38 @@ public class StateMenu extends BasicGameState implements GUIListener {
 	}
 
 	private void initButtons(GameContainer gc, StateBasedGame sbg) {
+		// Main menu
 		playButton = new Button(200, 250, 180 * 3, 130).setText("Play");
+		optionsButton = new Button(200, 400, 180 * 3, 130).setText("Options");
+		exitButton = new Button(200, 550, 180 * 3, 130).setText("Exit");
 		mainButtons.add(playButton);
-		exitButton = new Button(200, 450, 180 * 3, 130).setText("Exit");
+		mainButtons.add(optionsButton);
 		mainButtons.add(exitButton);
 
+		// Play menu
 		hostButton = new Button(200, 250, 180 * 3, 130).setText("Host");
+		joinButton = new Button(200, 400, 180 * 3, 130).setText("Join");
+		backButton = new Button(200, 550, 180 * 3, 130).setText("Back");
 		playButtons.add(hostButton);
-		joinButton = new Button(200, 450, 180 * 3, 130).setText("Join");
 		playButtons.add(joinButton);
-		backButton = new Button(200, 650, 180 * 3, 130).setText("Back");
 		playButtons.add(backButton);
 
-		test = new CheckBox(200, 250).setText("Click to check the box!");
-		hostButtons.add(test);
+		// Host menu
+		useAddons = new CheckBox(200, 250).setText("Use addons");
+		hostButtons.add(useAddons);
+		hostButtons.add(backButton);
+
+		// Join menu
+
+		// Options menu
+		credits = new Button(200, 250, 180 * 3, 130).setText("Credits");
+		musicVolume = new ScrollBar(200, 400, 180 * 3, 130, 0, 100).setText("Music Volume");
+		soundVolume = new ScrollBar(200, 550, 180 * 3, 130, 0, 100).setText("Sound Volume");
+		backButton2 = new Button(200, 700, 180 * 3, 130).setText("Back");
+		optiButtons.add(credits);
+		optiButtons.add(musicVolume);
+		optiButtons.add(soundVolume);
+		optiButtons.add(backButton2);
 	}
 
 	@Override
@@ -99,6 +128,10 @@ public class StateMenu extends BasicGameState implements GUIListener {
 			}
 		} else if (mode == HOST_MODE) {
 			for (GUIObject b : hostButtons) {
+				b.draw(g);
+			}
+		} else if (mode == OPTIONS_MODE) {
+			for (GUIObject b : optiButtons) {
 				b.draw(g);
 			}
 		}
@@ -148,15 +181,41 @@ public class StateMenu extends BasicGameState implements GUIListener {
 	@Override
 	public void mousePressed(int button, int x, int y) {
 		if (mode == MAIN_MODE) {
-			buttonPush(button, x, y, mainButtons);
+			guiPush(button, x, y, mainButtons);
 		} else if (mode == PLAY_MODE) {
-			buttonPush(button, x, y, playButtons);
+			guiPush(button, x, y, playButtons);
 		} else if (mode == HOST_MODE) {
-			buttonPush(button, x, y, hostButtons);
+			guiPush(button, x, y, hostButtons);
+		} else if (mode == OPTIONS_MODE) {
+			guiPush(button, x, y, optiButtons);
 		}
 	}
 
-	public void buttonPush(int button, int x, int y, List<GUIObject> list) {
+	@Override
+	public void mouseDragged(int oldx, int oldy, int newx, int newy) {
+		if (mode == MAIN_MODE) {
+			guiDrag(newx, newy, mainButtons);
+		} else if (mode == PLAY_MODE) {
+			guiDrag(newx, newy, playButtons);
+		} else if (mode == HOST_MODE) {
+			guiDrag(newx, newy, hostButtons);
+		} else if (mode == OPTIONS_MODE) {
+			guiDrag(newx, newy, optiButtons);
+		}
+	}
+
+	public void guiDrag(int x, int y, List<GUIObject> list) {
+		for (GUIObject b : list) {
+			if (b instanceof ScrollBar) {
+				if (b.contains(x, y)) {
+					Munchkin.buttonHandler.onScrollBarDragged((ScrollBar) b, x);
+					continue;
+				}
+			}
+		}
+	}
+
+	public void guiPush(int button, int x, int y, List<GUIObject> list) {
 		for (GUIObject b : list) {
 			if (b instanceof Button) {
 				if (b.contains(x, y)) {
@@ -167,6 +226,12 @@ public class StateMenu extends BasicGameState implements GUIListener {
 			if (b instanceof CheckBox) {
 				if (b.contains(x, y)) {
 					Munchkin.buttonHandler.onCheckBoxClicked((CheckBox) b);
+					continue;
+				}
+			}
+			if (b instanceof ScrollBar) {
+				if (b.contains(x, y)) {
+					Munchkin.buttonHandler.onScrollBarClicked((ScrollBar) b, x);
 					continue;
 				}
 			}
@@ -181,16 +246,29 @@ public class StateMenu extends BasicGameState implements GUIListener {
 		if (b.equals(exitButton)) {
 			System.exit(0);
 		}
-		if (b.equals(backButton)) {
+		if (b.equals(backButton) || b.equals(backButton2)) {
 			mode = MAIN_MODE;
 		}
 		if (b.equals(hostButton)) {
 			mode = HOST_MODE;
 		}
+		if (b.equals(optionsButton)) {
+			mode = OPTIONS_MODE;
+		}
 	}
 
 	@Override
 	public void onCheckBoxClicked(CheckBox cb) {
+
+	}
+
+	@Override
+	public void onScrollBarClicked(ScrollBar sb, float x) {
+
+	}
+
+	@Override
+	public void onScrollBarDragged(ScrollBar sb, int x) {
 
 	}
 

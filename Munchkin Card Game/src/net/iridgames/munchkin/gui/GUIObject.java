@@ -11,8 +11,34 @@ public abstract class GUIObject extends Rectangle {
 	private Color	color		= Color.white;
 	private Color	textColor	= Color.black;
 
+	private String	text	= "GUIObject";
+	protected int	textX;
+	protected int	textY;
+
 	public GUIObject( float x, float y, float width, float height ) {
 		super(x, y, width, height);
+	}
+
+	/** @return the textX */
+	public int getTextX() {
+		return textX;
+	}
+
+	/** @return the textY */
+	public int getTextY() {
+		return textY;
+	}
+
+	/** @return the text */
+	public String getText() {
+		return text;
+	}
+
+	/** @param text
+	 *            the text to set */
+	public GUIObject setText(String text) {
+		this.text = text;
+		return this;
 	}
 
 	/** @return the color */
@@ -22,8 +48,9 @@ public abstract class GUIObject extends Rectangle {
 
 	/** @param color
 	 *            the color to set */
-	public void setColor(Color color) {
+	public GUIObject setColor(Color color) {
 		this.color = color;
+		return this;
 	}
 
 	/** @return the textColor */
@@ -33,8 +60,9 @@ public abstract class GUIObject extends Rectangle {
 
 	/** @param textColor
 	 *            the textColor to set */
-	public void setTextColor(Color textColor) {
+	public GUIObject setTextColor(Color textColor) {
 		this.textColor = textColor;
+		return this;
 	}
 
 	public abstract void draw(Graphics g);

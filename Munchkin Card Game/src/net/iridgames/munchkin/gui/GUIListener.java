@@ -6,4 +6,8 @@ public interface GUIListener {
 
 	public void onCheckBoxClicked(CheckBox cb);
 
+	public void onScrollBarClicked(ScrollBar sb, float x);
+
+	public void onScrollBarDragged(ScrollBar sb, int x);
+
 }

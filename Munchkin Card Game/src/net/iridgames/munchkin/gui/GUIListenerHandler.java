@@ -25,4 +25,19 @@ public class GUIListenerHandler {
 		}
 	}
 
+	public void onScrollBarClicked(ScrollBar sb, float x) {
+		sb.changeBarPos(x - sb.getBar().getWidth() / 2);
+		for (GUIListener bl : listeners) {
+			bl.onScrollBarClicked(sb, x);
+		}
+	}
+
+	public void onScrollBarDragged(ScrollBar sb, int x) {
+		sb.changeBarPos(x - sb.getBar().getWidth() / 2);
+		for (GUIListener bl : listeners) {
+			bl.onScrollBarDragged(sb, x);
+		}
+		System.out.println(sb.getValue());
+	}
+
 }

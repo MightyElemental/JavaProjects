@@ -8,8 +8,6 @@ public class Button extends GUIObject {
 
 	private static final long serialVersionUID = 6625839121578821815L;
 
-	private String text = "Button";
-
 	private int	textX;
 	private int	textY;
 
@@ -17,15 +15,10 @@ public class Button extends GUIObject {
 		super(x, y, width, height);
 	}
 
-	/** @return the text */
-	public String getText() {
-		return text;
-	}
-
 	/** @param text
 	 *            the text to set */
 	public Button setText(String text) {
-		this.text = text;
+		super.setText(text);
 		textX = (int) (this.getCenterX() - Munchkin.font.getWidth(text) / 2.0);
 		textY = (int) (this.getCenterY() - Munchkin.font.getHeight() / 2.0);
 		return this;
