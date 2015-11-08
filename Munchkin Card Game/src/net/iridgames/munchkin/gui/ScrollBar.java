@@ -24,7 +24,7 @@ public class ScrollBar extends GUIObject {
 		bar = new Rectangle(x, y, (width * 10) / (maxVal - minVal), height);
 	}
 
-	public void changeBarPos(float x) {
+	public ScrollBar changeBarPos(float x) {
 		if (x + bar.getWidth() - getX() > getWidth()) {
 			x = width - bar.getWidth() + getX();
 		}
@@ -32,6 +32,7 @@ public class ScrollBar extends GUIObject {
 			x = getX();
 		}
 		bar.setX(x);
+		return this;
 	}
 
 	public float getValue() {

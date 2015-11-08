@@ -10,4 +10,6 @@ public interface GUIListener {
 
 	public void onScrollBarDragged(ScrollBar sb, int x);
 
+	public void onTextBoxClicked(TextBox tb, int x, int y);
+
 }

@@ -23,6 +23,9 @@ public class Munchkin extends StateBasedGame {
 	public static final String	TITLE		= GAME_NAME + " | v" + VERSION;
 	public static final int		WIDTH		= 1600;
 
+	public static float	soundVolume	= 1f;
+	public static float	musicVolume	= 1f;
+
 	public static final int	STATE_PRE_LOAD	= 0;
 	public static final int	STATE_MENU		= 1;
 	public static final int	STATE_GAME		= 2;

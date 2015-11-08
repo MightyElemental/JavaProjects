@@ -3,6 +3,7 @@ package net.iridgames.munchkin.states.menu;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.regex.Pattern;
 
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
@@ -17,6 +18,7 @@ import net.iridgames.munchkin.gui.CheckBox;
 import net.iridgames.munchkin.gui.GUIListener;
 import net.iridgames.munchkin.gui.GUIObject;
 import net.iridgames.munchkin.gui.ScrollBar;
+import net.iridgames.munchkin.gui.TextBox;
 
 public class StateMenu extends BasicGameState implements GUIListener {
 
@@ -26,6 +28,8 @@ public class StateMenu extends BasicGameState implements GUIListener {
 	private List<GUIObject>	playButtons	= new ArrayList<GUIObject>();
 	private List<GUIObject>	hostButtons	= new ArrayList<GUIObject>();
 	private List<GUIObject>	optiButtons	= new ArrayList<GUIObject>();
+
+	public int ticks;
 
 	private Random rand = new Random();
 
@@ -47,14 +51,16 @@ public class StateMenu extends BasicGameState implements GUIListener {
 	private Button	backButton;
 
 	// host buttons
-	private CheckBox useAddons;
-	// private TextBox portBox;
+	private CheckBox	useAddons;
+	private Button		createHost;
+	private Button		backButton2;
+	private TextBox		portBox;
 
 	// option buttons
 	private Button		credits;
 	private ScrollBar	musicVolume;
 	private ScrollBar	soundVolume;
-	private Button		backButton2;
+	private Button		backButton3;
 
 	// join
 
@@ -93,20 +99,26 @@ public class StateMenu extends BasicGameState implements GUIListener {
 
 		// Host menu
 		useAddons = new CheckBox(200, 250).setText("Use addons");
+		portBox = new TextBox(200, 350, 180 * 3, 100, 5, Pattern.compile("[^0-9]")).setText("4040")
+				.setSubText("Server Port - (Port Forward!)");
+		createHost = new Button(200, 500, 180 * 3, 130).setText("Host");
+		backButton2 = new Button(200, 650, 180 * 3, 130).setText("Back");
 		hostButtons.add(useAddons);
-		hostButtons.add(backButton);
+		hostButtons.add(createHost);
+		hostButtons.add(backButton2);
+		hostButtons.add(portBox);
 
 		// Join menu
 
 		// Options menu
 		credits = new Button(200, 250, 180 * 3, 130).setText("Credits");
-		musicVolume = new ScrollBar(200, 400, 180 * 3, 130, 0, 100).setText("Music Volume");
-		soundVolume = new ScrollBar(200, 550, 180 * 3, 130, 0, 100).setText("Sound Volume");
-		backButton2 = new Button(200, 700, 180 * 3, 130).setText("Back");
+		musicVolume = new ScrollBar(200, 400, 180 * 3, 130, 0, 100).setText("Music Volume").changeBarPos(740);
+		soundVolume = new ScrollBar(200, 550, 180 * 3, 130, 0, 100).setText("Sound Volume").changeBarPos(740);
+		backButton3 = new Button(200, 700, 180 * 3, 130).setText("Back");
 		optiButtons.add(credits);
 		optiButtons.add(musicVolume);
 		optiButtons.add(soundVolume);
-		optiButtons.add(backButton2);
+		optiButtons.add(backButton3);
 	}
 
 	@Override
@@ -147,7 +159,37 @@ public class StateMenu extends BasicGameState implements GUIListener {
 
 	@Override
 	public void update(GameContainer gc, StateBasedGame sbg, int delta) throws SlickException {
+		ticks++;
 		updateBackgroundImages(gc, sbg, delta);
+		updateTextBoxes(gc, sbg, ticks);
+	}
+
+	public void updateTextBoxes(GameContainer gc, StateBasedGame sbg, int ticks) throws SlickException {
+		if (mode == MAIN_MODE) {
+			for (GUIObject b : mainButtons) {
+				if (b instanceof TextBox) {
+					((TextBox) b).update(gc, sbg, ticks);
+				}
+			}
+		} else if (mode == PLAY_MODE) {
+			for (GUIObject b : playButtons) {
+				if (b instanceof TextBox) {
+					((TextBox) b).update(gc, sbg, ticks);
+				}
+			}
+		} else if (mode == HOST_MODE) {
+			for (GUIObject b : hostButtons) {
+				if (b instanceof TextBox) {
+					((TextBox) b).update(gc, sbg, ticks);
+				}
+			}
+		} else if (mode == OPTIONS_MODE) {
+			for (GUIObject b : optiButtons) {
+				if (b instanceof TextBox) {
+					((TextBox) b).update(gc, sbg, ticks);
+				}
+			}
+		}
 	}
 
 	public void updateBackgroundImages(GameContainer gc, StateBasedGame sbg, int delta) throws SlickException {
@@ -235,6 +277,12 @@ public class StateMenu extends BasicGameState implements GUIListener {
 					continue;
 				}
 			}
+			if (b instanceof TextBox) {
+				if (b.contains(x, y)) {
+					Munchkin.buttonHandler.onTextBoxClicked((TextBox) b, x, y);
+					continue;
+				}
+			}
 		}
 	}
 
@@ -246,7 +294,7 @@ public class StateMenu extends BasicGameState implements GUIListener {
 		if (b.equals(exitButton)) {
 			System.exit(0);
 		}
-		if (b.equals(backButton) || b.equals(backButton2)) {
+		if (b.equals(backButton) || b.equals(backButton3) || b.equals(backButton2)) {
 			mode = MAIN_MODE;
 		}
 		if (b.equals(hostButton)) {
@@ -264,12 +312,63 @@ public class StateMenu extends BasicGameState implements GUIListener {
 
 	@Override
 	public void onScrollBarClicked(ScrollBar sb, float x) {
-
+		if (sb.equals(musicVolume)) {
+			Munchkin.musicVolume = sb.getValue() / 100f;
+		}
+		if (sb.equals(soundVolume)) {
+			Munchkin.soundVolume = sb.getValue() / 100f;
+		}
 	}
 
 	@Override
 	public void onScrollBarDragged(ScrollBar sb, int x) {
+		if (sb.equals(musicVolume)) {
+			Munchkin.musicVolume = sb.getValue() / 100f;
+		}
+		if (sb.equals(soundVolume)) {
+			Munchkin.soundVolume = sb.getValue() / 100f;
+		}
+	}
 
+	@Override
+	public void onTextBoxClicked(TextBox tb, int x, int y) {
+
+	}
+
+	public void keyPressed(int key, char c) {
+		if (mode == MAIN_MODE) {
+			for (GUIObject b : mainButtons) {
+				if (b instanceof TextBox) {
+					if (((TextBox) b).isSelected()) {
+						((TextBox) b).keyPressed(key, c);
+					}
+				}
+			}
+		} else if (mode == PLAY_MODE) {
+			for (GUIObject b : playButtons) {
+				if (b instanceof TextBox) {
+					if (((TextBox) b).isSelected()) {
+						((TextBox) b).keyPressed(key, c);
+					}
+				}
+			}
+		} else if (mode == HOST_MODE) {
+			for (GUIObject b : hostButtons) {
+				if (b instanceof TextBox) {
+					if (((TextBox) b).isSelected()) {
+						((TextBox) b).keyPressed(key, c);
+					}
+				}
+			}
+		} else if (mode == OPTIONS_MODE) {
+			for (GUIObject b : optiButtons) {
+				if (b instanceof TextBox) {
+					if (((TextBox) b).isSelected()) {
+						((TextBox) b).keyPressed(key, c);
+					}
+				}
+			}
+		}
 	}
 
 }

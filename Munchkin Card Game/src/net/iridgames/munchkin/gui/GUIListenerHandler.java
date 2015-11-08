@@ -37,7 +37,12 @@ public class GUIListenerHandler {
 		for (GUIListener bl : listeners) {
 			bl.onScrollBarDragged(sb, x);
 		}
-		System.out.println(sb.getValue());
+	}
+
+	public void onTextBoxClicked(TextBox tb, int x, int y) {
+		for (GUIListener bl : listeners) {
+			bl.onTextBoxClicked(tb, x, y);
+		}
 	}
 
 }
