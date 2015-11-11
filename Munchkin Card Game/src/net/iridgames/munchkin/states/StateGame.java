@@ -16,8 +16,6 @@ public class StateGame extends BasicGameState {
 	public UDPClient client;
 
 	public UDPServer server;
-	
-	
 
 	public boolean connectToServer(String ipAddress, int port) {
 		client = new UDPClient(ipAddress, port);
@@ -28,6 +26,7 @@ public class StateGame extends BasicGameState {
 	public void createServer(int port) {
 		server = new UDPServer(port);
 		server.setupServer();
+		System.out.println("Server has been setup!");
 	}
 
 	public StateGame( int id ) {

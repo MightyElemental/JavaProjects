@@ -19,7 +19,7 @@ import net.iridgames.munchkin.states.menu.StateMenu;
 public class Munchkin extends StateBasedGame {
 
 	public static final String	GAME_NAME	= "Muchkin";
-	public static final String	VERSION		= "0.0.0";
+	public static final String	VERSION		= "0.1.0";
 	public static final String	TITLE		= GAME_NAME + " | v" + VERSION;
 	public static final int		WIDTH		= 1600;
 
@@ -28,8 +28,9 @@ public class Munchkin extends StateBasedGame {
 
 	public static final int	STATE_PRE_LOAD	= 0;
 	public static final int	STATE_MENU		= 1;
-	public static final int	STATE_GAME		= 2;
-	public static final int	STATE_PROFILE	= 3;
+	public static final int	STATE_GAME_LOAD	= 3;
+	public static final int	STATE_GAME		= 3;
+	public static final int	STATE_PROFILE	= 4;
 
 	public static GUIListenerHandler buttonHandler = new GUIListenerHandler();
 
@@ -41,7 +42,7 @@ public class Munchkin extends StateBasedGame {
 
 	public static boolean fullLoaded = false;
 
-	public StateGame stateGame = new StateGame(STATE_GAME);
+	public static StateGame stateGame = new StateGame(STATE_GAME);
 
 	public Munchkin( String name ) {
 		super(name);

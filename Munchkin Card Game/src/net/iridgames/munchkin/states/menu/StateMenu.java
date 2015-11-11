@@ -1,5 +1,6 @@
 package net.iridgames.munchkin.states.menu;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -24,19 +25,21 @@ public class StateMenu extends BasicGameState implements GUIListener {
 
 	private final int ID;
 
-	private List<GUIObject>	mainButtons	= new ArrayList<GUIObject>();
-	private List<GUIObject>	playButtons	= new ArrayList<GUIObject>();
-	private List<GUIObject>	hostButtons	= new ArrayList<GUIObject>();
-	private List<GUIObject>	optiButtons	= new ArrayList<GUIObject>();
+	private List<GUIObject>	mainButtons		= new ArrayList<GUIObject>();
+	private List<GUIObject>	playButtons		= new ArrayList<GUIObject>();
+	private List<GUIObject>	hostButtons		= new ArrayList<GUIObject>();
+	private List<GUIObject>	optiButtons		= new ArrayList<GUIObject>();
+	private List<GUIObject>	hostWaitButtons	= new ArrayList<GUIObject>();
 
 	public int ticks;
 
 	private Random rand = new Random();
 
-	private static final int	MAIN_MODE		= 0;
-	private static final int	PLAY_MODE		= 1;
-	private static final int	HOST_MODE		= 2;
-	private static final int	OPTIONS_MODE	= 3;
+	private static final int	MAIN_MODE			= 0;
+	private static final int	PLAY_MODE			= 1;
+	private static final int	HOST_MODE			= 2;
+	private static final int	OPTIONS_MODE		= 3;
+	private static final int	HOST_WAITING_MODE	= 4;
 
 	private int mode = MAIN_MODE;
 
@@ -61,6 +64,9 @@ public class StateMenu extends BasicGameState implements GUIListener {
 	private ScrollBar	musicVolume;
 	private ScrollBar	soundVolume;
 	private Button		backButton3;
+
+	// host waiting mode
+	private Button cancelHost;
 
 	// join
 
@@ -119,6 +125,10 @@ public class StateMenu extends BasicGameState implements GUIListener {
 		optiButtons.add(musicVolume);
 		optiButtons.add(soundVolume);
 		optiButtons.add(backButton3);
+
+		// Host wait mode
+		cancelHost = new Button(200, 250, 180 * 3, 130).setText("Cancel");
+		hostWaitButtons.add(cancelHost);
 	}
 
 	@Override
@@ -144,6 +154,10 @@ public class StateMenu extends BasicGameState implements GUIListener {
 			}
 		} else if (mode == OPTIONS_MODE) {
 			for (GUIObject b : optiButtons) {
+				b.draw(g);
+			}
+		} else if (mode == HOST_WAITING_MODE) {
+			for (GUIObject b : hostWaitButtons) {
 				b.draw(g);
 			}
 		}
@@ -189,6 +203,12 @@ public class StateMenu extends BasicGameState implements GUIListener {
 					((TextBox) b).update(gc, sbg, ticks);
 				}
 			}
+		} else if (mode == HOST_WAITING_MODE) {
+			for (GUIObject b : hostWaitButtons) {
+				if (b instanceof TextBox) {
+					((TextBox) b).update(gc, sbg, ticks);
+				}
+			}
 		}
 	}
 
@@ -230,6 +250,8 @@ public class StateMenu extends BasicGameState implements GUIListener {
 			guiPush(button, x, y, hostButtons);
 		} else if (mode == OPTIONS_MODE) {
 			guiPush(button, x, y, optiButtons);
+		} else if (mode == HOST_WAITING_MODE) {
+			guiPush(button, x, y, hostWaitButtons);
 		}
 	}
 
@@ -243,6 +265,8 @@ public class StateMenu extends BasicGameState implements GUIListener {
 			guiDrag(newx, newy, hostButtons);
 		} else if (mode == OPTIONS_MODE) {
 			guiDrag(newx, newy, optiButtons);
+		} else if (mode == HOST_WAITING_MODE) {
+			guiDrag(newx, newy, hostWaitButtons);
 		}
 	}
 
@@ -302,6 +326,18 @@ public class StateMenu extends BasicGameState implements GUIListener {
 		}
 		if (b.equals(optionsButton)) {
 			mode = OPTIONS_MODE;
+		}
+		if (b.equals(createHost)) {
+			Munchkin.stateGame.createServer(Integer.parseInt(portBox.getText()));
+			mode = HOST_WAITING_MODE;
+		}
+		if (b.equals(cancelHost)) {
+			try {
+				Munchkin.stateGame.server.stopServer();
+			} catch (InterruptedException | IOException e) {
+				e.printStackTrace();
+			}
+			mode = MAIN_MODE;
 		}
 	}
 
