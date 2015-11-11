@@ -1,5 +1,6 @@
 package net.mightyelemental.network;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.util.Random;
 
@@ -47,5 +48,7 @@ public abstract class Server {
 	public abstract void sendMessage(String message, InetAddress ip, int port);
 
 	public abstract void setupServer();
+
+	public abstract void stopServer() throws InterruptedException, IOException;
 
 }

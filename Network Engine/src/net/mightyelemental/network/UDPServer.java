@@ -235,4 +235,14 @@ public class UDPServer extends Server {
 		sendInstantMessage("JLB1F0_RETURN_PING", ip, port);
 		sendMessage("JLB1F0_CLIENT_UID " + getClientUIDFromIP(ip, port), ip, port);
 	}
+
+	@Override
+	public void stopServer() throws InterruptedException, IOException {
+		this.broadcastmessage("Server Closing");
+		this.port = 0;
+		this.running = false;
+		this.serverTick.join(1000);
+		this.serverSocket.close();
+		this.serverSocket = null;
+	}
 }

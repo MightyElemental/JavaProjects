@@ -124,4 +124,10 @@ public class TCPServer extends Server {
 		}
 	}
 
+	@Override
+	public void stopServer() throws InterruptedException, IOException {
+		this.serverTick.join(1000);
+		serverSocket.close();
+	}
+
 }
