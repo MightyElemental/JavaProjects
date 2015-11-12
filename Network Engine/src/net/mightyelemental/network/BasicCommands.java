@@ -12,7 +12,7 @@ public class BasicCommands {
 
 	/** Send a message to a client
 	 * 
-	 * @param udpServer
+	 * @param server
 	 *            is the Server instance
 	 * @param message
 	 *            the message to be sent

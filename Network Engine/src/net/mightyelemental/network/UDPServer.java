@@ -39,7 +39,13 @@ public class UDPServer extends Server {
 				receiveData = new byte[1024];
 				DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
 				try {
-
+					if (serverSocket != null) {
+						if (serverSocket.isClosed()) {
+							break;
+						}
+					} else {
+						break;
+					}
 					serverSocket.receive(receivePacket);
 					String data = new String(receivePacket.getData()).trim();
 					data = BasicCommands.decryptMessageBase64(data);
