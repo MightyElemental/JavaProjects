@@ -2,10 +2,12 @@ package net.iridgames.munchkin.states;
 
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
+import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 
+import net.iridgames.munchkin.Munchkin;
 import net.mightyelemental.network.UDPServer;
 import net.mightyelemental.network.client.UDPClient;
 
@@ -16,6 +18,8 @@ public class StateGame extends BasicGameState {
 	public UDPClient client;
 
 	public UDPServer server;
+
+	private Image background;
 
 	public boolean connectToServer(String ipAddress, int port) {
 		client = new UDPClient(ipAddress, port);
@@ -35,14 +39,18 @@ public class StateGame extends BasicGameState {
 
 	@Override
 	public void init(GameContainer gc, StateBasedGame sbg) throws SlickException {
-		// TODO Auto-generated method stub
-
+		background = Munchkin.loader.loadImage("menu.background");
 	}
 
 	@Override
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
-		// TODO Auto-generated method stub
+		background.draw(0, 0, gc.getWidth(), gc.getHeight());
+		renderTreasureCards(gc, sbg, g);
 
+	}
+
+	public void renderTreasureCards(GameContainer gc, StateBasedGame sbg, Graphics g) {
+		Munchkin.loader.loadImage("cardVers.axeCop.treasure.back").draw();
 	}
 
 	@Override

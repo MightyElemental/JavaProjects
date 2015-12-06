@@ -72,7 +72,7 @@ public class StateLoading extends BasicGameState {
 		if (ticks > 150 && Munchkin.fullLoaded) {
 			alpha -= 0.01f;
 			if (alpha < -0.2f) {
-				sbg.enterState(Munchkin.STATE_MENU);
+				sbg.enterState(Munchkin.STATE_GAME);
 			}
 		} else {
 			alpha += 0.01f;

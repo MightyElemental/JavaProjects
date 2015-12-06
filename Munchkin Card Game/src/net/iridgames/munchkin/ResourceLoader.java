@@ -41,6 +41,7 @@ public class ResourceLoader {
 							Image.FILTER_NEAREST);
 					System.out.println("Added texture\t'" + location + "'");
 				} else {
+
 					throw new Exception("Missing texture\t'" + location + "'");
 				}
 			} catch (Exception e) {
