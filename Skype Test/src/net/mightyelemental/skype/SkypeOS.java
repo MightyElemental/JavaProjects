@@ -41,14 +41,25 @@ public class SkypeOS implements ChatMessageListener {
 		new SkypeOS();
 	}
 
-	public void chat(ChatMessage cm) throws SkypeException {
-		if (chat.getAllMembers().length <= 1) { return; }
+	public void chat(ChatMessage cm, String message) throws SkypeException {
+		// if (chat.getAllMembers().length > 1) { return; }
+		if (message.startsWith("auto>")) { return; }
 
 		prefix = cm.getSenderDisplayName() + "@SkypeOS-Bot:~ ";
 
-		String message = cm.getContent().toLowerCase();
+		System.out.println(message);
 
 		chat = cm.getChat();
+
+		conditionMessage(message);
+
+		// String sendTemp = "";
+
+		/*
+		 * for (int i = message.length()-1; i >= 0; i--) { sendTemp += message.charAt(i); }
+		 */
+
+		// chat.send(sendTemp);
 
 		for (String s : bannedWords) {
 			if (message.toLowerCase().contains(s)) {
@@ -74,14 +85,36 @@ public class SkypeOS implements ChatMessageListener {
 		}
 	}
 
+	public void conditionMessage(String message) throws SkypeException {
+		if (message.contains("apple")) {
+			chat.send("auto> (company) Apple is crap. Apple should go bankrupt. Apple should never have existed");
+		}
+
+		// if (message.contains("james")) {
+		// chat.send("James is currently unavailable, please talk to his account directly or not at all, thanks.");
+		// }
+
+		if (message.contains("league")) {
+			chat.send("https://www.youtube.com/watch?v=Xhyuey4xU3Q");
+		}
+		if (message.contains("disney")) {
+			chat.send("auto> Disney needs to stop making terrible movies");
+		}
+		if (message.equals("idc")) {
+			chat.send("auto> You should care. It is just plain rude not to.");
+		}
+	}
+
 	@Override
 	public void chatMessageReceived(ChatMessage cm) throws SkypeException {
-		chat(cm);
+		String message = cm.getContent().toLowerCase();
+		chat(cm, message);
 	}
 
 	@Override
 	public void chatMessageSent(ChatMessage cm) throws SkypeException {
-		chat(cm);
+		String message = cm.getContent().toLowerCase();
+		chat(cm, message);
 	}
 
 }
