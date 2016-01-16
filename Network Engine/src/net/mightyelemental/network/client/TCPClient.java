@@ -10,11 +10,13 @@ import net.mightyelemental.network.BasicCommands;
 
 public class TCPClient extends Client {
 
-	private Socket				clientSocket;
-	private DataOutputStream	out;
-	private BufferedReader		in;
+	private Socket			clientSocket;
+	public DataOutputStream	out;
+	public BufferedReader	in;
 
 	private boolean running;
+
+	private boolean usesEncryption = false;
 
 	private Thread clientTick = new Thread("ClientReceiveThread") {
 
@@ -31,7 +33,9 @@ public class TCPClient extends Client {
 					stopClient();
 				}
 				System.out.println(tempMessage);
-				tempMessage = BasicCommands.decryptMessageBase64(tempMessage);
+				if (usesEncryption) {
+					tempMessage = BasicCommands.decryptMessageBase64(tempMessage);
+				}
 
 				if (tempMessage.contains("JLB1F0_CLIENT_UID")) {
 					clientUID = tempMessage.replace("JLB1F0_CLIENT_UID ", "");
@@ -54,9 +58,10 @@ public class TCPClient extends Client {
 		}
 	};
 
-	public TCPClient( String address, int port ) {
+	public TCPClient( String address, int port, boolean usesEncryption ) {
 		this.address = address;
 		this.port = port;
+		this.usesEncryption = usesEncryption;
 	}
 
 	public synchronized void setup() {
@@ -78,6 +83,7 @@ public class TCPClient extends Client {
 		clientTick.start();
 	}
 
+	@Deprecated
 	public void sendMessage(String message) {
 		message = message + '\n';
 		message = BasicCommands.encryptMessageBase64(message);
@@ -133,6 +139,27 @@ public class TCPClient extends Client {
 	/** @return the clients name */
 	public String getUID() {
 		return this.clientUID;
+	}
+
+	@Override
+	@Deprecated
+	public void sendBytes(byte[] bytes) {
+		try {
+			out.write(bytes);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/** @return the usesEncryption */
+	public boolean doesUseEncryption() {
+		return usesEncryption;
+	}
+
+	/** @param usesEncryption
+	 *            the usesEncryption to set */
+	public void setUseEncryption(boolean usesEncryption) {
+		this.usesEncryption = usesEncryption;
 	}
 
 }

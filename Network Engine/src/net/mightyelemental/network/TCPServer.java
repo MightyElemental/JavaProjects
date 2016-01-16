@@ -14,13 +14,15 @@ public class TCPServer extends Server {
 
 	private ServerSocket serverSocket;
 
+	private boolean usesEncryption = false;
+
 	private Thread serverTick = new Thread("ServerThread") {
 
 		public void run() {
 			while (running) {
 				try {
 					Socket newClientSocket = serverSocket.accept();
-					TCPConnection newTcpClient = new TCPConnection(newClientSocket, initiater, serverGUI);
+					TCPConnection newTcpClient = new TCPConnection(newClientSocket, initiater, serverGUI, usesEncryption);
 					String UID = generateClientInfo(newTcpClient, random);
 					newTcpClient.setUID(UID);
 					newTcpClient.startThread();
@@ -50,8 +52,9 @@ public class TCPServer extends Server {
 	};
 
 	/** TCP Server */
-	public TCPServer( int port ) {
+	public TCPServer( int port, boolean usesEncryption ) {
 		this.port = port;
+		this.usesEncryption = usesEncryption;
 	}
 
 	public synchronized void setupServer() {
@@ -137,6 +140,17 @@ public class TCPServer extends Server {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	/** @return the usesEncryption */
+	public boolean doesUseEncryption() {
+		return usesEncryption;
+	}
+
+	/** @param usesEncryption
+	 *            the usesEncryption to set */
+	public void setUseEncryption(boolean usesEncryption) {
+		this.usesEncryption = usesEncryption;
 	}
 
 }

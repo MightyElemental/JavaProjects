@@ -79,4 +79,10 @@ public abstract class Client {
 
 	public abstract void sendMessage(String message);
 
+	/** Sends the specified client a byte array
+	 * 
+	 * @param bytes
+	 *            the byte array to send */
+	public abstract void sendBytes(byte[] bytes);
+
 }

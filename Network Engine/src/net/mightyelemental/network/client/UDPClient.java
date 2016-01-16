@@ -24,6 +24,8 @@ public class UDPClient extends Client {
 
 	private int maxBytes = 1024;
 
+	private boolean usesEncryption = false;
+
 	private Thread clientTick = new Thread("ClientReceiveThread") {
 
 		public void run() {
@@ -40,8 +42,9 @@ public class UDPClient extends Client {
 					initiater.onBytesRecieved(receivePacket.getData());
 
 					String receiveData = new String(receivePacket.getData()).trim();
-					receiveData = BasicCommands.decryptMessageBase64(receiveData);
-
+					if (usesEncryption) {
+						receiveData = BasicCommands.decryptMessageBase64(receiveData);
+					}
 					// System.out.println(receiveData.toString());
 					if (receiveData.toString().contains("JLB1F0_CLIENT_UID")) {
 						clientUID = receiveData.toString().replace("JLB1F0_CLIENT_UID ", "");
@@ -120,7 +123,9 @@ public class UDPClient extends Client {
 	public void sendMessage(String message) {
 		sendData = null;
 		String messageOut = this.clientUID + " : " + message;
-		messageOut = BasicCommands.encryptMessageBase64(messageOut);
+		if (usesEncryption) {
+			messageOut = BasicCommands.encryptMessageBase64(messageOut);
+		}
 		sendData = messageOut.getBytes();
 
 		try {
@@ -171,6 +176,17 @@ public class UDPClient extends Client {
 	 *            the maxBytes to set */
 	public void setMaxBytes(int maxBytes) {
 		this.maxBytes = maxBytes;
+	}
+
+	/** @return the usesEncryption */
+	public boolean doesUseEncryption() {
+		return usesEncryption;
+	}
+
+	/** @param usesEncryption
+	 *            the usesEncryption to set */
+	public void setUseEncryption(boolean usesEncryption) {
+		this.usesEncryption = usesEncryption;
 	}
 
 }

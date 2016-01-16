@@ -20,6 +20,8 @@ public class UDPServer extends Server {
 
 	private boolean stopServer;
 
+	private boolean usesEncryption = false;
+
 	public DatagramSocket serverSocket;
 
 	public Map<String, List<Object>> attachedClients = new HashMap<String, List<Object>>();
@@ -63,7 +65,9 @@ public class UDPServer extends Server {
 					initiater.onBytesRecieved(receivePacket.getData(), IPAddress, port);
 
 					String data = new String(receivePacket.getData()).trim();
-					data = BasicCommands.decryptMessageBase64(data);
+					if (usesEncryption) {
+						data = BasicCommands.decryptMessageBase64(data);
+					}
 
 					String[] dataArray = data.split(" : ");
 
@@ -121,9 +125,10 @@ public class UDPServer extends Server {
 	 *            - the port of which the server should run
 	 * @param maxBytes
 	 *            - the maximum amount of bytes the server should be able to send */
-	public UDPServer( int port, int maxBytes ) {
+	public UDPServer( int port, int maxBytes, boolean usesEncryption ) {
 		this.port = port;
 		this.maxBytes = maxBytes;
+		this.usesEncryption = usesEncryption;
 	}
 
 	/** Adds a message to the server GUI */
@@ -199,11 +204,13 @@ public class UDPServer extends Server {
 
 		String cUID = getClientUIDFromIP(ip, port);
 
-		if (!message.contains("JLB1F0") && !message.contains("JLB1F0_CLIENT_UID")) {
+		if (!message.contains("JLB1F0") && !message.contains("JLB1F0_CLIENT_UID") && serverGUI != null) {
 			serverGUI.addCommand("Console > " + cUID + " : " + message);
 		}
 
-		message = BasicCommands.encryptMessageBase64(message);
+		if (usesEncryption) {
+			message = BasicCommands.encryptMessageBase64(message);
+		}
 
 		try {
 			sendData = (message.toString()).getBytes("UTF-8");

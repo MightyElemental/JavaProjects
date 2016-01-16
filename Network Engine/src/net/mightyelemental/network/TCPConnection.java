@@ -20,11 +20,15 @@ public class TCPConnection {
 	public BufferedReader	in;
 	public DataOutputStream	out;
 
+	private boolean usesEncryption = false;
+
 	private ServerGUI serverGUI;
 
 	private ServerInitiater SI;
 
 	private boolean running = false;
+
+	private byte[] recievedBytes;
 
 	private Thread run = new Thread("TCPConnection_Undef") {
 
@@ -33,13 +37,19 @@ public class TCPConnection {
 				while (running) {
 					in = new BufferedReader(new InputStreamReader(client.getInputStream()));
 					out = new DataOutputStream(client.getOutputStream());
+					client.getInputStream().read(recievedBytes);
 					String message = in.readLine();
-					System.out.println("Before decryp: " + message);// SENDS BYTE ARRAYS! DO NOT DECRYPT THEM!
+					SI.onBytesRecieved(recievedBytes, ip, port);
 					if (message == null) {
 						continue;
 					}
-					message = BasicCommands.decryptMessageBase64(message);
-					System.out.println("After decryp: " + message);
+					if (usesEncryption) {
+						System.out.println("Before decryp: " + message);// SENDS BYTE ARRAYS! DO NOT DECRYPT THEM!
+						message = BasicCommands.decryptMessageBase64(message);
+						System.out.println("After decryp: " + message);
+					} else {
+						System.out.println("Message: " + message);
+					}
 					SI.onMessageRecieved(message, ip, port);
 					if (message.contains("JLB1F0_TEST_CONNECTION RETURN_UID")) {
 						sendMessage("JLB1F0_CLIENT_UID " + UID);
@@ -67,12 +77,13 @@ public class TCPConnection {
 		}
 	}
 
-	public TCPConnection( Socket client, ServerInitiater initiater, ServerGUI serverGUI ) {
+	public TCPConnection( Socket client, ServerInitiater initiater, ServerGUI serverGUI, boolean usesEncryption ) {
 		this.client = client;
 		this.ip = client.getInetAddress();
 		this.port = client.getPort();
 		this.SI = initiater;
 		this.serverGUI = serverGUI;
+		this.usesEncryption = usesEncryption;
 		try {
 			this.client.setSoTimeout(0);
 			this.client.setKeepAlive(true);
@@ -87,7 +98,9 @@ public class TCPConnection {
 	public synchronized void sendMessage(String message) throws IOException {
 		if (message == null) { return; }
 		out = new DataOutputStream(client.getOutputStream());
-		message = BasicCommands.encryptMessageBase64(message);
+		if (usesEncryption) {
+			message = BasicCommands.encryptMessageBase64(message);
+		}
 		out.writeChars(message);// Socket closed issue
 	}
 
