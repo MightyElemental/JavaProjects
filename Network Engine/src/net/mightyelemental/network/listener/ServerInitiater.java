@@ -18,6 +18,12 @@ public class ServerInitiater {
 			mls.onMessageRecievedFromClient(message, ip, port);
 	}
 
+	public void onBytesRecieved(byte[] bytes, InetAddress ip, int port) {
+		// Notify everybody that may be interested.
+		for (MessageListenerServer mls : listeners)
+			mls.onBytesRecievedFromClient(bytes, ip, port);
+	}
+
 	public void onNewClientAdded(InetAddress ip, int port, String uid) {
 		// Notify everybody that may be interested.
 		for (MessageListenerServer mls : listeners)

@@ -56,12 +56,14 @@ public class UDPServer extends Server {
 				DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
 				try {
 					serverSocket.receive(receivePacket);
-					String data = new String(receivePacket.getData()).trim();
-					data = BasicCommands.decryptMessageBase64(data);
 
 					InetAddress IPAddress = receivePacket.getAddress();
-
 					int port = receivePacket.getPort();
+
+					initiater.onBytesRecieved(receivePacket.getData(), IPAddress, port);
+
+					String data = new String(receivePacket.getData()).trim();
+					data = BasicCommands.decryptMessageBase64(data);
 
 					String[] dataArray = data.split(" : ");
 

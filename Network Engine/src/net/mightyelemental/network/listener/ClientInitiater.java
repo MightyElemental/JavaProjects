@@ -18,4 +18,11 @@ public class ClientInitiater {
 		}
 	}
 
+	public void onBytesRecieved(byte[] bytes) {
+		// Notify everybody that may be interested.
+		for (MessageListenerClient mlc : listeners) {
+			mlc.onBytesRecievedFromServer(bytes);
+		}
+	}
+
 }

@@ -36,6 +36,9 @@ public class UDPClient extends Client {
 					sendData = new byte[maxBytes];
 					DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
 					clientSocket.receive(receivePacket);
+
+					initiater.onBytesRecieved(receivePacket.getData());
+
 					String receiveData = new String(receivePacket.getData()).trim();
 					receiveData = BasicCommands.decryptMessageBase64(receiveData);
 

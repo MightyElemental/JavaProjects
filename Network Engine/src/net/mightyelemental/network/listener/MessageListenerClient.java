@@ -6,4 +6,8 @@ public interface MessageListenerClient {
 	 *            the message received from server */
 	public void onMessageRecievedFromServer(String message);
 
+	/** @param bytes
+	 *            the byte array received from server */
+	public void onBytesRecievedFromServer(byte[] bytes);
+
 }
