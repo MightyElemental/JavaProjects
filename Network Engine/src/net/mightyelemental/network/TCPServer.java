@@ -130,4 +130,13 @@ public class TCPServer extends Server {
 		serverSocket.close();
 	}
 
+	@Override
+	public void sendBytes(byte[] bytes, InetAddress ip, int port) {
+		try {
+			getTCPConnectionFromIP(ip, port).sendBytes(bytes);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
 }

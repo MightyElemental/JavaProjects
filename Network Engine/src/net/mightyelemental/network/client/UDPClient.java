@@ -22,6 +22,8 @@ public class UDPClient extends Client {
 	private byte[]	receiveData;
 	private byte[]	sendData;
 
+	private int maxBytes = 1024;
+
 	private Thread clientTick = new Thread("ClientReceiveThread") {
 
 		public void run() {
@@ -30,7 +32,8 @@ public class UDPClient extends Client {
 			while (running) {
 				timeRunning = System.currentTimeMillis() - timeStarted;
 				try {
-					receiveData = new byte[1024];
+					receiveData = new byte[maxBytes];
+					sendData = new byte[maxBytes];
 					DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
 					clientSocket.receive(receivePacket);
 					String receiveData = new String(receivePacket.getData()).trim();
@@ -63,10 +66,13 @@ public class UDPClient extends Client {
 	/** @param address
 	 *            the IP address in String form
 	 * @param port
-	 *            the port for the client to send messages through */
-	public UDPClient( String address, int port ) {
+	 *            the port for the client to send messages through
+	 * @param maxBytes
+	 *            the maximum amount of bytes the client should handle */
+	public UDPClient( String address, int port, int maxBytes ) {
 		this.address = address;
 		this.port = port;
+		this.maxBytes = maxBytes;
 	}
 
 	/** @return the clients name */
@@ -95,8 +101,8 @@ public class UDPClient extends Client {
 			clientSocket = new DatagramSocket();
 			IPAddress = InetAddress.getByName(getAddress());
 
-			sendData = new byte[1024];
-			receiveData = new byte[1024];
+			sendData = new byte[maxBytes];
+			receiveData = new byte[maxBytes];
 		} catch (SocketException | UnknownHostException e) {
 			e.printStackTrace();
 		}
@@ -137,6 +143,17 @@ public class UDPClient extends Client {
 	/** @return the time it took to ping the server */
 	public long getPingTime() {
 		return pingTime;
+	}
+
+	/** @return the maxBytes */
+	public int getMaxBytes() {
+		return maxBytes;
+	}
+
+	/** @param maxBytes
+	 *            the maxBytes to set */
+	public void setMaxBytes(int maxBytes) {
+		this.maxBytes = maxBytes;
 	}
 
 }

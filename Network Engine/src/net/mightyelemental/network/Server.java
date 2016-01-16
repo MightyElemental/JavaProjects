@@ -51,4 +51,14 @@ public abstract class Server {
 
 	public abstract void stopServer() throws InterruptedException, IOException;
 
+	/** Sends the specified client a byte array
+	 * 
+	 * @param bytes
+	 *            the byte array to send
+	 * @param ip
+	 *            the IP address of the client
+	 * @param port
+	 *            the port of the client */
+	public abstract void sendBytes(byte[] bytes, InetAddress ip, int port);
+
 }

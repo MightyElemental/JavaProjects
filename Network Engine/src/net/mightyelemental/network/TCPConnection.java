@@ -34,7 +34,7 @@ public class TCPConnection {
 					in = new BufferedReader(new InputStreamReader(client.getInputStream()));
 					out = new DataOutputStream(client.getOutputStream());
 					String message = in.readLine();
-					System.out.println("Before decryp: " + message);
+					System.out.println("Before decryp: " + message);// SENDS BYTE ARRAYS! DO NOT DECRYPT THEM!
 					if (message == null) {
 						continue;
 					}
@@ -89,6 +89,13 @@ public class TCPConnection {
 		out = new DataOutputStream(client.getOutputStream());
 		message = BasicCommands.encryptMessageBase64(message);
 		out.writeChars(message);// Socket closed issue
+	}
+
+	/** Send a byte array to the client */
+	public synchronized void sendBytes(byte[] bytes) throws IOException {
+		if (bytes == null) { return; }
+		out = new DataOutputStream(client.getOutputStream());
+		out.write(bytes);// Socket closed issue
 	}
 
 	/** Start the clients thread */

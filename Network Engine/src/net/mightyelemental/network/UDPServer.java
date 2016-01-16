@@ -18,6 +18,8 @@ public class UDPServer extends Server {
 	private int		port;
 	private boolean	running;
 
+	private boolean stopServer;
+
 	public DatagramSocket serverSocket;
 
 	public Map<String, List<Object>> attachedClients = new HashMap<String, List<Object>>();
@@ -25,27 +27,34 @@ public class UDPServer extends Server {
 	private byte[]	receiveData;
 	private byte[]	sendData;
 
-	private String lastMessage = "";
+	private String	lastMessage	= "";
+	private int		maxBytes	= 1024;
 	// private boolean parse = true;
 
 	private Thread serverTick = new Thread("ServerThread") {
 
 		public void run() {
 
-			receiveData = new byte[1024];
-			sendData = new byte[1024];
+			receiveData = new byte[maxBytes];
+			sendData = new byte[maxBytes];
 
 			while (running) {
+				if (serverSocket == null) {
+					running = false;
+					break;
+				} else {
+					if (serverSocket.isClosed()) {
+						running = false;
+						break;
+					}
+				}
+				if (stopServer) {
+					running = false;
+					break;
+				}
 				receiveData = new byte[1024];
 				DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
 				try {
-					if (serverSocket != null) {
-						if (serverSocket.isClosed()) {
-							break;
-						}
-					} else {
-						break;
-					}
 					serverSocket.receive(receivePacket);
 					String data = new String(receivePacket.getData()).trim();
 					data = BasicCommands.decryptMessageBase64(data);
@@ -95,6 +104,7 @@ public class UDPServer extends Server {
 			}
 
 			try {
+				stopServer = false;
 				this.join();
 			} catch (InterruptedException e) {
 				e.printStackTrace();
@@ -103,9 +113,15 @@ public class UDPServer extends Server {
 
 	};
 
-	/** UDP Server */
-	public UDPServer( int port ) {
+	/** UDP Server
+	 * 
+	 * @param port
+	 *            - the port of which the server should run
+	 * @param maxBytes
+	 *            - the maximum amount of bytes the server should be able to send */
+	public UDPServer( int port, int maxBytes ) {
 		this.port = port;
+		this.maxBytes = maxBytes;
 	}
 
 	/** Adds a message to the server GUI */
@@ -213,6 +229,28 @@ public class UDPServer extends Server {
 		sendInstantMessage(message, ip, port);
 	}
 
+	/** Sends the specified client a byte array
+	 * 
+	 * @param bytes
+	 *            the byte array to send
+	 * @param ip
+	 *            the IP address of the client
+	 * @param port
+	 *            the port of the client */
+	public synchronized void sendBytes(byte[] bytes, InetAddress ip, int port) {
+		String cUID = getClientUIDFromIP(ip, port);
+
+		serverGUI.addCommand("Console > " + cUID + " : Byte Array");
+
+		try {
+			sendData = bytes;
+			DatagramPacket sendPacket = new DatagramPacket(this.sendData, this.sendData.length, ip, port);
+			this.serverSocket.send(sendPacket);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
 	/** Broadcast a message to every client
 	 * 
 	 * @param message
@@ -247,8 +285,36 @@ public class UDPServer extends Server {
 		this.broadcastmessage("Server Closing");
 		this.port = 0;
 		this.running = false;
-		this.serverTick.join(1000);
-		this.serverSocket.close();
-		this.serverSocket = null;
+		Thread close = new Thread() {
+
+			public void run() {
+				try {
+					stopServer = true;
+					serverTick.join(1);
+					serverSocket.close();
+					serverSocket = null;
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				try {
+					this.join();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+
+		};
+		close.start();
+	}
+
+	/** @return the maxBytes */
+	public int getMaxBytes() {
+		return maxBytes;
+	}
+
+	/** @param maxBytes
+	 *            the maxBytes to set */
+	public void setMaxBytes(int maxBytes) {
+		this.maxBytes = maxBytes;
 	}
 }
