@@ -8,7 +8,7 @@ import com.skype.SkypeException;
 
 public class Commands {
 
-	public static String[] commands = { "ls", "time", "add", "spamMe", "wave" };
+	public static String[] commands = { "ls", "time", "add", "spamMe", "wave", "reverse" };
 
 	private static String prefix = SkypeOS.prefix;
 
@@ -52,7 +52,22 @@ public class Commands {
 	}
 
 	private static void send(String mess, ChatMessage cm) throws SkypeException {
-		cm.getChat().send(prefix + mess);
+		cm.getChat().send(mess);
+	}
+
+	public static void reverse(ChatMessage cm) throws SkypeException {
+		String temp = "\n";
+		String message = cm.getContent().replaceFirst(Parser.commandPrefix + "reverse", "");
+		for (int i = message.length() - 1; i >= 0; i--) {
+			temp += message.charAt(i);
+		}
+
+		if (!SkypeOS.removeBannedWords(cm, temp)) {
+			send("[Skype] "+temp, cm);
+		} else {
+			send("[Skype] If I were to send message backwords, it would contain a banned phrase. Therefore I am not going to send it", cm);
+		}
+
 	}
 
 }

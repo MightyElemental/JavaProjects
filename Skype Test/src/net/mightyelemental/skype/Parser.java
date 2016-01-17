@@ -5,7 +5,7 @@ import com.skype.SkypeException;
 
 public class Parser {
 
-	static String commandPrefix = "asdf!";
+	static String commandPrefix = "!";
 
 	public static String[] getArgs(String command) {
 		if (!command.startsWith(commandPrefix)) { return null; }
@@ -25,6 +25,8 @@ public class Parser {
 			Commands.spam(cm);
 		} else if (args[0].equals("wave")) {
 			Commands.wave(cm);
+		}else if(args[0].equals("reverse")){
+			Commands.reverse(cm);
 		}
 	}
 
