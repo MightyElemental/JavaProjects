@@ -18,13 +18,14 @@ public class TCPClient extends Client {
 
 	private boolean usesEncryption = false;
 
+	private int maxBytes;
+
 	private Thread clientTick = new Thread("ClientReceiveThread") {
 
 		public void run() {
 			running = true;
 			while (running) {
 
-				System.out.println("temp");
 				String tempMessage = null;
 				try {
 					tempMessage = in.readLine();
@@ -32,7 +33,7 @@ public class TCPClient extends Client {
 					System.err.println("Server has been closed");
 					stopClient();
 				}
-				System.out.println(tempMessage);
+				System.out.println("[TCPClient] message: " + tempMessage);
 				if (usesEncryption) {
 					tempMessage = BasicCommands.decryptMessageBase64(tempMessage);
 				}
@@ -58,10 +59,11 @@ public class TCPClient extends Client {
 		}
 	};
 
-	public TCPClient( String address, int port, boolean usesEncryption ) {
+	public TCPClient( String address, int port, boolean usesEncryption, int maxBytes ) {
 		this.address = address;
 		this.port = port;
 		this.usesEncryption = usesEncryption;
+		this.maxBytes = maxBytes;
 	}
 
 	public synchronized void setup() {
@@ -72,8 +74,8 @@ public class TCPClient extends Client {
 			stopClient();
 		}
 		try {
-			clientSocket.setReceiveBufferSize(2 ^ 9);
-			clientSocket.setSendBufferSize(2 ^ 9);
+			clientSocket.setReceiveBufferSize(maxBytes);
+			clientSocket.setSendBufferSize(maxBytes);
 			clientSocket.setKeepAlive(true);
 			in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 			out = new DataOutputStream(clientSocket.getOutputStream());
@@ -83,7 +85,6 @@ public class TCPClient extends Client {
 		clientTick.start();
 	}
 
-	@Deprecated
 	public void sendMessage(String message) {
 		message = message + '\n';
 		message = BasicCommands.encryptMessageBase64(message);
@@ -142,7 +143,6 @@ public class TCPClient extends Client {
 	}
 
 	@Override
-	@Deprecated
 	public void sendBytes(byte[] bytes) {
 		try {
 			out.write(bytes);
@@ -160,6 +160,17 @@ public class TCPClient extends Client {
 	 *            the usesEncryption to set */
 	public void setUseEncryption(boolean usesEncryption) {
 		this.usesEncryption = usesEncryption;
+	}
+
+	/** @return the maxBytes */
+	public int getMaxBytes() {
+		return maxBytes;
+	}
+
+	/** @param maxBytes
+	 *            the maxBytes to set */
+	public void setMaxBytes(int maxBytes) {
+		this.maxBytes = maxBytes;
 	}
 
 }

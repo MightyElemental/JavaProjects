@@ -1,6 +1,7 @@
 package net.mightyelemental.network;
 
 import java.io.BufferedReader;
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -19,6 +20,7 @@ public class TCPConnection {
 
 	public BufferedReader	in;
 	public DataOutputStream	out;
+	public DataInputStream	is;
 
 	private boolean usesEncryption = false;
 
@@ -28,7 +30,8 @@ public class TCPConnection {
 
 	private boolean running = false;
 
-	private byte[] recievedBytes;
+	private byte[]	recievedBytes;
+	public int		maxBytes	= 2 ^ 10;
 
 	private Thread run = new Thread("TCPConnection_Undef") {
 
@@ -37,7 +40,9 @@ public class TCPConnection {
 				while (running) {
 					in = new BufferedReader(new InputStreamReader(client.getInputStream()));
 					out = new DataOutputStream(client.getOutputStream());
-					client.getInputStream().read(recievedBytes);
+					is = new DataInputStream(client.getInputStream());
+					recievedBytes = new byte[maxBytes];
+					is.readFully(recievedBytes);
 					String message = in.readLine();
 					SI.onBytesRecieved(recievedBytes, ip, port);
 					if (message == null) {
@@ -55,7 +60,7 @@ public class TCPConnection {
 						sendMessage("JLB1F0_CLIENT_UID " + UID);
 					} else if (message.contains("JLB1F0_PING_SERVER")) {
 						returnPingRequest();
-					} else {
+					} else if (serverGUI != null) {
 						serverGUI.addCommand(UID + " : " + message);
 					}
 				}
@@ -77,18 +82,19 @@ public class TCPConnection {
 		}
 	}
 
-	public TCPConnection( Socket client, ServerInitiater initiater, ServerGUI serverGUI, boolean usesEncryption ) {
+	public TCPConnection( Socket client, ServerInitiater initiater, ServerGUI serverGUI, boolean usesEncryption, int maxBytes ) {
 		this.client = client;
 		this.ip = client.getInetAddress();
 		this.port = client.getPort();
 		this.SI = initiater;
 		this.serverGUI = serverGUI;
 		this.usesEncryption = usesEncryption;
+		this.maxBytes = maxBytes;
 		try {
 			this.client.setSoTimeout(0);
 			this.client.setKeepAlive(true);
-			this.client.setReceiveBufferSize(2 ^ 9);
-			this.client.setSendBufferSize(2 ^ 9);
+			this.client.setReceiveBufferSize(maxBytes);
+			this.client.setSendBufferSize(maxBytes);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

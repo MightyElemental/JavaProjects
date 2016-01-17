@@ -16,18 +16,19 @@ public class TCPServer extends Server {
 
 	private boolean usesEncryption = false;
 
+	private int maxBytes = 2 ^ 10;
+
 	private Thread serverTick = new Thread("ServerThread") {
 
 		public void run() {
 			while (running) {
 				try {
 					Socket newClientSocket = serverSocket.accept();
-					TCPConnection newTcpClient = new TCPConnection(newClientSocket, initiater, serverGUI, usesEncryption);
+					TCPConnection newTcpClient = new TCPConnection(newClientSocket, initiater, serverGUI, usesEncryption, maxBytes);
 					String UID = generateClientInfo(newTcpClient, random);
 					newTcpClient.setUID(UID);
 					newTcpClient.startThread();
 					tcpConnections.put(UID, newTcpClient);
-
 					initiater.onNewClientAdded(newClientSocket.getInetAddress(), newClientSocket.getPort(), UID);
 
 					if (hasGUI) {
@@ -52,9 +53,10 @@ public class TCPServer extends Server {
 	};
 
 	/** TCP Server */
-	public TCPServer( int port, boolean usesEncryption ) {
+	public TCPServer( int port, boolean usesEncryption, int maxBytes ) {
 		this.port = port;
 		this.usesEncryption = usesEncryption;
+		this.maxBytes = maxBytes;
 	}
 
 	public synchronized void setupServer() {
@@ -151,6 +153,20 @@ public class TCPServer extends Server {
 	 *            the usesEncryption to set */
 	public void setUseEncryption(boolean usesEncryption) {
 		this.usesEncryption = usesEncryption;
+	}
+
+	/** @return the maxBytes */
+	public int getMaxBytes() {
+		return maxBytes;
+	}
+
+	/** @param maxBytes
+	 *            the maxBytes to set */
+	public void setMaxBytes(int maxBytes) {
+		this.maxBytes = maxBytes;
+		for (TCPConnection t : tcpConnections.values()) {
+			t.maxBytes = maxBytes;
+		}
 	}
 
 }
