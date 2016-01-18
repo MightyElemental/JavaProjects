@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.net.Socket;
 
 import net.mightyelemental.network.BasicCommands;
@@ -11,7 +12,8 @@ import net.mightyelemental.network.BasicCommands;
 public class TCPClient extends Client {
 
 	private Socket			clientSocket;
-	public DataOutputStream	out;
+	public DataOutputStream	byteOut;
+	public PrintStream		out;
 	public BufferedReader	in;
 
 	private boolean running;
@@ -78,7 +80,8 @@ public class TCPClient extends Client {
 			clientSocket.setSendBufferSize(maxBytes);
 			clientSocket.setKeepAlive(true);
 			in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-			out = new DataOutputStream(clientSocket.getOutputStream());
+			out = new PrintStream(clientSocket.getOutputStream());
+			byteOut = new DataOutputStream(clientSocket.getOutputStream());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -87,12 +90,10 @@ public class TCPClient extends Client {
 
 	public void sendMessage(String message) {
 		message = message + '\n';
-		message = BasicCommands.encryptMessageBase64(message);
-		try {
-			out.writeChars(message);
-		} catch (IOException e) {
-			e.printStackTrace();
+		if (usesEncryption) {
+			message = BasicCommands.encryptMessageBase64(message);
 		}
+		out.println(message);
 	}
 
 	/** @return the clientUID */
@@ -145,7 +146,7 @@ public class TCPClient extends Client {
 	@Override
 	public void sendBytes(byte[] bytes) {
 		try {
-			out.write(bytes);
+			byteOut.write(bytes);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

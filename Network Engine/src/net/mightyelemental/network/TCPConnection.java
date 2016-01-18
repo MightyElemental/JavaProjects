@@ -5,6 +5,8 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
 
@@ -19,7 +21,8 @@ public class TCPConnection {
 	private String		UID;
 
 	public BufferedReader	in;
-	public DataOutputStream	out;
+	public DataOutputStream	byteOut;
+	public PrintWriter		pout;
 	public DataInputStream	is;
 
 	private boolean usesEncryption = false;
@@ -38,16 +41,14 @@ public class TCPConnection {
 		public void run() {
 			try {
 				while (running) {
-					in = new BufferedReader(new InputStreamReader(client.getInputStream()));
-					out = new DataOutputStream(client.getOutputStream());
-					is = new DataInputStream(client.getInputStream());
 					recievedBytes = new byte[maxBytes];
-					is.readFully(recievedBytes);
+					// is.readFully(recievedBytes);
 					String message = in.readLine();
 					SI.onBytesRecieved(recievedBytes, ip, port);
 					if (message == null) {
 						continue;
 					}
+					recievedBytes = message.getBytes();
 					if (usesEncryption) {
 						System.out.println("Before decryp: " + message);// SENDS BYTE ARRAYS! DO NOT DECRYPT THEM!
 						message = BasicCommands.decryptMessageBase64(message);
@@ -91,6 +92,15 @@ public class TCPConnection {
 		this.usesEncryption = usesEncryption;
 		this.maxBytes = maxBytes;
 		try {
+			OutputStreamWriter out = new OutputStreamWriter(client.getOutputStream());
+			byteOut = new DataOutputStream(client.getOutputStream());
+			in = new BufferedReader(new InputStreamReader(client.getInputStream()));
+			is = new DataInputStream(client.getInputStream());
+			pout = new PrintWriter(out);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		try {
 			this.client.setSoTimeout(0);
 			this.client.setKeepAlive(true);
 			this.client.setReceiveBufferSize(maxBytes);
@@ -103,18 +113,22 @@ public class TCPConnection {
 	/** Send a message to the client */
 	public synchronized void sendMessage(String message) throws IOException {
 		if (message == null) { return; }
-		out = new DataOutputStream(client.getOutputStream());
 		if (usesEncryption) {
 			message = BasicCommands.encryptMessageBase64(message);
 		}
-		out.writeChars(message);// Socket closed issue
+		pout.println(message);// Socket closed issue
 	}
 
-	/** Send a byte array to the client */
+	/** Send a byte array to the client
+	 * 
+	 * @throws IndexOutOfBoundsException
+	 *             if byte array contains negative values */
 	public synchronized void sendBytes(byte[] bytes) throws IOException {
 		if (bytes == null) { return; }
-		out = new DataOutputStream(client.getOutputStream());
-		out.write(bytes);// Socket closed issue
+		for (byte b : bytes) {
+			if (b < 0) { throw new IndexOutOfBoundsException(""); }
+		}
+		byteOut.write(bytes);// Socket closed issue
 	}
 
 	/** Start the clients thread */
