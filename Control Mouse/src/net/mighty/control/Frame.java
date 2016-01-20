@@ -2,6 +2,7 @@ package net.mighty.control;
 
 import java.awt.Graphics;
 import java.awt.List;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -44,12 +45,14 @@ public class Frame extends JFrame {
 
 	int frames = 0;
 
+	public Rectangle r = new Rectangle(0, 0, 1920, 1080);
+
 	@SuppressWarnings( "serial" )
 	JPanel remoteView = new JPanel() {
 
 		public void paint(Graphics g) {
 			// g.fillRect(0, 0, panel.getWidth(), panel.getHeight());
-			g.drawImage(Control.capture, 0, 0, panel.getWidth(), panel.getHeight(), null);
+			g.drawImage(Control.capture, r.x, r.y, r.width, r.height, null);
 			tabbedPane.setBounds(10, 11, contentPane.getWidth() - 20, contentPane.getHeight() - 20);
 		}
 	};

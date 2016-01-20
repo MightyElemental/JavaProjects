@@ -49,6 +49,12 @@ public class Control {
 		return buffer;
 	}
 
+	public static BufferedImage bytesToImg(byte[] bytes) throws IOException {
+		InputStream in = new ByteArrayInputStream(bytes);
+		BufferedImage img = ImageIO.read(in);
+		return img;
+	}
+
 	public static int[] imgToRGB(BufferedImage img) throws IOException {
 		int[] buffer = new int[img.getHeight() * img.getWidth() + 2];
 		for (int x = 0; x < img.getWidth(); x++) {
@@ -59,12 +65,6 @@ public class Control {
 		buffer[0] = img.getWidth();
 		buffer[1] = img.getHeight();
 		return buffer;
-	}
-
-	public static BufferedImage bytesToImg(byte[] bytes) throws IOException {
-		InputStream in = new ByteArrayInputStream(bytes);
-		BufferedImage img = ImageIO.read(in);
-		return img;
 	}
 
 	/** The first two ints in the array must be the width and height */
