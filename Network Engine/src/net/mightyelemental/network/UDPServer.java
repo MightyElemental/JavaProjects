@@ -1,6 +1,10 @@
 package net.mightyelemental.network;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -29,6 +33,9 @@ public class UDPServer extends Server {
 	private byte[]	receiveData;
 	private byte[]	sendData;
 
+	protected ObjectInputStream		ois;
+	protected ObjectOutputStream	ous;
+
 	private String	lastMessage	= "";
 	private int		maxBytes	= 1024;
 	// private boolean parse = true;
@@ -54,48 +61,44 @@ public class UDPServer extends Server {
 					running = false;
 					break;
 				}
-				receiveData = new byte[1024];
+				receiveData = new byte[maxBytes];
 				DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
 				try {
+
+					ois = new ObjectInputStream(new ByteArrayInputStream(receivePacket.getData()));
 					serverSocket.receive(receivePacket);
 
 					InetAddress IPAddress = receivePacket.getAddress();
 					int port = receivePacket.getPort();
 
-					initiater.onBytesRecieved(receivePacket.getData(), IPAddress, port);
-
-					String data = new String(receivePacket.getData()).trim();
-					if (usesEncryption) {
-						data = BasicCommands.decryptMessageBase64(data);
+					try {
+						initiater.onObjectRecieved(IPAddress, port, ois.readObject());
+					} catch (ClassNotFoundException e) {
+						e.printStackTrace();
 					}
-
-					String[] dataArray = data.split(" : ");
-
-					StringBuilder sb = new StringBuilder();
-
-					for (int i = 1; i < dataArray.length; i++) {
-						sb.append(dataArray[i]);
-					}
-
-					String message = sb.toString();
-					// String sender = dataArray[0];
-					// if (lastMessage.equals(message)) {
-					// parse = false;
-					// } else {
-					lastMessage = message;
-					// parse = true;
-					// }
-
-					// if (parse) {
 					checkIfNewClient(IPAddress, port);
-					if (message.contains("JLB1F0_TEST_CONNECTION RETURN_UID")) {
-						sendMessage("JLB1F0_CLIENT_UID " + getClientUIDFromIP(IPAddress, port), IPAddress, port);
-					} else if (message.contains("JLB1F0_PING_SERVER")) {
-						returnPingRequest(IPAddress, port);
-					} else {
-						serverGUI.addCommand(getClientUIDFromIP(IPAddress, port) + " : " + message);
-					}
-					initiater.onMessageRecieved(message, IPAddress, port);
+
+					// String data = new String(receivePacket.getData()).trim();
+					// if (usesEncryption) {
+					// data = BasicCommands.decryptMessageBase64(data);
+					// }
+					//
+					// String[] dataArray = data.split(" : ");
+					//
+					// StringBuilder sb = new StringBuilder();
+					//
+					// for (int i = 1; i < dataArray.length; i++) {
+					// sb.append(dataArray[i]);
+					// }
+					//
+					// String message = sb.toString();
+					// lastMessage = message;
+					// if (message.contains("JLB1F0_TEST_CONNECTION RETURN_UID")) {
+					// sendMessage("JLB1F0_CLIENT_UID " + getClientUIDFromIP(IPAddress, port), IPAddress, port);
+					// } else if (message.contains("JLB1F0_PING_SERVER")) {
+					// returnPingRequest(IPAddress, port);
+					// } else {
+					// serverGUI.addCommand(getClientUIDFromIP(IPAddress, port) + " : " + message);
 					// }
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -153,6 +156,11 @@ public class UDPServer extends Server {
 	private void checkIfNewClient(InetAddress ip, int port) {
 		if (attachedClients.containsValue(Arrays.asList(new Object[] { ip, port }))) { return; }
 		String UID = generateClientInfo(ip, port, random);
+		try {
+			sendObject("JLB1F0_CLIENT_UID " + getClientUIDFromIP(ip, port), ip, port);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		initiater.onNewClientAdded(ip, port, UID);// notifies all listeners about new client
 	}
 
@@ -200,6 +208,7 @@ public class UDPServer extends Server {
 	 *            the IP address of the client
 	 * @param port
 	 *            the port of the client */
+	@Deprecated
 	public void sendInstantMessage(String message, InetAddress ip, int port) {
 
 		String cUID = getClientUIDFromIP(ip, port);
@@ -229,6 +238,7 @@ public class UDPServer extends Server {
 	 *            the IP address of the client
 	 * @param port
 	 *            the port of the client */
+	@Deprecated
 	public synchronized void sendMessage(String message, InetAddress ip, int port) {
 		try {
 			Thread.sleep(100);
@@ -246,6 +256,7 @@ public class UDPServer extends Server {
 	 *            the IP address of the client
 	 * @param port
 	 *            the port of the client */
+	@Deprecated
 	public synchronized void sendBytes(byte[] bytes, InetAddress ip, int port) {
 		String cUID = getClientUIDFromIP(ip, port);
 
@@ -264,6 +275,7 @@ public class UDPServer extends Server {
 	 * 
 	 * @param message
 	 *            the message to be sent */
+	@Deprecated
 	public void broadcastmessage(String message) {
 		Object[] keys = this.getAttachedClients().keySet().toArray();
 		for (Object key : keys) {
@@ -284,14 +296,14 @@ public class UDPServer extends Server {
 	}
 
 	/** Returns a clients ping request */
+	@SuppressWarnings( "unused" )
 	private void returnPingRequest(InetAddress ip, int port) {
 		sendInstantMessage("JLB1F0_RETURN_PING", ip, port);
-		sendMessage("JLB1F0_CLIENT_UID " + getClientUIDFromIP(ip, port), ip, port);
 	}
 
 	@Override
 	public void stopServer() throws InterruptedException, IOException {
-		this.broadcastmessage("Server Closing");
+		this.broadcastmessage("Server Closed");
 		this.port = 0;
 		this.running = false;
 		Thread close = new Thread() {
@@ -325,5 +337,32 @@ public class UDPServer extends Server {
 	 *            the maxBytes to set */
 	public void setMaxBytes(int maxBytes) {
 		this.maxBytes = maxBytes;
+	}
+
+	/** Sends an object over the network */
+	@Override
+	public void sendObject(Object obj, InetAddress ip, int port) throws IOException {
+		sendData = null;
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		ObjectOutputStream oos = new ObjectOutputStream(baos);
+		oos.writeObject(obj);
+		oos.flush();
+		// get the byte array of the object
+		byte[] Buf = baos.toByteArray();
+
+		int number = Buf.length;
+		sendData = new byte[this.maxBytes];
+
+		// int -> byte[]
+		for (int i = 0; i < sendData.length; ++i) {
+			int shift = i << 3; // i * 8
+			sendData[sendData.length - 1 - i] = (byte) ((number & (0xff << shift)) >>> shift);
+		}
+
+		try {
+			serverSocket.send(new DatagramPacket(sendData, sendData.length, ip, port));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }

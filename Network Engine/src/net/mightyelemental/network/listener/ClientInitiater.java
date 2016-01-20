@@ -11,17 +11,24 @@ public class ClientInitiater {
 		listeners.add(toAdd);
 	}
 
-	public void onMessageRecieved(String message) {
-		// Notify everybody that may be interested.
-		for (MessageListenerClient mlc : listeners) {
-			mlc.onMessageRecievedFromServer(message);
-		}
-	}
+	// public void onMessageRecieved(String message) {
+	// // Notify everybody that may be interested.
+	// for (MessageListenerClient mlc : listeners) {
+	// mlc.onMessageRecievedFromServer(message);
+	// }
+	// }
+	//
+	// public void onBytesRecieved(byte[] bytes) {
+	// // Notify everybody that may be interested.
+	// for (MessageListenerClient mlc : listeners) {
+	// mlc.onBytesRecievedFromServer(bytes);
+	// }
+	// }
 
-	public void onBytesRecieved(byte[] bytes) {
+	public void onObjectRecieved(Object obj) {
 		// Notify everybody that may be interested.
 		for (MessageListenerClient mlc : listeners) {
-			mlc.onBytesRecievedFromServer(bytes);
+			mlc.onObjectRecievedFromServer(obj);
 		}
 	}
 

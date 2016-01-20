@@ -12,22 +12,29 @@ public class ServerInitiater {
 		listeners.add(toAdd);
 	}
 
-	public void onMessageRecieved(String message, InetAddress ip, int port) {
-		// Notify everybody that may be interested.
-		for (MessageListenerServer mls : listeners)
-			mls.onMessageRecievedFromClient(message, ip, port);
-	}
-
-	public void onBytesRecieved(byte[] bytes, InetAddress ip, int port) {
-		// Notify everybody that may be interested.
-		for (MessageListenerServer mls : listeners)
-			mls.onBytesRecievedFromClient(bytes, ip, port);
-	}
+	// public void onMessageRecieved(String message, InetAddress ip, int port) {
+	// // Notify everybody that may be interested.
+	// for (MessageListenerServer mls : listeners)
+	// mls.onMessageRecievedFromClient(message, ip, port);
+	// }
+	//
+	// public void onBytesRecieved(byte[] bytes, InetAddress ip, int port) {
+	// // Notify everybody that may be interested.
+	// for (MessageListenerServer mls : listeners)
+	// mls.onBytesRecievedFromClient(bytes, ip, port);
+	// }
 
 	public void onNewClientAdded(InetAddress ip, int port, String uid) {
 		// Notify everybody that may be interested.
 		for (MessageListenerServer mls : listeners)
 			mls.onNewClientAdded(ip, port, uid);
+	}
+
+	public void onObjectRecieved(InetAddress ip, int port, Object obj) {
+		// Notify everybody that may be interested.
+		for (MessageListenerServer mls : listeners) {
+			mls.onObjectRecievedFromServer(ip, port, obj);
+		}
 	}
 
 }

@@ -45,6 +45,7 @@ public abstract class Server {
 	 *            the message to be sent */
 	public abstract void broadcastmessage(String message);
 
+	@Deprecated
 	public abstract void sendMessage(String message, InetAddress ip, int port);
 
 	public abstract void setupServer();
@@ -59,6 +60,9 @@ public abstract class Server {
 	 *            the IP address of the client
 	 * @param port
 	 *            the port of the client */
+	@Deprecated
 	public abstract void sendBytes(byte[] bytes, InetAddress ip, int port);
+
+	public abstract void sendObject(Object obj, InetAddress ip, int port) throws IOException;
 
 }

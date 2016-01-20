@@ -92,6 +92,7 @@ public class TCPServer extends Server {
 	 *            the IP address of the client
 	 * @param port
 	 *            the port of the client */
+	@Deprecated
 	public synchronized void sendMessage(String message, InetAddress ip, int port) {
 		try {
 			getTCPConnectionFromIP(ip, port).sendMessage(message);
@@ -119,6 +120,7 @@ public class TCPServer extends Server {
 	}
 
 	@Override
+	@Deprecated
 	public void broadcastmessage(String message) {
 		for (String key : getTcpConnections().keySet()) {
 			try {
@@ -136,6 +138,7 @@ public class TCPServer extends Server {
 	}
 
 	@Override
+	@Deprecated
 	public void sendBytes(byte[] bytes, InetAddress ip, int port) {
 		try {
 			getTCPConnectionFromIP(ip, port).sendBytes(bytes);
@@ -167,6 +170,11 @@ public class TCPServer extends Server {
 		for (TCPConnection t : tcpConnections.values()) {
 			t.maxBytes = maxBytes;
 		}
+	}
+
+	@Override
+	public void sendObject(Object obj, InetAddress ip, int port) throws IOException {
+		getTCPConnectionFromIP(ip, port).sendObject(obj);
 	}
 
 }

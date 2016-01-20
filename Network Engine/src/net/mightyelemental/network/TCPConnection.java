@@ -5,6 +5,8 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.InetAddress;
@@ -20,20 +22,26 @@ public class TCPConnection {
 	private int			port;
 	private String		UID;
 
+	@Deprecated
 	public BufferedReader	in;
-	public DataOutputStream	byteOut;
-	public PrintWriter		pout;
+	@Deprecated
 	public DataInputStream	is;
+	@Deprecated
+	public DataOutputStream	byteOut;
+	@Deprecated
+	public PrintWriter		pout;
+
+	public ObjectOutputStream	objectOut;
+	public ObjectInputStream	objectIn;
 
 	private boolean usesEncryption = false;
 
+	@SuppressWarnings( "unused" )
 	private ServerGUI serverGUI;
 
 	private ServerInitiater SI;
 
-	private boolean running = false;
-
-	private byte[]	recievedBytes;
+	private boolean	running		= false;
 	public int		maxBytes	= 2 ^ 10;
 
 	private Thread run = new Thread("TCPConnection_Undef") {
@@ -41,29 +49,28 @@ public class TCPConnection {
 		public void run() {
 			try {
 				while (running) {
-					recievedBytes = new byte[maxBytes];
 					// is.readFully(recievedBytes);
-					String message = in.readLine();
-					SI.onBytesRecieved(recievedBytes, ip, port);
-					if (message == null) {
-						continue;
+					try {
+						Object obj = objectIn.readObject();
+						SI.onObjectRecieved(ip, port, obj);
+					} catch (ClassNotFoundException e) {
+						SI.onObjectRecieved(ip, port, null);
+						e.printStackTrace();
 					}
-					recievedBytes = message.getBytes();
-					if (usesEncryption) {
-						System.out.println("Before decryp: " + message);// SENDS BYTE ARRAYS! DO NOT DECRYPT THEM!
-						message = BasicCommands.decryptMessageBase64(message);
-						System.out.println("After decryp: " + message);
-					} else {
-						System.out.println("Message: " + message);
-					}
-					SI.onMessageRecieved(message, ip, port);
-					if (message.contains("JLB1F0_TEST_CONNECTION RETURN_UID")) {
-						sendMessage("JLB1F0_CLIENT_UID " + UID);
-					} else if (message.contains("JLB1F0_PING_SERVER")) {
-						returnPingRequest();
-					} else if (serverGUI != null) {
-						serverGUI.addCommand(UID + " : " + message);
-					}
+					// if (usesEncryption) {
+					// System.out.println("Before decryp: " + message);// SENDS BYTE ARRAYS! DO NOT DECRYPT THEM!
+					// message = BasicCommands.decryptMessageBase64(message);
+					// System.out.println("After decryp: " + message);
+					// } else {
+					// System.out.println("Message: " + message);
+					// }
+					// if (message.contains("JLB1F0_TEST_CONNECTION RETURN_UID")) {
+					// sendMessage("JLB1F0_CLIENT_UID " + UID);
+					// } else if (message.contains("JLB1F0_PING_SERVER")) {
+					// returnPingRequest();
+					// } else if (serverGUI != null) {
+					// serverGUI.addCommand(UID + " : " + message);
+					// }
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -74,7 +81,8 @@ public class TCPConnection {
 	};
 
 	/** Returns a clients ping request */
-	private void returnPingRequest() {
+	@Deprecated
+	public void returnPingRequest() {
 		try {
 			sendMessage("JLB1F0_RETURN_PING");
 			sendMessage("JLB1F0_CLIENT_UID " + UID);
@@ -96,6 +104,8 @@ public class TCPConnection {
 			byteOut = new DataOutputStream(client.getOutputStream());
 			in = new BufferedReader(new InputStreamReader(client.getInputStream()));
 			is = new DataInputStream(client.getInputStream());
+			objectOut = new ObjectOutputStream(client.getOutputStream());
+			objectIn = new ObjectInputStream(client.getInputStream());
 			pout = new PrintWriter(out);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -111,6 +121,7 @@ public class TCPConnection {
 	}
 
 	/** Send a message to the client */
+	@Deprecated
 	public synchronized void sendMessage(String message) throws IOException {
 		if (message == null) { return; }
 		if (usesEncryption) {
@@ -123,6 +134,7 @@ public class TCPConnection {
 	 * 
 	 * @throws IndexOutOfBoundsException
 	 *             if byte array contains negative values */
+	@Deprecated
 	public synchronized void sendBytes(byte[] bytes) throws IOException {
 		if (bytes == null) { return; }
 		for (byte b : bytes) {
@@ -171,6 +183,10 @@ public class TCPConnection {
 	public void setUID(String uID) {
 		UID = uID;
 		run.setName("TCPConnection_" + UID);
+	}
+
+	public void sendObject(Object obj) throws IOException {
+		objectOut.writeObject(obj);
 	}
 
 }
