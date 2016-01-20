@@ -34,7 +34,7 @@ public class Control {
 
 	public static BufferedImage capture;
 
-	public static BufferedImage img;
+	public transient static BufferedImage img;
 
 	public static BufferedImage resize(BufferedImage img, int newW, int newH) {
 		Image tmp = img.getScaledInstance(newW, newH, Image.SCALE_SMOOTH);
@@ -55,9 +55,33 @@ public class Control {
 		return buffer;
 	}
 
+	public static int[] imgToRGB(BufferedImage img) throws IOException {
+		int[] buffer = new int[img.getHeight() * img.getWidth() + 2];
+		for (int x = 0; x < img.getWidth(); x++) {
+			for (int y = 0; y < img.getHeight(); y++) {
+				buffer[(y * img.getWidth()) + x + 2] = img.getRGB(x, y);
+			}
+		}
+		buffer[0] = img.getWidth();
+		buffer[1] = img.getHeight();
+		return buffer;
+	}
+
 	public static BufferedImage bytesToImg(byte[] bytes) throws IOException {
 		InputStream in = new ByteArrayInputStream(bytes);
 		BufferedImage img = ImageIO.read(in);
+		return img;
+	}
+
+	/** The first two ints in the array must be the width and height */
+	public static BufferedImage rgbToImg(int[] ints) throws IOException {
+		if (ints.length < 3) { return null; }
+		BufferedImage bi = new BufferedImage(ints[0], ints[1], BufferedImage.TYPE_INT_ARGB);
+		for (int x = 0; x < ints[0]; x++) {
+			for (int y = 0; y < ints[1]; y++) {
+				bi.setRGB(x, y, ints[(y * ints[0]) + x + 1]);
+			}
+		}
 		return img;
 	}
 

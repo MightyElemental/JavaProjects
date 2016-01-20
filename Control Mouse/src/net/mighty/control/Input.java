@@ -7,8 +7,6 @@ import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.InetAddress;
-import java.util.ArrayList;
-import java.util.List;
 
 import net.mightyelemental.network.TCPServer;
 import net.mightyelemental.network.client.TCPClient;
@@ -48,10 +46,12 @@ public class Input implements MessageListenerServer, MessageListenerClient {
 							(int) (Control.capture.getHeight() * 0.8));
 					sleep((int) (1000));
 					// System.out.println(Control.imgToBytes(Control.capture).length);
-					// client.out.write(Control.imgToBytes(Control.capture));
-					client.out.println("hello there");
+					client.sendObject(Control.imgToBytes(Control.capture));
+					// client.out.println("hello there");
 				} catch (InterruptedException | AWTException e) {
 					e.printStackTrace();
+				} catch (IOException e) {
+					System.err.println("'Wow!' *wink*\nAn Error has occured!\n");
 				}
 			}
 		}
@@ -63,62 +63,29 @@ public class Input implements MessageListenerServer, MessageListenerClient {
 	}
 
 	@Override
-	public void onMessageRecievedFromClient(String message, InetAddress ip, int port) {
-		Control.frame.entiresList.add(message);
-	}
-
-	@Override
 	public void onNewClientAdded(InetAddress ip, int port, String UID) {
 		System.out.println("hello " + ip.getHostAddress() + ":" + port + " (" + UID + ")");
 		Control.frame.entiresList.add("Added " + ip.getHostAddress() + ":" + port + " (" + UID + ")");
 	}
 
 	@Override
-	public void onMessageRecievedFromServer(String message) {
-		Control.frame.entiresList.add(message);
+	public void onObjectRecievedFromServer(Object obj) {
+
 	}
 
 	@Override
-	public void onBytesRecievedFromServer(byte[] bytes) {
-		// Control.frame.entiresList.add(bytes.toString());
-	}
-
-	public List<Integer> temp = new ArrayList<Integer>();
-
-	@Override
-	public void onBytesRecievedFromClient(byte[] bytes, InetAddress ip, int port) {
-		String tempStr = "";
-		for (byte b : bytes) {
-			tempStr += (char) b;
-		}
-		System.out.println("*" + tempStr + "*");
-		for (int i = 0; i < bytes.length; i++) {
-			// if (bytes[i] < 0) {
-			// continue;
-			// }
-			temp.add(bytes[i] & 0xFF);
-		}
-		byte[] b2 = new byte[temp.size()];
-		for (int i = 0; i < temp.size(); i++) {
-			Object e = temp.toArray()[i];
-			int b = (int) e;
-			b2[i] = (byte) b;
-		}
-		try {
-			BufferedImage tmp = Control.bytesToImg(b2);
-			if (tmp != null) {
-				Control.capture = tmp;
-				System.out.println("new");
-				temp.clear();
+	public void onObjectRecievedFromServer(InetAddress ip, int port, Object obj) {
+		if (obj instanceof byte[]) {
+			try {
+				BufferedImage tmp = Control.bytesToImg((byte[]) obj);
+				if (tmp != null) {
+					Control.capture = tmp;
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
-			if (Control.capture != null) {
-				String temp = Control.capture.getHeight() + " x " + Control.capture.getWidth();
-				System.out.println(temp);
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
+			Control.frame.remoteView.repaint();
 		}
-		Control.frame.remoteView.repaint();
 	}
 
 }
