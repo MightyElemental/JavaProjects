@@ -36,19 +36,29 @@ public class Input implements MessageListenerServer, MessageListenerClient {
 		clientThread.start();
 	}
 
+	private Robot robot;
+
 	public Thread clientThread = new Thread("client") {
 
 		public void run() {
+			try {
+				robot = new Robot();
+			} catch (AWTException e1) {
+				e1.printStackTrace();
+			}
 			while (Control.connected) {
 				try {
-					Control.capture = new Robot().createScreenCapture(clientScreenRect);
+					long time1 = System.currentTimeMillis();
+					Control.capture = robot.createScreenCapture(clientScreenRect);
 					Control.capture = Control.resize(Control.capture, (int) (Control.capture.getWidth() * 0.8),
 							(int) (Control.capture.getHeight() * 0.8));
-					sleep((int) (1000));
+					sleep(100);
 					// System.out.println(Control.imgToBytes(Control.capture).length);
 					client.sendObject(Control.imgToBytes(Control.capture));
 					// client.out.println("hello there");
-				} catch (InterruptedException | AWTException e) {
+					System.out.println("Time to capture and send image: " + (System.currentTimeMillis() - time1));
+					Control.frame.entiresList.add("Time to capture and send image: " + (System.currentTimeMillis() - time1));
+				} catch (InterruptedException e) {
 					e.printStackTrace();
 				} catch (IOException e) {
 					System.err.println("'Wow!' *wink*\nAn Error has occured!\n");
@@ -73,9 +83,14 @@ public class Input implements MessageListenerServer, MessageListenerClient {
 
 	}
 
+	long start = System.currentTimeMillis();
+
 	@Override
 	public void onObjectRecievedFromServer(InetAddress ip, int port, Object obj) {
 		if (obj instanceof byte[]) {
+			System.out.println("ms per frame: " + (System.currentTimeMillis() - start));
+			Control.frame.entiresList.add("ms per frame: " + (System.currentTimeMillis() - start));
+			start = System.currentTimeMillis();
 			try {
 				BufferedImage tmp = Control.bytesToImg((byte[]) obj);
 				if (tmp != null) {
@@ -86,6 +101,12 @@ public class Input implements MessageListenerServer, MessageListenerClient {
 			}
 			Control.frame.remoteView.repaint();
 		}
+	}
+
+	@Override
+	public void onServerClosed() {
+		System.err.println("Server Closed");
+		System.exit(0);
 	}
 
 }

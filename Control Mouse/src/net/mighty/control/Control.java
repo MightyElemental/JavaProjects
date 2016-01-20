@@ -13,12 +13,6 @@ import javax.imageio.ImageIO;
 public class Control {
 
 	public Control() {
-		try {
-			img = ImageIO.read(this.getClass().getClassLoader().getResourceAsStream("net/mighty/control/teddy_bear.png"));
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 
 	public static boolean connected = true;

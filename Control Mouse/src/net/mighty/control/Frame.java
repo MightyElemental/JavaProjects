@@ -42,8 +42,7 @@ public class Frame extends JFrame {
 	public JSlider	slider		= new JSlider();
 	public List		entiresList	= new List();
 
-	long	start	= System.currentTimeMillis();
-	int		frames	= 0;
+	int frames = 0;
 
 	@SuppressWarnings( "serial" )
 	JPanel remoteView = new JPanel() {
@@ -52,13 +51,6 @@ public class Frame extends JFrame {
 			// g.fillRect(0, 0, panel.getWidth(), panel.getHeight());
 			g.drawImage(Control.capture, 0, 0, panel.getWidth(), panel.getHeight(), null);
 			tabbedPane.setBounds(10, 11, contentPane.getWidth() - 20, contentPane.getHeight() - 20);
-			if (System.currentTimeMillis() <= start + 1000) {
-				frames++;
-			} else {
-				System.out.println(frames);
-				start = System.currentTimeMillis();
-				frames = 0;
-			}
 		}
 	};
 
