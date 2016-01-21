@@ -339,8 +339,6 @@ public class UDPServer extends Server {
 		this.maxBytes = maxBytes;
 	}
 
-	private Map<String, Object> objectToSend = new HashMap<String, Object>();
-
 	/** Sends an object over the network */
 	@Override
 	public void sendObject(String varName, Object obj, InetAddress ip, int port) throws IOException {

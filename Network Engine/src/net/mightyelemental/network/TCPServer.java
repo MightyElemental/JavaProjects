@@ -23,6 +23,9 @@ public class TCPServer extends Server {
 		public void run() {
 			while (running) {
 				try {
+					if (serverSocket == null) {
+						continue;
+					}
 					Socket newClientSocket = serverSocket.accept();
 					TCPConnection newTcpClient = new TCPConnection(newClientSocket, initiater, serverGUI, usesEncryption, maxBytes);
 					String UID = generateClientInfo(newTcpClient, random);

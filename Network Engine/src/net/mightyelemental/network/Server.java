@@ -2,6 +2,7 @@ package net.mightyelemental.network;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
@@ -18,6 +19,8 @@ public abstract class Server {
 	protected ServerGUI	serverGUI;
 
 	protected static Random random = new Random();
+
+	public Map<String, Object> objectToSend = new HashMap<String, Object>();
 
 	protected ServerInitiater initiater = new ServerInitiater();
 

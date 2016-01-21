@@ -197,7 +197,8 @@ public class TCPConnection {
 	 *            the object to send
 	 * @throws IOException */
 	public void sendObject(String varName, Object obj) throws IOException {
-		objectToSend.clear();
+		objectToSend = null;
+		objectToSend = new HashMap<String, Object>();
 		objectToSend.put(varName, obj);
 		objectOut.writeObject(objectToSend);
 	}
