@@ -157,7 +157,7 @@ public class UDPServer extends Server {
 		if (attachedClients.containsValue(Arrays.asList(new Object[] { ip, port }))) { return; }
 		String UID = generateClientInfo(ip, port, random);
 		try {
-			sendObject("JLB1F0_CLIENT_UID " + getClientUIDFromIP(ip, port), ip, port);
+			sendObject("UID", getClientUIDFromIP(ip, port), ip, port);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -339,13 +339,17 @@ public class UDPServer extends Server {
 		this.maxBytes = maxBytes;
 	}
 
+	private Map<String, Object> objectToSend = new HashMap<String, Object>();
+
 	/** Sends an object over the network */
 	@Override
-	public void sendObject(Object obj, InetAddress ip, int port) throws IOException {
+	public void sendObject(String varName, Object obj, InetAddress ip, int port) throws IOException {
 		sendData = null;
+		objectToSend.clear();
+		objectToSend.put(varName, obj);
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		ObjectOutputStream oos = new ObjectOutputStream(baos);
-		oos.writeObject(obj);
+		oos.writeObject(objectToSend);
 		oos.flush();
 		// get the byte array of the object
 		byte[] Buf = baos.toByteArray();
@@ -359,10 +363,34 @@ public class UDPServer extends Server {
 			sendData[sendData.length - 1 - i] = (byte) ((number & (0xff << shift)) >>> shift);
 		}
 
-		try {
-			serverSocket.send(new DatagramPacket(sendData, sendData.length, ip, port));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		serverSocket.send(new DatagramPacket(sendData, sendData.length, ip, port));
 	}
+
+	/** Send a map of objects to server
+	 * 
+	 * @param objects
+	 *            the object map to send
+	 * @throws IOException */
+	@Override
+	public void sendObjectMap(Map<String, Object> objects, InetAddress ip, int port) throws IOException {
+		sendData = null;
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		ObjectOutputStream oos = new ObjectOutputStream(baos);
+		oos.writeObject(objects);
+		oos.flush();
+		// get the byte array of the object
+		byte[] Buf = baos.toByteArray();
+
+		int number = Buf.length;
+		sendData = new byte[this.maxBytes];
+
+		// int -> byte[]
+		for (int i = 0; i < sendData.length; ++i) {
+			int shift = i << 3; // i * 8
+			sendData[sendData.length - 1 - i] = (byte) ((number & (0xff << shift)) >>> shift);
+		}
+
+		serverSocket.send(new DatagramPacket(sendData, sendData.length, ip, port));
+	}
+
 }

@@ -14,8 +14,6 @@ public interface MessageListenerClient {
 	 *            the object the client received from the server */
 	public void onObjectRecievedFromServer(Object obj);
 
-	/** @param obj
-	 *            the object the client received from the server */
 	public void onServerClosed();
 
 }

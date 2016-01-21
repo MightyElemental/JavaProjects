@@ -11,6 +11,8 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.util.HashMap;
+import java.util.Map;
 
 import net.mightyelemental.network.gui.ServerGUI;
 import net.mightyelemental.network.listener.ServerInitiater;
@@ -185,8 +187,28 @@ public class TCPConnection {
 		run.setName("TCPConnection_" + UID);
 	}
 
-	public void sendObject(Object obj) throws IOException {
-		objectOut.writeObject(obj);
+	private Map<String, Object> objectToSend = new HashMap<String, Object>();
+
+	/** Send an object to server
+	 * 
+	 * @param varName
+	 *            the variable name of the object so that it is easier to detect certain variables on serverside
+	 * @param obj
+	 *            the object to send
+	 * @throws IOException */
+	public void sendObject(String varName, Object obj) throws IOException {
+		objectToSend.clear();
+		objectToSend.put(varName, obj);
+		objectOut.writeObject(objectToSend);
+	}
+
+	/** Send a map of objects to server
+	 * 
+	 * @param objects
+	 *            the object map to send
+	 * @throws IOException */
+	public void sendMap(Map<String, Object> objects) throws IOException {
+		objectOut.writeObject(objects);
 	}
 
 }

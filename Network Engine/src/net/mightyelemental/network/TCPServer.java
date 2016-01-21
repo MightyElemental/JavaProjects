@@ -173,8 +173,13 @@ public class TCPServer extends Server {
 	}
 
 	@Override
-	public void sendObject(Object obj, InetAddress ip, int port) throws IOException {
-		getTCPConnectionFromIP(ip, port).sendObject(obj);
+	public void sendObject(String varName, Object obj, InetAddress ip, int port) throws IOException {
+		getTCPConnectionFromIP(ip, port).sendObject(varName, obj);
+	}
+
+	@Override
+	public void sendObjectMap(Map<String, Object> objects, InetAddress ip, int port) throws IOException {
+		getTCPConnectionFromIP(ip, port).sendMap(objects);
 	}
 
 }

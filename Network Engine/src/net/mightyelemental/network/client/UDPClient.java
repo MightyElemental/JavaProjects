@@ -10,6 +10,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.Map;
 
 import net.mightyelemental.network.BasicCommands;
 
@@ -30,6 +31,7 @@ public class UDPClient extends Client {
 
 	private Thread clientTick = new Thread("ClientReceiveThread") {
 
+		@SuppressWarnings( "unchecked" )
 		public void run() {
 			running = true;
 
@@ -42,10 +44,12 @@ public class UDPClient extends Client {
 					ois = new ObjectInputStream(new ByteArrayInputStream(receivePacket.getData()));
 					clientSocket.receive(receivePacket);
 
-					try {
-						initiater.onObjectRecieved(ois.readObject());
-					} catch (ClassNotFoundException e) {
-						e.printStackTrace();
+					Object obj = ois.readObject();
+
+					initiater.onObjectRecieved(obj);
+
+					if (((Map<String, Object>) obj).containsKey("UID")) { //Sets client uid
+						clientUID = (String) ((Map<String, Object>) obj).get("UID");
 					}
 
 					// String receiveData = new String(receivePacket.getData()).trim();
@@ -64,6 +68,9 @@ public class UDPClient extends Client {
 					// initiater.onMessageRecieved(lastMessage);
 					// }
 				} catch (IOException e) {
+					e.printStackTrace();
+				} catch (ClassNotFoundException e) {
+					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
@@ -190,16 +197,14 @@ public class UDPClient extends Client {
 
 	/** Sends an object over the network */
 	@Override
-	public void sendObject(Object obj) throws IOException {
+	public void sendObject(String varName, Object obj) throws IOException {
 		sendData = null;
+		objectToSend.clear();
+		objectToSend.put(varName, obj);
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		try {
-			ObjectOutputStream oos = new ObjectOutputStream(baos);
-			oos.writeObject(obj);
-			oos.flush();
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}
+		ObjectOutputStream oos = new ObjectOutputStream(baos);
+		oos.writeObject(objectToSend);
+		oos.flush();
 		// get the byte array of the object
 		byte[] Buf = baos.toByteArray();
 
@@ -212,11 +217,29 @@ public class UDPClient extends Client {
 			sendData[sendData.length - 1 - i] = (byte) ((number & (0xff << shift)) >>> shift);
 		}
 
-		try {
-			clientSocket.send(new DatagramPacket(sendData, sendData.length, this.IPAddress, this.port));
-		} catch (IOException e) {
-			e.printStackTrace();
+		clientSocket.send(new DatagramPacket(sendData, sendData.length, this.IPAddress, this.port));
+	}
+
+	@Override
+	public void sendObjectMap(Map<String, Object> objects) throws IOException {
+		sendData = null;
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		ObjectOutputStream oos = new ObjectOutputStream(baos);
+		oos.writeObject(objects);
+		oos.flush();
+		// get the byte array of the object
+		byte[] Buf = baos.toByteArray();
+
+		int number = Buf.length;
+		sendData = new byte[this.maxBytes];
+
+		// int -> byte[]
+		for (int i = 0; i < sendData.length; ++i) {
+			int shift = i << 3; // i * 8
+			sendData[sendData.length - 1 - i] = (byte) ((number & (0xff << shift)) >>> shift);
 		}
+
+		clientSocket.send(new DatagramPacket(sendData, sendData.length, this.IPAddress, this.port));
 	}
 
 }

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.Map;
 
 import net.mightyelemental.network.BasicCommands;
 
@@ -19,6 +20,7 @@ public class TCPClient extends Client {
 
 	private Thread clientTick = new Thread("ClientReceiveThread") {
 
+		@SuppressWarnings( "unchecked" )
 		public void run() {
 			running = true;
 			while (running) {
@@ -26,6 +28,10 @@ public class TCPClient extends Client {
 				try {
 					Object obj = ois.readObject();
 					initiater.onObjectRecieved(obj);
+
+					if (((Map<String, Object>) obj).containsKey("UID")) { // Sets client uid
+						clientUID = (String) ((Map<String, Object>) obj).get("UID");
+					}
 				} catch (ClassNotFoundException | IOException e) {
 					initiater.onServerClosed();
 				}
@@ -121,13 +127,20 @@ public class TCPClient extends Client {
 	}
 
 	@Override
-	public void sendObject(Object obj) throws IOException {
-		ous.writeObject(obj);
+	@Deprecated
+	public void sendBytes(byte[] bytes) {
 	}
 
 	@Override
-	@Deprecated
-	public void sendBytes(byte[] bytes) {
+	public void sendObject(String varName, Object obj) throws IOException {
+		objectToSend.clear();
+		objectToSend.put(varName, obj);
+		ous.writeObject(objectToSend);
+	}
+
+	@Override
+	public void sendObjectMap(Map<String, Object> objects) throws IOException {
+		ous.writeObject(objects);
 	}
 
 }

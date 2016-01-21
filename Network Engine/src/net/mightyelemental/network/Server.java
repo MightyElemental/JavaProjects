@@ -2,6 +2,7 @@ package net.mightyelemental.network;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.util.Map;
 import java.util.Random;
 
 import net.mightyelemental.network.gui.ServerGUI;
@@ -63,6 +64,8 @@ public abstract class Server {
 	@Deprecated
 	public abstract void sendBytes(byte[] bytes, InetAddress ip, int port);
 
-	public abstract void sendObject(Object obj, InetAddress ip, int port) throws IOException;
+	public abstract void sendObject(String varName, Object obj, InetAddress ip, int port) throws IOException;
+
+	public abstract void sendObjectMap(Map<String, Object> objects, InetAddress ip, int port) throws IOException;
 
 }

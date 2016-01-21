@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import net.mightyelemental.network.listener.ClientInitiater;
 import net.mightyelemental.network.listener.MessageListenerClient;
@@ -16,6 +18,8 @@ public abstract class Client {
 
 	protected ObjectInputStream		ois;
 	protected ObjectOutputStream	ous;
+
+	public Map<String, Object> objectToSend = new HashMap<String, Object>();
 
 	protected String clientUID = "UNASIGNED";
 
@@ -106,7 +110,12 @@ public abstract class Client {
 	@Deprecated
 	public abstract void sendBytes(byte[] bytes);
 
-	/** Sends an object over network */
-	public abstract void sendObject(Object obj) throws IOException;
+	public abstract void sendObject(String varName, Object obj) throws IOException;
+
+	/** Send a map of objects to server
+	 * 
+	 * @param objects
+	 *            the object map to send @throws IOException */
+	public abstract void sendObjectMap(Map<String, Object> objects) throws IOException;
 
 }
