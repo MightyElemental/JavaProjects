@@ -6,6 +6,7 @@ import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
@@ -50,9 +51,18 @@ public class Frame extends JFrame {
 	@SuppressWarnings( "serial" )
 	JPanel remoteView = new JPanel() {
 
+		BufferedImage bf;
+
 		public void paint(Graphics g) {
+			if (bf == null) {
+				bf = new BufferedImage(Control.in.width, Control.in.height, BufferedImage.TYPE_INT_RGB);
+			}
 			// g.fillRect(0, 0, panel.getWidth(), panel.getHeight());
-			g.drawImage(Control.capture, r.x, r.y, r.width, r.height, null);
+			int w = (int) (Control.in.width * slider.getValue() * 0.01);
+			int h = (int) (Control.in.height * slider.getValue() * 0.01);
+
+			bf.getGraphics().drawImage(Control.capture, r.x - (w / 2), r.y - (h / 2), r.width, r.height, null);
+			g.drawImage(bf, 0, 0, this.getWidth(), this.getHeight(), null);
 			tabbedPane.setBounds(10, 11, contentPane.getWidth() - 20, contentPane.getHeight() - 20);
 		}
 	};
@@ -206,16 +216,15 @@ public class Frame extends JFrame {
 		slider.setValue(10);
 		slider.setSnapToTicks(true);
 		slider.setPaintTicks(true);
-		slider.setMinorTickSpacing(1);
-		slider.setMajorTickSpacing(1);
+		slider.setMinorTickSpacing(2);
+		slider.setMajorTickSpacing(10);
 		slider.setMinimum(1);
-		slider.setMaximum(10);
 		slider.setBounds(6, 58, 175, 31);
 		frameControlls.add(slider);
 
-		JLabel lblFramesPerSecond = new JLabel("Frames Per Second");
-		lblFramesPerSecond.setBounds(6, 37, 175, 14);
-		frameControlls.add(lblFramesPerSecond);
+		JLabel lblDrawSize = new JLabel("% of screen to draw around pointer");
+		lblDrawSize.setBounds(6, 37, 242, 14);
+		frameControlls.add(lblDrawSize);
 
 		entiresList.setBounds(9, 87, 323, 206);
 		panel.add(entiresList);

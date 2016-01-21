@@ -10,6 +10,8 @@ import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.util.HashMap;
+import java.util.Map;
 
 import net.mightyelemental.network.TCPServer;
 import net.mightyelemental.network.client.TCPClient;
@@ -50,6 +52,8 @@ public class Input implements MessageListenerServer, MessageListenerClient {
 	int	x1	= 0;
 	int	y1	= 0;
 
+	private Map<String, Object> objectToSend = new HashMap<String, Object>();
+
 	public Thread clientThread = new Thread("client") {
 
 		public void run() {
@@ -65,22 +69,26 @@ public class Input implements MessageListenerServer, MessageListenerClient {
 					Point b = a.getLocation();
 					x1 = (int) b.getX();
 					y1 = (int) b.getY();
-					int w = (int) (width * 0.3);
-					int h = (int) (height * 0.3);
-					clientScreenRect.setBounds(x1 - (w / 3), y1 - (h / 3), w, h);
+					int w = (int) (width * Control.frame.slider.getValue() * 0.01);
+					int h = (int) (height * Control.frame.slider.getValue() * 0.01);
+					clientScreenRect.setBounds(x1 - (w / 2), y1 - (h / 2), w, h);
 
 					sleep(100);
-
-					client.sendObject(new Point(x1, y1));
-					client.sendObject(clientScreenRect);
 
 					Control.capture = robot.createScreenCapture(clientScreenRect);
 					Control.capture = Control.resize(Control.capture, (int) (Control.capture.getWidth() * 0.9),
 							(int) (Control.capture.getHeight() * 0.9));
 					// System.out.println(Control.imgToBytes(Control.capture).length);
-					client.sendObject(Control.imgToBytes(Control.capture));
+					objectToSend.clear();
+					objectToSend = null;
+					objectToSend = new HashMap<String, Object>();
+					objectToSend.put("clientMouseX", x1);
+					objectToSend.put("clientMouseY", y1);
+					objectToSend.put("clientScreen", clientScreenRect);
+					objectToSend.put("screenCapture", Control.imgToBytes(Control.capture));
+					client.sendObjectMap(objectToSend);
 					// client.out.println("hello there");
-					System.out.println("Time to capture and send image: " + (System.currentTimeMillis() - time1));
+					// System.out.println("Time to capture and send image: " + (System.currentTimeMillis() - time1));
 					Control.frame.entiresList.add("Time to capture and send image: " + (System.currentTimeMillis() - time1));
 				} catch (InterruptedException e) {
 					e.printStackTrace();
@@ -111,20 +119,24 @@ public class Input implements MessageListenerServer, MessageListenerClient {
 
 	@Override
 	public void onObjectRecievedFromServer(InetAddress ip, int port, Object obj) {
-		if (obj instanceof Point) {
-			Control.frame.r.x = ((Point) obj).x;
-			Control.frame.r.y = ((Point) obj).y;
+		@SuppressWarnings( "unchecked" )
+		Map<String, Object> objMap = (Map<String, Object>) obj;
+
+		if (objMap.containsKey("clientMouseX") && objMap.containsKey("clientMouseY")) {
+			Control.frame.r.x = (int) objMap.get("clientMouseX");
+			Control.frame.r.y = (int) objMap.get("clientMouseY");
+			System.out.println(Control.frame.r.x);
 		}
-		if (obj instanceof Rectangle) {
-			Control.frame.r.width = ((Rectangle) obj).width;
-			Control.frame.r.height = ((Rectangle) obj).height;
+		if (objMap.containsKey("clientScreen")) {
+			Control.frame.r.width = ((Rectangle) objMap.get("clientScreen")).width;
+			Control.frame.r.height = ((Rectangle) objMap.get("clientScreen")).height;
 		}
-		if (obj instanceof byte[]) {
-			System.out.println("ms per frame: " + (System.currentTimeMillis() - start));
+		if (objMap.containsKey("screenCapture")) {
+			// System.out.println("ms per frame: " + (System.currentTimeMillis() - start));
 			Control.frame.entiresList.add("ms per frame: " + (System.currentTimeMillis() - start));
 			start = System.currentTimeMillis();
 			try {
-				BufferedImage tmp = Control.bytesToImg((byte[]) obj);
+				BufferedImage tmp = Control.bytesToImg((byte[]) objMap.get("screenCapture"));
 				if (tmp != null) {
 					Control.capture = tmp;
 				}
