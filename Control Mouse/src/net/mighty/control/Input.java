@@ -1,6 +1,7 @@
 package net.mighty.control;
 
 import java.awt.AWTException;
+import java.awt.Dimension;
 import java.awt.MouseInfo;
 import java.awt.Point;
 import java.awt.PointerInfo;
@@ -45,12 +46,20 @@ public class Input implements MessageListenerServer, MessageListenerClient {
 		client.setup();
 		client.addListener(this);
 		clientThread.start();
+		try {
+			client.sendObject("OriginalSize", new Dimension(width, height));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private Robot robot;
 
 	int	x1	= 0;
 	int	y1	= 0;
+
+	int	newMouseX	= 0;
+	int	newMouseY	= 0;
 
 	private Map<String, Object> objectToSend = new HashMap<String, Object>();
 
@@ -79,14 +88,15 @@ public class Input implements MessageListenerServer, MessageListenerClient {
 					Control.capture = Control.resize(Control.capture, (int) (Control.capture.getWidth() * 0.9),
 							(int) (Control.capture.getHeight() * 0.9));
 					// System.out.println(Control.imgToBytes(Control.capture).length);
-					objectToSend.clear();
-					objectToSend = null;
-					objectToSend = new HashMap<String, Object>();
 					objectToSend.put("clientMouseX", x1);
 					objectToSend.put("clientMouseY", y1);
-					objectToSend.put("clientScreen", clientScreenRect);
+					objectToSend.put("clientScreenW", clientScreenRect.getWidth());
+					objectToSend.put("clientScreenH", clientScreenRect.getHeight());
 					objectToSend.put("screenCapture", Control.imgToBytes(Control.capture));
+					objectToSend.put("sliderValue", Control.frame.slider.getValue() * 0.01);
 					client.sendObjectMap(objectToSend);
+					objectToSend = null;
+					objectToSend = new HashMap<String, Object>();
 					// client.out.println("hello there");
 					// System.out.println("Time to capture and send image: " + (System.currentTimeMillis() - time1));
 					Control.frame.entiresList.add("Time to capture and send image: " + (System.currentTimeMillis() - time1));
@@ -112,7 +122,13 @@ public class Input implements MessageListenerServer, MessageListenerClient {
 
 	@Override
 	public void onObjectRecievedFromServer(Object obj) {
+		@SuppressWarnings( "unchecked" )
+		Map<String, Object> objMap = (Map<String, Object>) obj;
 
+		if (objMap.containsKey("newMouseX") && objMap.containsKey("newMouseY")) {
+			this.newMouseX = (int) objMap.get("newMouseX");
+			this.newMouseY = (int) objMap.get("newMouseY");
+		}
 	}
 
 	long start = System.currentTimeMillis();
@@ -122,14 +138,29 @@ public class Input implements MessageListenerServer, MessageListenerClient {
 		@SuppressWarnings( "unchecked" )
 		Map<String, Object> objMap = (Map<String, Object>) obj;
 
+		try {
+			host.sendObject("newMouseX", newMouseX, ip, port);
+			host.sendObject("newMouseY", newMouseY, ip, port);
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+
+		if (objMap.containsKey("OriginalSize")) {
+			this.width = ((Dimension) objMap.get("OriginalSize")).width;
+			this.height = ((Dimension) objMap.get("OriginalSize")).height;
+		}
+
+		if (objMap.containsKey("sliderValue")) {
+			Control.frame.sliderValue = (double) objMap.get("sliderValue");
+		}
+
 		if (objMap.containsKey("clientMouseX") && objMap.containsKey("clientMouseY")) {
 			Control.frame.r.x = (int) objMap.get("clientMouseX");
 			Control.frame.r.y = (int) objMap.get("clientMouseY");
-			System.out.println(Control.frame.r.x);
 		}
-		if (objMap.containsKey("clientScreen")) {
-			Control.frame.r.width = ((Rectangle) objMap.get("clientScreen")).width;
-			Control.frame.r.height = ((Rectangle) objMap.get("clientScreen")).height;
+		if (objMap.containsKey("clientScreenW") && objMap.containsKey("clientScreenH")) {
+			Control.frame.r.width = (int) ((double) objMap.get("clientScreenW"));
+			Control.frame.r.height = (int) ((double) objMap.get("clientScreenH"));
 		}
 		if (objMap.containsKey("screenCapture")) {
 			// System.out.println("ms per frame: " + (System.currentTimeMillis() - start));

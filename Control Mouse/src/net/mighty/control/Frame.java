@@ -6,6 +6,8 @@ import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 
 import javax.swing.ButtonGroup;
@@ -48,6 +50,11 @@ public class Frame extends JFrame {
 
 	public Rectangle r = new Rectangle(0, 0, 1920, 1080);
 
+	public double sliderValue = 11 * 0.01;
+
+	double	widthRatio;
+	double	heightRatio;
+
 	@SuppressWarnings( "serial" )
 	JPanel remoteView = new JPanel() {
 
@@ -58,11 +65,21 @@ public class Frame extends JFrame {
 				bf = new BufferedImage(Control.in.width, Control.in.height, BufferedImage.TYPE_INT_RGB);
 			}
 			// g.fillRect(0, 0, panel.getWidth(), panel.getHeight());
-			int w = (int) (Control.in.width * slider.getValue() * 0.01);
-			int h = (int) (Control.in.height * slider.getValue() * 0.01);
+			int w = (int) (Control.in.width * sliderValue);
+			int h = (int) (Control.in.height * sliderValue);
 
 			bf.getGraphics().drawImage(Control.capture, r.x - (w / 2), r.y - (h / 2), r.width, r.height, null);
 			g.drawImage(bf, 0, 0, this.getWidth(), this.getHeight(), null);
+
+			widthRatio = ((double) Control.in.width / (double) this.getWidth());
+			heightRatio = ((double) Control.in.height / (double) this.getHeight());
+
+			double pointX = ((r.x) / widthRatio);
+			double pointY = ((r.y) / heightRatio);
+
+			// System.out.println(pointX + " | " + tempX);
+
+			g.fillRect((int) pointX, (int) pointY, 6, 6);
 			tabbedPane.setBounds(10, 11, contentPane.getWidth() - 20, contentPane.getHeight() - 20);
 		}
 	};
@@ -92,6 +109,22 @@ public class Frame extends JFrame {
 
 		tabbedPane.addTab("Connection", null, panel, null);
 		panel.setLayout(null);
+
+		remoteView.addMouseMotionListener(new MouseMotionListener() {
+
+			@Override
+			public void mouseDragged(MouseEvent e) {
+
+			}
+
+			@Override
+			public void mouseMoved(MouseEvent e) {
+				Control.in.newMouseX = (int) ((e.getX()) * ((double) Control.in.width / (double) remoteView.getWidth()));
+				Control.in.newMouseY = (int) ((e.getY()) * ((double) Control.in.height / (double) remoteView.getHeight()));
+
+			}
+
+		});
 
 		JLabel lblNewLabel = new JLabel("You are...");
 		lblNewLabel.setBounds(9, 9, 70, 14);
