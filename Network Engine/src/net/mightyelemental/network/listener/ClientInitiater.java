@@ -32,4 +32,11 @@ public class ClientInitiater {
 		}
 	}
 
+	public void onServerClosed() {
+		// Notify everybody that may be interested.
+		for (MessageListenerClient mlc : listeners) {
+			mlc.onServerClosed();
+		}
+	}
+
 }

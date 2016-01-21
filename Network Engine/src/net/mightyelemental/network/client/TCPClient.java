@@ -27,8 +27,7 @@ public class TCPClient extends Client {
 					Object obj = ois.readObject();
 					initiater.onObjectRecieved(obj);
 				} catch (ClassNotFoundException | IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					initiater.onServerClosed();
 				}
 
 				// String tempMessage = null;
