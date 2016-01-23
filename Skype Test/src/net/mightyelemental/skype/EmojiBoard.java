@@ -38,6 +38,71 @@ public class EmojiBoard extends JFrame {
 		});
 	}
 
+	/** Finds the amount of hours overlapping in a 24 hour period. */
+	public static int findOverlappingInterval(int startTime1, int endTime1, int startTime2, int endTime2) {
+		int overlappingTime = 0;
+
+		// First time
+		int time1Length = 0;
+		if (endTime1 < startTime1) {
+			time1Length = 24 - startTime1;
+			time1Length += endTime1;
+		}
+		int[] time1;
+		if (time1Length == 0) {
+			time1 = new int[Math.abs(endTime1 - startTime1)];
+			for (int i1 = startTime1; i1 < endTime1; i1++) {
+				time1[i1 - startTime1] = i1;
+			}
+		} else {
+			time1 = new int[time1Length];
+			int count = 0;
+			for (int i1 = 0; i1 < endTime1; i1++) {
+				time1[count] = i1;
+				count++;
+			}
+			for (int i1 = startTime1; i1 < 24; i1++) {
+				time1[count] = i1;
+				count++;
+			}
+		}
+
+		// Second time
+		int time2Length = 0;
+		if (endTime2 < startTime2) {
+			time2Length = 24 - startTime2;
+			time2Length += endTime2;
+		}
+		int[] time2;
+		if (time2Length == 0) {
+			time2 = new int[Math.abs(endTime2 - startTime2)];
+			for (int i2 = startTime2; i2 < endTime2; i2++) {
+				time2[i2 - startTime2] = i2;
+			}
+		} else {
+			time2 = new int[time2Length];
+			int count = 0;
+			for (int i2 = 0; i2 < endTime2; i2++) {
+				time2[count] = i2;
+				count++;
+			}
+			for (int i2 = startTime2; i2 < 24; i2++) {
+				time2[count] = i2;
+				count++;
+			}
+		}
+
+		// Overlap calculator
+		for (int i = 0; i < time1.length; i++) {
+			for (int j = 0; j < time2.length; j++) {
+				if (time1[i] == time2[j]) {
+					overlappingTime++;
+				}
+			}
+		}
+		return overlappingTime;
+	}
+
 	/** Create the frame. */
 	public EmojiBoard() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
