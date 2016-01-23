@@ -121,7 +121,7 @@ public class Frame extends JFrame {
 			public void mouseMoved(MouseEvent e) {
 				Control.in.newMouseX = (int) ((e.getX()) * ((double) Control.in.width / (double) remoteView.getWidth()));
 				Control.in.newMouseY = (int) ((e.getY()) * ((double) Control.in.height / (double) remoteView.getHeight()));
-
+				Control.in.hasMoved = true;
 			}
 
 		});

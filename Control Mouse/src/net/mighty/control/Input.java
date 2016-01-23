@@ -124,25 +124,35 @@ public class Input implements MessageListenerServer, MessageListenerClient {
 	public void onObjectRecievedFromServer(Object obj) {
 		@SuppressWarnings( "unchecked" )
 		Map<String, Object> objMap = (Map<String, Object>) obj;
-
-		if (objMap.containsKey("newMouseX") && objMap.containsKey("newMouseY")) {
+		System.out.println(obj);
+		if (objMap.containsKey("newMouseX")) {
 			this.newMouseX = (int) objMap.get("newMouseX");
+		}
+		if (objMap.containsKey("newMouseY")) {
 			this.newMouseY = (int) objMap.get("newMouseY");
+			robot.mouseMove(newMouseX, newMouseY);
+			System.out.println("MOVED");
 		}
 	}
 
 	long start = System.currentTimeMillis();
+
+	boolean hasMoved = false;
 
 	@Override
 	public void onObjectRecievedFromServer(InetAddress ip, int port, Object obj) {
 		@SuppressWarnings( "unchecked" )
 		Map<String, Object> objMap = (Map<String, Object>) obj;
 
-		try {
-			host.sendObject("newMouseX", newMouseX, ip, port);
-			host.sendObject("newMouseY", newMouseY, ip, port);
-		} catch (IOException e1) {
-			e1.printStackTrace();
+		if (hasMoved) {
+			try {
+				host.sendObject("newMouseX", newMouseX, ip, port);
+				host.sendObject("newMouseY", newMouseY, ip, port);
+				System.out.println("MOVE");
+				hasMoved = false;
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
 		}
 
 		if (objMap.containsKey("OriginalSize")) {
