@@ -31,7 +31,7 @@ public class SkypeOS implements ChatMessageListener, ChatMessageEditListener {
 			getSFB(new Byte[] { 115, 101, 120 }), getSFB(new Byte[] { 97, 114, 115, 101 }),
 			getSFB(new Byte[] { 114, 105, 109, 32, 106, 111, 98 }) };
 
-	Random rand = new Random();//
+	Random rand = new Random();
 
 	public static String getSFB(Byte[] b) {
 		String temp = "";
@@ -71,12 +71,12 @@ public class SkypeOS implements ChatMessageListener, ChatMessageEditListener {
 
 	public void chat(ChatMessage cm, String message, boolean host) throws SkypeException {
 		chat = cm.getChat();
-		if (chat.getAllMembers().length < 3) { return; }
+		// if (chat.getAllMembers().length < 3) { return; }
 
 		prefix = cm.getSenderDisplayName().replaceAll(" ", "-") + "@SkypeOS-Bot:~ ";
 
 		conditionMessage(message);
-		System.out.println("[Skype] '" + message + "' = " + stringToByte(message));
+		// System.out.println("[Skype] '" + message + "' = " + stringToByte(message));
 
 		boolean flag = removeBannedWords(cm, message);
 
@@ -136,9 +136,10 @@ public class SkypeOS implements ChatMessageListener, ChatMessageEditListener {
 			chat.send("[Skype] (company) Apple is crap. Apple should go bankrupt. Apple should never have existed");
 		}
 
-		// if (message.contains("james")) {
-		// chat.send("James is currently unavailable, please talk to his account directly or not at all, thanks.");
-		// }
+		if (message.contains("james") && !message.contains("[Skype]")) {
+			chat.send(
+					"[Skype] James is currently unavailable, please talk to his account directly if you are trying to contact him, thanks.");
+		}
 
 		if (message.contains("league")) {
 			chat.send("https://www.youtube.com/watch?v=Xhyuey4xU3Q");
@@ -173,6 +174,9 @@ public class SkypeOS implements ChatMessageListener, ChatMessageEditListener {
 				break;
 			case "vvt":
 				messTemp += "y - thanks";
+				break;
+			case "vvgn":
+				messTemp += "gn - Good Job";
 				break;
 		}
 		if (messTemp.length() > 0) {

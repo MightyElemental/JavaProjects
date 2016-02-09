@@ -3,12 +3,19 @@ package net.mightyelemental.skype;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
+
 import com.skype.ChatMessage;
 import com.skype.SkypeException;
 
 public class Commands {
 
-	public static String[] commands = { "ls", "time", "add", "spamMe", "wave", "reverse" };
+	public static String[] commands = { "ls", "time", "add", "spamMe", "wave", "reverse", "doMaths (=)", "angry" };
+
+	public static ScriptEngineManager	manager	= new ScriptEngineManager();
+	public static ScriptEngine			engine	= manager.getEngineByName("js");
 
 	private static String prefix = SkypeOS.prefix;
 
@@ -55,15 +62,36 @@ public class Commands {
 		cm.getChat().send(mess);
 	}
 
+	public static void doMaths(ChatMessage cm) throws SkypeException {
+		String evalRaw = cm.getContent().replaceFirst("=", "").replaceAll("[^0-9.%^*/()+-]", "").replaceAll(" ", "");
+		System.out.println(evalRaw);
+		try {
+			Object answer = engine.eval(evalRaw);
+			if (cm.isEditable() && cm.getChat().getAllMembers().length < 3) {
+				cm.setContent(evalRaw + "\n=" + answer);
+			} else {
+				send(evalRaw + "\n=" + answer, cm);
+			}
+		} catch (ScriptException e) {
+			send("Syntax Error!", cm);
+			System.err.println("Error!");
+		}
+	}
+
+	public static void angry(ChatMessage cm) throws SkypeException {
+		send("\u0028\u251b\u25c9\u0414\u25c9\u0029\u251b\u5f61\u253b\u2501\u253b", cm);
+	}
+
 	public static void reverse(ChatMessage cm) throws SkypeException {
 		String temp = "\n";
 		String message = cm.getContent().replaceFirst(Parser.commandPrefix + "reverse", "");
+		if (message.length() < 4) { return; }
 		for (int i = message.length() - 1; i >= 0; i--) {
 			temp += message.charAt(i);
 		}
 
 		if (!SkypeOS.removeBannedWords(cm, temp)) {
-			send("[Skype] "+temp, cm);
+			send("[Skype] " + temp, cm);
 		} else {
 			send("[Skype] If I were to send message backwords, it would contain a banned phrase. Therefore I am not going to send it", cm);
 		}
