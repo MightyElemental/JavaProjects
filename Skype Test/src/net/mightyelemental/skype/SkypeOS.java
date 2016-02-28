@@ -76,7 +76,7 @@ public class SkypeOS implements ChatMessageListener, ChatMessageEditListener {
 		prefix = cm.getSenderDisplayName().replaceAll(" ", "-") + "@SkypeOS-Bot:~ ";
 
 		conditionMessage(message);
-		// System.out.println("[Skype] '" + message + "' = " + stringToByte(message));
+		System.out.println("[Skype] '" + message + "' = " + stringToByte(message));
 
 		boolean flag = removeBannedWords(cm, message);
 
@@ -87,7 +87,7 @@ public class SkypeOS implements ChatMessageListener, ChatMessageEditListener {
 		if (flag) {
 			// cm.getSender().chat().send("[Skype] The use of banned phrases will not be tolerated");
 			// chat.send(cm.getSenderDisplayName() + " has been muted due to the use of banned phrases");
-			// chat.send("/setrole " + cm.getSenderId() + " listener");
+			chat.send("/setrole " + cm.getSenderId() + " listener");
 			chat.send("[Skype] User '" + cm.getSenderId() + "' has violated the T.O.S. by using banned phrases");
 			System.out.println(cm.getSenderId() + "> CONTAINS BANNED (a) PHRASE(S)");
 		} else if (message.length() > 1) {
@@ -136,10 +136,11 @@ public class SkypeOS implements ChatMessageListener, ChatMessageEditListener {
 			chat.send("[Skype] (company) Apple is crap. Apple should go bankrupt. Apple should never have existed");
 		}
 
-		if (message.contains("james") && !message.contains("[Skype]")) {
-			chat.send(
-					"[Skype] James is currently unavailable, please talk to his account directly if you are trying to contact him, thanks.");
-		}
+		// if (message.contains("james") && !message.contains("[Skype]")) {
+		// chat.send(
+		// "[Skype] James is currently unavailable, please talk to his account directly if you are trying to contact
+		// him, thanks.");
+		// }
 
 		if (message.contains("league")) {
 			chat.send("https://www.youtube.com/watch?v=Xhyuey4xU3Q");
@@ -211,8 +212,9 @@ public class SkypeOS implements ChatMessageListener, ChatMessageEditListener {
 		if (a) {
 			cm.getChat().send(cm.getSenderDisplayName() + " has been found guilty of spamming!");
 			try {
-				cm.getChat().send(cm.getSenderDisplayName() + " has been muted! Please contact an admin to be unmuted.");
-				cm.getChat().send("/setrole " + cm.getSenderId() + " listener");
+				// cm.getChat().send(cm.getSenderDisplayName() + " has been muted! Please contact an admin to be
+				// unmuted.");
+				// cm.getChat().send("/setrole " + cm.getSenderId() + " listener");
 			} catch (Exception e) {
 				// System.err.println("MUTING FAILED! " + cm.getSenderId().toUpperCase() + " CAN STILL TALK!!");
 				// e.printStackTrace();
