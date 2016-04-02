@@ -33,7 +33,7 @@ public class ServerInitiater {
 	public void onObjectRecieved(InetAddress ip, int port, Object obj) {
 		// Notify everybody that may be interested.
 		for (MessageListenerServer mls : listeners) {
-			mls.onObjectRecievedFromServer(ip, port, obj);
+			mls.onObjectRecievedFromClient(ip, port, obj);
 		}
 	}
 

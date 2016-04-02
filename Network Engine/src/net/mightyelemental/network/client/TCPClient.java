@@ -10,61 +10,63 @@ import net.mightyelemental.network.BasicCommands;
 
 public class TCPClient extends Client {
 
-	private Socket clientSocket;
+	private Socket	clientSocket;
 
-	private boolean running;
+	private boolean	running;
 
-	private boolean usesEncryption = false;
+	private boolean	usesEncryption	= false;
 
-	private int maxBytes;
+	private int		maxBytes;
 
-	private Thread clientTick = new Thread("ClientReceiveThread") {
+	private Thread	clientTick		= new Thread("ClientReceiveThread") {
 
-		@SuppressWarnings( "unchecked" )
-		public void run() {
-			running = true;
-			while (running) {
+										@SuppressWarnings( "unchecked" )
+										public void run() {
+											running = true;
+											while (running) {
 
-				try {
-					Object obj = ois.readObject();
-					initiater.onObjectRecieved(obj);
+												try {
+													Object obj = ois.readObject();
+													initiater.onObjectRecieved(obj);
 
-					if (((Map<String, Object>) obj).containsKey("UID")) { // Sets client uid
-						clientUID = (String) ((Map<String, Object>) obj).get("UID");
-					}
-				} catch (ClassNotFoundException | IOException e) {
-					initiater.onServerClosed();
-				}
+													if (((Map<String, Object>) obj).containsKey("UID")) {					// Sets
+																															// client
+																															// uid
+														clientUID = (String) ((Map<String, Object>) obj).get("UID");
+													}
+												} catch (ClassNotFoundException | IOException e) {
+													initiater.onServerClosed();
+												}
 
-				// String tempMessage = null;
-				// try {
-				// tempMessage = in.readLine();
-				// } catch (IOException e) {
-				// System.err.println("Server has been closed");
-				// stopClient();
-				// }
-				// System.out.println("[TCPClient] message: " + tempMessage);
-				// if (usesEncryption) {
-				// tempMessage = BasicCommands.decryptMessageBase64(tempMessage);
-				// }
-				//
-				// if (tempMessage.contains("JLB1F0_CLIENT_UID")) {
-				// clientUID = tempMessage.replace("JLB1F0_CLIENT_UID ", "");
-				// } else if (tempMessage.contains("JLB1F0_RETURN_PING")) {
-				// timeOfPingResponse = System.currentTimeMillis();
-				// pingTime = timeOfPingResponse - timeOfPingRequest;
-				// } else {
-				// lastMessage = tempMessage;
-				// recievedMessages.add(lastMessage);
-				// }
-			}
-			try {
-				clientSocket.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-	};
+												// String tempMessage = null;
+												// try {
+												// tempMessage = in.readLine();
+												// } catch (IOException e) {
+												// System.err.println("Server has been closed");
+												// stopClient();
+												// }
+												// System.out.println("[TCPClient] message: " + tempMessage);
+												// if (usesEncryption) {
+												// tempMessage = BasicCommands.decryptMessageBase64(tempMessage);
+												// }
+												//
+												// if (tempMessage.contains("JLB1F0_CLIENT_UID")) {
+												// clientUID = tempMessage.replace("JLB1F0_CLIENT_UID ", "");
+												// } else if (tempMessage.contains("JLB1F0_RETURN_PING")) {
+												// timeOfPingResponse = System.currentTimeMillis();
+												// pingTime = timeOfPingResponse - timeOfPingRequest;
+												// } else {
+												// lastMessage = tempMessage;
+												// recievedMessages.add(lastMessage);
+												// }
+											}
+											try {
+												clientSocket.close();
+											} catch (IOException e) {
+												e.printStackTrace();
+											}
+										}
+									};
 
 	public TCPClient( String address, int port, boolean usesEncryption, int maxBytes ) {
 		this.address = address;

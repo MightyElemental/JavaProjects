@@ -22,7 +22,7 @@ public interface MessageListenerServer {
 
 	/** @param obj
 	 *            the object the client received from the server */
-	public void onObjectRecievedFromServer(InetAddress ip, int port, Object obj);
+	public void onObjectRecievedFromClient(InetAddress ip, int port, Object obj);
 
 	/** @param ip
 	 *            the client's IP address

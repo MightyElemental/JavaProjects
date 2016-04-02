@@ -1,7 +1,10 @@
 package net.mightyelemental.network;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.InetAddress;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -12,17 +15,17 @@ import net.mightyelemental.network.listener.ServerInitiater;
 
 public abstract class Server {
 
-	protected int		port;
-	protected boolean	running;
+	protected int				port;
+	public boolean				running;
 
-	protected boolean	hasGUI;
-	protected ServerGUI	serverGUI;
+	protected boolean			hasGUI;
+	protected ServerGUI			serverGUI;
 
-	protected static Random random = new Random();
+	protected static Random		random			= new Random();
 
-	public Map<String, Object> objectToSend = new HashMap<String, Object>();
+	public Map<String, Object>	objectToSend	= new HashMap<String, Object>();
 
-	protected ServerInitiater initiater = new ServerInitiater();
+	protected ServerInitiater	initiater		= new ServerInitiater();
 
 	/** Adds listener to initiater
 	 * 
@@ -41,6 +44,18 @@ public abstract class Server {
 	/** @return the port the server is running on */
 	public int getPort() {
 		return this.port;
+	}
+
+	/** Gets the external IP address of where the server is running */
+	public static String getExternalIPAddress() {
+		try {
+			URL whatismyip = new URL("http://checkip.amazonaws.com");
+			BufferedReader in = new BufferedReader(new InputStreamReader(whatismyip.openStream()));
+			String ip = in.readLine(); // you get the IP as a String
+			return ip;
+		} catch (Exception e) {
+		}
+		return "0.0.0.0";
 	}
 
 	/** Broadcast a message to every client
