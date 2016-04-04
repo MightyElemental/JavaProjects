@@ -10,6 +10,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.HashMap;
 import java.util.Map;
 
 import net.mightyelemental.network.BasicCommands;
@@ -17,7 +18,6 @@ import net.mightyelemental.network.BasicCommands;
 public class UDPClient extends Client {
 	
 	
-	public boolean running;
 	public long timeStarted = System.currentTimeMillis();
 	public long timeRunning = 0l;
 	
@@ -229,8 +229,10 @@ public class UDPClient extends Client {
 			int shift = i << 3; // i * 8
 			sendData[sendData.length - 1 - i] = (byte) ((number & (0xff << shift)) >>> shift);
 		}
-		
 		clientSocket.send(new DatagramPacket(sendData, sendData.length, this.IPAddress, this.port));
+		objectToSend.clear();
+		objectToSend = null;
+		objectToSend = new HashMap<String, Object>();
 	}
 	
 	@Override
@@ -257,6 +259,9 @@ public class UDPClient extends Client {
 		}
 		
 		clientSocket.send(new DatagramPacket(sendData, sendData.length, this.IPAddress, this.port));
+		objectToSend.clear();
+		objectToSend = null;
+		objectToSend = new HashMap<String, Object>();
 	}
 	
 }

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.HashMap;
 import java.util.Map;
 
 import net.mightyelemental.network.BasicCommands;
@@ -12,8 +13,6 @@ public class TCPClient extends Client {
 	
 	
 	private Socket clientSocket;
-	
-	private boolean running;
 	
 	private boolean usesEncryption = false;
 	
@@ -38,6 +37,7 @@ public class TCPClient extends Client {
 					}
 				} catch (ClassNotFoundException | IOException e) {
 					initiater.onServerClosed();
+					break;
 				}
 				
 				// String tempMessage = null;
@@ -64,6 +64,7 @@ public class TCPClient extends Client {
 			}
 			try {
 				clientSocket.close();
+				stopClient();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -145,6 +146,9 @@ public class TCPClient extends Client {
 		objectToSend.clear();
 		objectToSend.put(varName, obj);
 		ous.writeObject(objectToSend);
+		objectToSend.clear();
+		objectToSend = null;
+		objectToSend = new HashMap<String, Object>();
 	}
 	
 	@Override
@@ -154,6 +158,9 @@ public class TCPClient extends Client {
 			return;
 		}
 		ous.writeObject(objects);
+		objectToSend.clear();
+		objectToSend = null;
+		objectToSend = new HashMap<String, Object>();
 	}
 	
 }

@@ -20,6 +20,7 @@ public abstract class Client {
 	protected ObjectInputStream ois;
 	protected ObjectOutputStream ous;
 	
+	protected boolean running;
 	protected boolean debugMode = false;
 	protected boolean hasBeenSetup = false;
 	
@@ -47,6 +48,10 @@ public abstract class Client {
 	
 	public boolean hasBeenSetup() {
 		return this.hasBeenSetup;
+	}
+	
+	public boolean isRunning() {
+		return this.running;
 	}
 	
 	/** Pings the server */

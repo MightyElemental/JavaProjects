@@ -3,7 +3,7 @@ package net.mightyelemental.network.listener;
 import java.net.InetAddress;
 
 public interface MessageListenerServer {
-
+	
 	// /** @param message
 	// * the message from the client
 	// * @param ip
@@ -19,15 +19,21 @@ public interface MessageListenerServer {
 	// * @param port
 	// * the client's port */
 	// public void onBytesRecievedFromClient(byte[] bytes, InetAddress ip, int port);
-
+	
 	/** @param obj
 	 *            the object the client received from the server */
 	public void onObjectRecievedFromClient(InetAddress ip, int port, Object obj);
-
+	
 	/** @param ip
 	 *            the client's IP address
 	 * @param port
 	 *            the client's port */
 	public void onNewClientAdded(InetAddress ip, int port, String uid);
-
+	
+	/** @param ip
+	 *            the client's IP address
+	 * @param port
+	 *            the client's port */
+	public void onClientDisconnect(InetAddress ip, int port, String uid);
+	
 }

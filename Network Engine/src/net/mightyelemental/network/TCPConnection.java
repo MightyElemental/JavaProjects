@@ -18,36 +18,38 @@ import net.mightyelemental.network.gui.ServerGUI;
 import net.mightyelemental.network.listener.ServerInitiater;
 
 public class TCPConnection {
-
-	private Socket		client;
-	private InetAddress	ip;
-	private int			port;
-	private String		UID;
-
+	
+	
+	private Socket client;
+	private InetAddress ip;
+	private int port;
+	private String UID;
+	
 	@Deprecated
-	public BufferedReader	in;
+	public BufferedReader in;
 	@Deprecated
-	public DataInputStream	is;
+	public DataInputStream is;
 	@Deprecated
-	public DataOutputStream	byteOut;
+	public DataOutputStream byteOut;
 	@Deprecated
-	public PrintWriter		pout;
-
-	public ObjectOutputStream	objectOut;
-	public ObjectInputStream	objectIn;
-
+	public PrintWriter pout;
+	
+	public ObjectOutputStream objectOut;
+	public ObjectInputStream objectIn;
+	
 	private boolean usesEncryption = false;
-
+	
 	@SuppressWarnings( "unused" )
 	private ServerGUI serverGUI;
-
+	
 	private ServerInitiater SI;
-
-	private boolean	running		= false;
-	public int		maxBytes	= 2 ^ 10;
-
+	
+	private boolean running = false;
+	public int maxBytes = 2 ^ 10;
+	
 	private Thread run = new Thread("TCPConnection_Undef") {
-
+		
+		
 		public void run() {
 			try {
 				while (running) {
@@ -56,8 +58,7 @@ public class TCPConnection {
 						Object obj = objectIn.readObject();
 						SI.onObjectRecieved(ip, port, obj);
 					} catch (ClassNotFoundException e) {
-						SI.onObjectRecieved(ip, port, null);
-						e.printStackTrace();
+						SI.onClientDisconnect(ip, port, getUID());
 					}
 					// if (usesEncryption) {
 					// System.out.println("Before decryp: " + message);// SENDS BYTE ARRAYS! DO NOT DECRYPT THEM!
@@ -78,10 +79,10 @@ public class TCPConnection {
 				e.printStackTrace();
 				stopThread();
 			}
-
+			
 		}
 	};
-
+	
 	/** Returns a clients ping request */
 	@Deprecated
 	public void returnPingRequest() {
@@ -92,7 +93,7 @@ public class TCPConnection {
 			e1.printStackTrace();
 		}
 	}
-
+	
 	public TCPConnection( Socket client, ServerInitiater initiater, ServerGUI serverGUI, boolean usesEncryption, int maxBytes ) {
 		this.client = client;
 		this.ip = client.getInetAddress();
@@ -121,7 +122,7 @@ public class TCPConnection {
 			e.printStackTrace();
 		}
 	}
-
+	
 	/** Send a message to the client */
 	@Deprecated
 	public synchronized void sendMessage(String message) throws IOException {
@@ -131,7 +132,7 @@ public class TCPConnection {
 		}
 		pout.println(message);// Socket closed issue
 	}
-
+	
 	/** Send a byte array to the client
 	 * 
 	 * @throws IndexOutOfBoundsException
@@ -144,13 +145,13 @@ public class TCPConnection {
 		}
 		byteOut.write(bytes);// Socket closed issue
 	}
-
+	
 	/** Start the clients thread */
 	public synchronized void startThread() {
 		running = true;
 		run.start();
 	}
-
+	
 	public synchronized void stopThread() {
 		running = false;
 		try {
@@ -159,36 +160,36 @@ public class TCPConnection {
 			e.printStackTrace();
 		}
 	}
-
+	
 	/** @return the client */
 	public Socket getClient() {
 		return client;
 	}
-
+	
 	/** @return the ip */
 	public InetAddress getIp() {
 		return ip;
 	}
-
+	
 	/** @return the port */
 	public int getPort() {
 		return port;
 	}
-
+	
 	/** @return the uID */
 	public String getUID() {
 		return UID;
 	}
-
+	
 	/** @param uID
 	 *            the uID to set */
 	public void setUID(String uID) {
 		UID = uID;
 		run.setName("TCPConnection_" + UID);
 	}
-
+	
 	private Map<String, Object> objectToSend = new HashMap<String, Object>();
-
+	
 	/** Send an object to server
 	 * 
 	 * @param varName
@@ -202,7 +203,7 @@ public class TCPConnection {
 		objectToSend.put(varName, obj);
 		objectOut.writeObject(objectToSend);
 	}
-
+	
 	/** Send a map of objects to server
 	 * 
 	 * @param objects
@@ -211,5 +212,5 @@ public class TCPConnection {
 	public void sendMap(Map<String, Object> objects) throws IOException {
 		objectOut.writeObject(objects);
 	}
-
+	
 }
