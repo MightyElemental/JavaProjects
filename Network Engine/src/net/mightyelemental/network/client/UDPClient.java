@@ -15,26 +15,28 @@ import java.util.Map;
 import net.mightyelemental.network.BasicCommands;
 
 public class UDPClient extends Client {
-
-	public boolean	running;
-	public long		timeStarted	= System.currentTimeMillis();
-	public long		timeRunning	= 0l;
-
+	
+	
+	public boolean running;
+	public long timeStarted = System.currentTimeMillis();
+	public long timeRunning = 0l;
+	
 	private DatagramSocket clientSocket;
-
+	
 	private InetAddress IPAddress;
-
-	private byte[]	receiveData;
-	private byte[]	sendData;
-
+	
+	private byte[] receiveData;
+	private byte[] sendData;
+	
 	private boolean usesEncryption = false;
-
+	
 	private Thread clientTick = new Thread("ClientReceiveThread") {
-
+		
+		
 		@SuppressWarnings( "unchecked" )
 		public void run() {
 			running = true;
-
+			
 			while (running) {
 				timeRunning = System.currentTimeMillis() - timeStarted;
 				try {
@@ -43,23 +45,30 @@ public class UDPClient extends Client {
 					DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
 					ois = new ObjectInputStream(new ByteArrayInputStream(receivePacket.getData()));
 					clientSocket.receive(receivePacket);
-
+					
 					Object obj = ois.readObject();
-
+					
 					initiater.onObjectRecieved(obj);
-
-					if (((Map<String, Object>) obj).containsKey("UID")) { //Sets client uid
+					
+					if (((Map<String, Object>) obj).containsKey("UID")) { // Sets
+																			// client
+																			// uid
 						clientUID = (String) ((Map<String, Object>) obj).get("UID");
 					}
-
-					// String receiveData = new String(receivePacket.getData()).trim();
+					
+					// String receiveData = new
+					// String(receivePacket.getData()).trim();
 					// if (usesEncryption) {
-					// receiveData = BasicCommands.decryptMessageBase64(receiveData);
+					// receiveData =
+					// BasicCommands.decryptMessageBase64(receiveData);
 					// }
 					// System.out.println(receiveData.toString());
-					// if (receiveData.toString().contains("JLB1F0_CLIENT_UID")) {
-					// clientUID = receiveData.toString().replace("JLB1F0_CLIENT_UID ", "");
-					// } else if (receiveData.toString().contains("JLB1F0_RETURN_PING")) {
+					// if (receiveData.toString().contains("JLB1F0_CLIENT_UID"))
+					// {
+					// clientUID =
+					// receiveData.toString().replace("JLB1F0_CLIENT_UID ", "");
+					// } else if
+					// (receiveData.toString().contains("JLB1F0_RETURN_PING")) {
 					// timeOfPingResponse = System.currentTimeMillis();
 					// pingTime = timeOfPingResponse - timeOfPingRequest;
 					// } else {
@@ -74,7 +83,7 @@ public class UDPClient extends Client {
 					e.printStackTrace();
 				}
 			}
-
+			
 			try {
 				this.join();
 			} catch (InterruptedException e) {
@@ -82,7 +91,7 @@ public class UDPClient extends Client {
 			}
 		}
 	};
-
+	
 	/** @param address
 	 *            the IP address in String form
 	 * @param port
@@ -94,42 +103,42 @@ public class UDPClient extends Client {
 		this.port = port;
 		this.maxBytes = maxBytes;
 	}
-
+	
 	/** @return the clients name */
 	public String getUID() {
 		return this.clientUID;
 	}
-
+	
 	/** @return the IP address in the form of String */
 	public String getAddress() {
 		return this.address;
 	}
-
+	
 	/** @return the full IP address */
 	public String getFullIPAddress() {
 		return getAddress() + ":" + getPort();
 	}
-
+	
 	/** @return the port the client is running on */
 	public int getPort() {
 		return port;
 	}
-
+	
 	/** Used to connect the client to server as well as setting up the data pipes. */
 	public synchronized void setup() {
 		try {
 			clientSocket = new DatagramSocket();
 			IPAddress = InetAddress.getByName(getAddress());
-
+			
 			sendData = new byte[maxBytes];
 			receiveData = new byte[maxBytes];
 		} catch (SocketException | UnknownHostException e) {
 			e.printStackTrace();
 		}
 		clientTick.start();
-		// sendMessage("JLB1F0_TEST_CONNECTION RETURN_UID");
+		hasBeenSetup = true;
 	}
-
+	
 	/** Sends a message to the connected server
 	 * 
 	 * @param message
@@ -142,14 +151,14 @@ public class UDPClient extends Client {
 			messageOut = BasicCommands.encryptMessageBase64(messageOut);
 		}
 		sendData = messageOut.getBytes();
-
+		
 		try {
 			clientSocket.send(new DatagramPacket(sendData, sendData.length, this.IPAddress, this.port));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
-
+	
 	/** Sends the specified client a byte array
 	 * 
 	 * @param bytes
@@ -164,40 +173,44 @@ public class UDPClient extends Client {
 			e.printStackTrace();
 		}
 	}
-
+	
 	/** Used to stop the client thread */
 	public synchronized void stopClient() {
 		this.running = false;
 		sendData = null;
 		receiveData = null;
 	}
-
+	
 	/** Pings the server */
 	@Deprecated
 	public void sendPingRequest() {
 		timeOfPingRequest = System.currentTimeMillis();
 		// sendMessage("JLB1F0_PING_SERVER");
 	}
-
+	
 	/** @return the time it took to ping the server */
 	public long getPingTime() {
 		return pingTime;
 	}
-
+	
 	/** @return the usesEncryption */
 	public boolean doesUseEncryption() {
 		return usesEncryption;
 	}
-
+	
 	/** @param usesEncryption
 	 *            the usesEncryption to set */
 	public void setUseEncryption(boolean usesEncryption) {
 		this.usesEncryption = usesEncryption;
 	}
-
+	
 	/** Sends an object over the network */
 	@Override
 	public void sendObject(String varName, Object obj) throws IOException {
+		if (!hasBeenSetup) {
+			System.err.println("FATAL ERROR: Client has not been setup yet!");
+			return;
+		}
 		sendData = null;
 		objectToSend.clear();
 		objectToSend.put(varName, obj);
@@ -207,21 +220,25 @@ public class UDPClient extends Client {
 		oos.flush();
 		// get the byte array of the object
 		byte[] Buf = baos.toByteArray();
-
+		
 		int number = Buf.length;
 		sendData = new byte[this.maxBytes];
-
+		
 		// int -> byte[]
 		for (int i = 0; i < sendData.length; ++i) {
 			int shift = i << 3; // i * 8
 			sendData[sendData.length - 1 - i] = (byte) ((number & (0xff << shift)) >>> shift);
 		}
-
+		
 		clientSocket.send(new DatagramPacket(sendData, sendData.length, this.IPAddress, this.port));
 	}
-
+	
 	@Override
 	public void sendObjectMap(Map<String, Object> objects) throws IOException {
+		if (!hasBeenSetup) {
+			System.err.println("FATAL ERROR: Client has not been setup yet!");
+			return;
+		}
 		sendData = null;
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		ObjectOutputStream oos = new ObjectOutputStream(baos);
@@ -229,17 +246,17 @@ public class UDPClient extends Client {
 		oos.flush();
 		// get the byte array of the object
 		byte[] Buf = baos.toByteArray();
-
+		
 		int number = Buf.length;
 		sendData = new byte[this.maxBytes];
-
+		
 		// int -> byte[]
 		for (int i = 0; i < sendData.length; ++i) {
 			int shift = i << 3; // i * 8
 			sendData[sendData.length - 1 - i] = (byte) ((number & (0xff << shift)) >>> shift);
 		}
-
+		
 		clientSocket.send(new DatagramPacket(sendData, sendData.length, this.IPAddress, this.port));
 	}
-
+	
 }

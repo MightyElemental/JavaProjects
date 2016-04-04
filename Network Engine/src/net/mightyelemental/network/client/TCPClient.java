@@ -9,72 +9,74 @@ import java.util.Map;
 import net.mightyelemental.network.BasicCommands;
 
 public class TCPClient extends Client {
-
-	private Socket	clientSocket;
-
-	private boolean	running;
-
-	private boolean	usesEncryption	= false;
-
-	private int		maxBytes;
-
-	private Thread	clientTick		= new Thread("ClientReceiveThread") {
-
-										@SuppressWarnings( "unchecked" )
-										public void run() {
-											running = true;
-											while (running) {
-
-												try {
-													Object obj = ois.readObject();
-													initiater.onObjectRecieved(obj);
-
-													if (((Map<String, Object>) obj).containsKey("UID")) {					// Sets
-																															// client
-																															// uid
-														clientUID = (String) ((Map<String, Object>) obj).get("UID");
-													}
-												} catch (ClassNotFoundException | IOException e) {
-													initiater.onServerClosed();
-												}
-
-												// String tempMessage = null;
-												// try {
-												// tempMessage = in.readLine();
-												// } catch (IOException e) {
-												// System.err.println("Server has been closed");
-												// stopClient();
-												// }
-												// System.out.println("[TCPClient] message: " + tempMessage);
-												// if (usesEncryption) {
-												// tempMessage = BasicCommands.decryptMessageBase64(tempMessage);
-												// }
-												//
-												// if (tempMessage.contains("JLB1F0_CLIENT_UID")) {
-												// clientUID = tempMessage.replace("JLB1F0_CLIENT_UID ", "");
-												// } else if (tempMessage.contains("JLB1F0_RETURN_PING")) {
-												// timeOfPingResponse = System.currentTimeMillis();
-												// pingTime = timeOfPingResponse - timeOfPingRequest;
-												// } else {
-												// lastMessage = tempMessage;
-												// recievedMessages.add(lastMessage);
-												// }
-											}
-											try {
-												clientSocket.close();
-											} catch (IOException e) {
-												e.printStackTrace();
-											}
-										}
-									};
-
+	
+	
+	private Socket clientSocket;
+	
+	private boolean running;
+	
+	private boolean usesEncryption = false;
+	
+	private int maxBytes;
+	
+	private Thread clientTick = new Thread("ClientReceiveThread") {
+		
+		
+		@SuppressWarnings( "unchecked" )
+		public void run() {
+			running = true;
+			while (running) {
+				
+				try {
+					Object obj = ois.readObject();
+					initiater.onObjectRecieved(obj);
+					
+					if (((Map<String, Object>) obj).containsKey("UID")) { // Sets
+																			// client
+																			// uid
+						clientUID = (String) ((Map<String, Object>) obj).get("UID");
+					}
+				} catch (ClassNotFoundException | IOException e) {
+					initiater.onServerClosed();
+				}
+				
+				// String tempMessage = null;
+				// try {
+				// tempMessage = in.readLine();
+				// } catch (IOException e) {
+				// System.err.println("Server has been closed");
+				// stopClient();
+				// }
+				// System.out.println("[TCPClient] message: " + tempMessage);
+				// if (usesEncryption) {
+				// tempMessage = BasicCommands.decryptMessageBase64(tempMessage);
+				// }
+				//
+				// if (tempMessage.contains("JLB1F0_CLIENT_UID")) {
+				// clientUID = tempMessage.replace("JLB1F0_CLIENT_UID ", "");
+				// } else if (tempMessage.contains("JLB1F0_RETURN_PING")) {
+				// timeOfPingResponse = System.currentTimeMillis();
+				// pingTime = timeOfPingResponse - timeOfPingRequest;
+				// } else {
+				// lastMessage = tempMessage;
+				// recievedMessages.add(lastMessage);
+				// }
+			}
+			try {
+				clientSocket.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	};
+	
 	public TCPClient( String address, int port, boolean usesEncryption, int maxBytes ) {
 		this.address = address;
 		this.port = port;
 		this.usesEncryption = usesEncryption;
 		this.maxBytes = maxBytes;
 	}
-
+	
 	public synchronized void setup() {
 		try {
 			clientSocket = new Socket(address, port);
@@ -95,8 +97,9 @@ public class TCPClient extends Client {
 			e.printStackTrace();
 		}
 		clientTick.start();
+		hasBeenSetup = true;
 	}
-
+	
 	/** Used to stop the client thread */
 	public synchronized void stopClient() {// make a listener method instead of this
 		running = false;
@@ -107,18 +110,18 @@ public class TCPClient extends Client {
 		}
 		System.exit(0);
 	}
-
+	
 	/** @return the usesEncryption */
 	public boolean doesUseEncryption() {
 		return usesEncryption;
 	}
-
+	
 	/** @param usesEncryption
 	 *            the usesEncryption to set */
 	public void setUseEncryption(boolean usesEncryption) {
 		this.usesEncryption = usesEncryption;
 	}
-
+	
 	@Deprecated
 	public void sendMessage(String message) {
 		message = message + '\n';
@@ -127,22 +130,30 @@ public class TCPClient extends Client {
 		}
 		// out.println(message);
 	}
-
+	
 	@Override
 	@Deprecated
 	public void sendBytes(byte[] bytes) {
 	}
-
+	
 	@Override
 	public void sendObject(String varName, Object obj) throws IOException {
+		if (!hasBeenSetup) {
+			System.err.println("FATAL ERROR: Client has not been setup yet!");
+			return;
+		}
 		objectToSend.clear();
 		objectToSend.put(varName, obj);
 		ous.writeObject(objectToSend);
 	}
-
+	
 	@Override
 	public void sendObjectMap(Map<String, Object> objects) throws IOException {
+		if (!hasBeenSetup) {
+			System.err.println("FATAL ERROR: Client has not been setup yet!");
+			return;
+		}
 		ous.writeObject(objects);
 	}
-
+	
 }

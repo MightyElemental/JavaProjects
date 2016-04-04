@@ -18,35 +18,37 @@ import java.util.Random;
 import net.mightyelemental.network.gui.ServerGUI;
 
 public class UDPServer extends Server {
-
-	private int		port;
-	private boolean	running;
-
+	
+	
+	private int port;
+	private boolean running;
+	
 	private boolean stopServer;
-
+	
 	private boolean usesEncryption = false;
-
+	
 	public DatagramSocket serverSocket;
-
+	
 	public Map<String, List<Object>> attachedClients = new HashMap<String, List<Object>>();
-
-	private byte[]	receiveData;
-	private byte[]	sendData;
-
-	protected ObjectInputStream		ois;
-	protected ObjectOutputStream	ous;
-
-	private String	lastMessage	= "";
-	private int		maxBytes	= 1024;
+	
+	private byte[] receiveData;
+	private byte[] sendData;
+	
+	protected ObjectInputStream ois;
+	protected ObjectOutputStream ous;
+	
+	private String lastMessage = "";
+	private int maxBytes = 1024;
 	// private boolean parse = true;
-
+	
 	private Thread serverTick = new Thread("ServerThread") {
-
+		
+		
 		public void run() {
-
+			
 			receiveData = new byte[maxBytes];
 			sendData = new byte[maxBytes];
-
+			
 			while (running) {
 				if (serverSocket == null) {
 					running = false;
@@ -64,54 +66,99 @@ public class UDPServer extends Server {
 				receiveData = new byte[maxBytes];
 				DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
 				try {
-
+					
 					ois = new ObjectInputStream(new ByteArrayInputStream(receivePacket.getData()));
 					serverSocket.receive(receivePacket);
-
+					
 					InetAddress IPAddress = receivePacket.getAddress();
 					int port = receivePacket.getPort();
-
+					
 					try {
 						initiater.onObjectRecieved(IPAddress, port, ois.readObject());
 					} catch (ClassNotFoundException e) {
 						e.printStackTrace();
 					}
 					checkIfNewClient(IPAddress, port);
-
-					// String data = new String(receivePacket.getData()).trim();
-					// if (usesEncryption) {
-					// data = BasicCommands.decryptMessageBase64(data);
+					
+					// String
+					// data
+					// = new
+					// String(receivePacket.getData()).trim();
+					// if
+					// (usesEncryption)
+					// {
+					// data
+					// =
+					// BasicCommands.decryptMessageBase64(data);
 					// }
 					//
-					// String[] dataArray = data.split(" : ");
+					// String[]
+					// dataArray
+					// =
+					// data.split("
+					// : ");
 					//
-					// StringBuilder sb = new StringBuilder();
+					// StringBuilder
+					// sb =
+					// new
+					// StringBuilder();
 					//
-					// for (int i = 1; i < dataArray.length; i++) {
+					// for
+					// (int
+					// i =
+					// 1; i
+					// <
+					// dataArray.length;
+					// i++)
+					// {
 					// sb.append(dataArray[i]);
 					// }
 					//
-					// String message = sb.toString();
-					// lastMessage = message;
-					// if (message.contains("JLB1F0_TEST_CONNECTION RETURN_UID")) {
-					// sendMessage("JLB1F0_CLIENT_UID " + getClientUIDFromIP(IPAddress, port), IPAddress, port);
-					// } else if (message.contains("JLB1F0_PING_SERVER")) {
-					// returnPingRequest(IPAddress, port);
-					// } else {
-					// serverGUI.addCommand(getClientUIDFromIP(IPAddress, port) + " : " + message);
+					// String
+					// message
+					// =
+					// sb.toString();
+					// lastMessage
+					// =
+					// message;
+					// if
+					// (message.contains("JLB1F0_TEST_CONNECTION
+					// RETURN_UID"))
+					// {
+					// sendMessage("JLB1F0_CLIENT_UID
+					// " +
+					// getClientUIDFromIP(IPAddress,
+					// port),
+					// IPAddress,
+					// port);
+					// }
+					// else
+					// if
+					// (message.contains("JLB1F0_PING_SERVER"))
+					// {
+					// returnPingRequest(IPAddress,
+					// port);
+					// }
+					// else
+					// {
+					// serverGUI.addCommand(getClientUIDFromIP(IPAddress,
+					// port)
+					// + " :
+					// " +
+					// message);
 					// }
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-
+				
 				if (hasGUI) {
 					if (serverGUI != null) {
 						serverGUI.updateClients();
 					}
 				}
-
+				
 			}
-
+			
 			try {
 				stopServer = false;
 				this.join();
@@ -119,9 +166,9 @@ public class UDPServer extends Server {
 				e.printStackTrace();
 			}
 		}
-
+		
 	};
-
+	
 	/** UDP Server
 	 * 
 	 * @param port
@@ -133,25 +180,26 @@ public class UDPServer extends Server {
 		this.maxBytes = maxBytes;
 		this.usesEncryption = usesEncryption;
 	}
-
+	
 	/** Adds a message to the server GUI */
 	public void addMessageToConsole(String message) {
 		serverGUI.addCommand(message);
 	}
-
+	
 	/** This is required to start the server thread & to create a new socket */
 	public synchronized void setupServer() {
-
+		
 		try {
 			serverSocket = new DatagramSocket(port);
 		} catch (SocketException e1) {
 			e1.printStackTrace();
 		}
 		this.running = true;
-
+		
 		serverTick.start();
+		hasBeenSetup = true;
 	}
-
+	
 	/** Checks to see if the client was connected before. If not, it will add the client with a new UID */
 	private void checkIfNewClient(InetAddress ip, int port) {
 		if (attachedClients.containsValue(Arrays.asList(new Object[] { ip, port }))) { return; }
@@ -161,9 +209,10 @@ public class UDPServer extends Server {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		initiater.onNewClientAdded(ip, port, UID);// notifies all listeners about new client
+		initiater.onNewClientAdded(ip, port, UID);// notifies all listeners
+													// about new client
 	}
-
+	
 	/** Return the client UID associated with the given IP and port */
 	public String getClientUIDFromIP(InetAddress ip, int port) {
 		List<Object> tester = Arrays.asList(new Object[] { ip, port });
@@ -173,7 +222,7 @@ public class UDPServer extends Server {
 		}
 		return null;
 	}
-
+	
 	/** Adds client UID to array and makes sure its unique
 	 * 
 	 * @return uid the client's UID */
@@ -182,24 +231,25 @@ public class UDPServer extends Server {
 		while (attachedClients.containsKey(chars)) {
 			chars = BasicCommands.generateClientUID(rand);
 		}
-		// System.out.println("New client! " + chars + " | IP: " + ip.getHostAddress() + ":" + port);
+		// System.out.println("New client! " + chars + " | IP: " +
+		// ip.getHostAddress() + ":" + port);
 		attachedClients.put(chars, Arrays.asList(new Object[] { ip, port }));
 		this.sendMessage(chars, ip, port);
 		return chars;
 	}
-
+	
 	/** @return the attachedClients<br>
 	 *         Uses ClientUID as key. The List it gives is an 'InetAddress' and an 'int', in that order. */
 	public Map<String, List<Object>> getAttachedClients() {
 		return attachedClients;
 	}
-
+	
 	/** Setup the built in GUI */
 	public void initGUI(String title) {
 		serverGUI = new ServerGUI(title, this, BasicCommands.getExternalIPAddress() + ":" + this.getPort());
 		this.hasGUI = true;
 	}
-
+	
 	/** Sends a message, instantly, to a client
 	 * 
 	 * @param message
@@ -210,17 +260,17 @@ public class UDPServer extends Server {
 	 *            the port of the client */
 	@Deprecated
 	public void sendInstantMessage(String message, InetAddress ip, int port) {
-
+		
 		String cUID = getClientUIDFromIP(ip, port);
-
+		
 		if (!message.contains("JLB1F0") && !message.contains("JLB1F0_CLIENT_UID") && serverGUI != null) {
 			serverGUI.addCommand("Console > " + cUID + " : " + message);
 		}
-
+		
 		if (usesEncryption) {
 			message = BasicCommands.encryptMessageBase64(message);
 		}
-
+		
 		try {
 			sendData = (message.toString()).getBytes("UTF-8");
 			DatagramPacket sendPacket = new DatagramPacket(this.sendData, this.sendData.length, ip, port);
@@ -229,7 +279,7 @@ public class UDPServer extends Server {
 			e.printStackTrace();
 		}
 	}
-
+	
 	/** Waits 100ms then sends a message to a client
 	 * 
 	 * @param message
@@ -247,7 +297,7 @@ public class UDPServer extends Server {
 		}
 		sendInstantMessage(message, ip, port);
 	}
-
+	
 	/** Sends the specified client a byte array
 	 * 
 	 * @param bytes
@@ -259,9 +309,9 @@ public class UDPServer extends Server {
 	@Deprecated
 	public synchronized void sendBytes(byte[] bytes, InetAddress ip, int port) {
 		String cUID = getClientUIDFromIP(ip, port);
-
+		
 		serverGUI.addCommand("Console > " + cUID + " : Byte Array");
-
+		
 		try {
 			sendData = bytes;
 			DatagramPacket sendPacket = new DatagramPacket(this.sendData, this.sendData.length, ip, port);
@@ -270,7 +320,7 @@ public class UDPServer extends Server {
 			e.printStackTrace();
 		}
 	}
-
+	
 	/** Broadcast a message to every client
 	 * 
 	 * @param message
@@ -284,30 +334,31 @@ public class UDPServer extends Server {
 			sendInstantMessage(message, ip, port);
 		}
 	}
-
+	
 	/** Is the server thread running? */
 	public boolean isRunning() {
 		return running;
 	}
-
+	
 	/** @return the lastMessage */
 	public String getLastMessage() {
 		return lastMessage;
 	}
-
+	
 	/** Returns a clients ping request */
 	@SuppressWarnings( "unused" )
 	private void returnPingRequest(InetAddress ip, int port) {
 		sendInstantMessage("JLB1F0_RETURN_PING", ip, port);
 	}
-
+	
 	@Override
 	public void stopServer() throws InterruptedException, IOException {
 		this.broadcastmessage("Server Closed");
 		this.port = 0;
 		this.running = false;
 		Thread close = new Thread() {
-
+			
+			
 			public void run() {
 				try {
 					stopServer = true;
@@ -323,25 +374,29 @@ public class UDPServer extends Server {
 					e.printStackTrace();
 				}
 			}
-
+			
 		};
 		close.start();
 	}
-
+	
 	/** @return the maxBytes */
 	public int getMaxBytes() {
 		return maxBytes;
 	}
-
+	
 	/** @param maxBytes
 	 *            the maxBytes to set */
 	public void setMaxBytes(int maxBytes) {
 		this.maxBytes = maxBytes;
 	}
-
+	
 	/** Sends an object over the network */
 	@Override
 	public void sendObject(String varName, Object obj, InetAddress ip, int port) throws IOException {
+		if (!hasBeenSetup) {
+			System.err.println("FATAL ERROR: Server has not been setup yet!");
+			return;
+		}
 		sendData = null;
 		objectToSend.clear();
 		objectToSend.put(varName, obj);
@@ -351,19 +406,19 @@ public class UDPServer extends Server {
 		oos.flush();
 		// get the byte array of the object
 		byte[] Buf = baos.toByteArray();
-
+		
 		int number = Buf.length;
 		sendData = new byte[this.maxBytes];
-
+		
 		// int -> byte[]
 		for (int i = 0; i < sendData.length; ++i) {
 			int shift = i << 3; // i * 8
 			sendData[sendData.length - 1 - i] = (byte) ((number & (0xff << shift)) >>> shift);
 		}
-
+		
 		serverSocket.send(new DatagramPacket(sendData, sendData.length, ip, port));
 	}
-
+	
 	/** Send a map of objects to server
 	 * 
 	 * @param objects
@@ -371,6 +426,10 @@ public class UDPServer extends Server {
 	 * @throws IOException */
 	@Override
 	public void sendObjectMap(Map<String, Object> objects, InetAddress ip, int port) throws IOException {
+		if (!hasBeenSetup) {
+			System.err.println("FATAL ERROR: Server has not been setup yet!");
+			return;
+		}
 		sendData = null;
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		ObjectOutputStream oos = new ObjectOutputStream(baos);
@@ -378,17 +437,17 @@ public class UDPServer extends Server {
 		oos.flush();
 		// get the byte array of the object
 		byte[] Buf = baos.toByteArray();
-
+		
 		int number = Buf.length;
 		sendData = new byte[this.maxBytes];
-
+		
 		// int -> byte[]
 		for (int i = 0; i < sendData.length; ++i) {
 			int shift = i << 3; // i * 8
 			sendData[sendData.length - 1 - i] = (byte) ((number & (0xff << shift)) >>> shift);
 		}
-
+		
 		serverSocket.send(new DatagramPacket(sendData, sendData.length, ip, port));
 	}
-
+	
 }
