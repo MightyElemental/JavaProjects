@@ -82,7 +82,7 @@ public class BasicCommands {
 	public static String generateClientUID(Random rand) {
 		String chars = "";
 		
-		for (int i = 0; i < 6; i++) {
+		for (int i = 0; i < 4; i++) {
 			chars += (char) (rand.nextInt(26) + 'a');
 		}
 		return chars;
