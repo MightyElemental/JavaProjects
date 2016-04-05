@@ -86,11 +86,6 @@ public abstract class Client {
 		return this.clientUID;
 	}
 	
-	/** @return the clientUID */
-	public String getClientUID() {
-		return clientUID;
-	}
-	
 	/** @return the maxBytes */
 	public int getMaxBytes() {
 		return maxBytes;
