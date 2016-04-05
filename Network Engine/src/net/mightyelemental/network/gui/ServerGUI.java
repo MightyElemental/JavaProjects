@@ -1,7 +1,11 @@
 package net.mightyelemental.network.gui;
 
+import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Graphics;
 import java.awt.List;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.net.InetAddress;
 
 import javax.swing.JFrame;
@@ -21,6 +25,9 @@ public class ServerGUI extends JFrame {
 	
 	
 	private JPanel contentPane;
+	private JPanel panel;
+	private JPanel panel_1;
+	private JPanel panel_2;
 	
 	private List list = new List();
 	private Server server;
@@ -31,7 +38,21 @@ public class ServerGUI extends JFrame {
 	/** Create the frame. */
 	public ServerGUI( String title, Server server, String IPAddress ) {
 		this.server = server;
-		setResizable(false);
+		addComponentListener(new ComponentAdapter() {
+			
+			
+			@Override
+			public void componentResized(ComponentEvent e) {
+				int height = getHeight();
+				if (getHeight() < 328) {
+					height = 328;
+				}
+				setSize(new Dimension(475, height));// Force window to be certain width
+				super.componentResized(e);
+			}
+			
+		});
+		setResizable(true);
 		setVisible(true);
 		setTitle(title);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -42,7 +63,7 @@ public class ServerGUI extends JFrame {
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
-		JPanel panel = new JPanel();
+		panel = new JPanel();
 		panel.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
 		panel.setBounds(10, 177, 233, 171);
 		contentPane.add(panel);
@@ -56,7 +77,7 @@ public class ServerGUI extends JFrame {
 		lblClients.setBounds(0, 4, 233, 14);
 		panel.add(lblClients);
 		
-		JPanel panel_1 = new JPanel();
+		panel_1 = new JPanel();
 		panel_1.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
 		panel_1.setBounds(253, 177, 206, 171);
 		contentPane.add(panel_1);
@@ -79,13 +100,13 @@ public class ServerGUI extends JFrame {
 		textField.setText(IPAddress);
 		textField.setColumns(10);
 		
-		JPanel panel_2 = new JPanel();
+		panel_2 = new JPanel();
 		panel_2.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
 		panel_2.setBounds(10, 11, 449, 155);
 		contentPane.add(panel_2);
 		panel_2.setLayout(null);
 		
-		commands.setBounds(10, 23, 429, 121);
+		commands.setBounds(10, 23, 429, this.getHeight() - (387 - 121));
 		panel_2.add(commands);
 		
 		JLabel lblClientCommands = new JLabel("Client Commands");
@@ -115,8 +136,31 @@ public class ServerGUI extends JFrame {
 			}
 			lblClients.setText("Clients (" + ((TCPServer) server).getTcpConnections().size() + ")");
 		}
-		
+		repaintFrame();
+	}
+	
+	private void repaintFrame() {
+		lblClients.validate();
+		lblClients.repaint();
+		panel.validate();
+		panel.repaint();
+		panel_1.validate();
+		panel_1.repaint();
+		panel_2.validate();
+		panel_2.repaint();
+		this.validate();
 		this.repaint();
+	}
+	
+	public void paint(Graphics g) {
+		super.paint(g);
+		try {
+			commands.setBounds(10, 23, 429, this.getHeight() - (387 - 121));
+			panel_2.setBounds(10, 11, 449, this.getHeight() - (387 - 155));
+			panel_1.setBounds(253, 177 + (this.getHeight() - 387), 206, 171);
+			panel.setBounds(10, 177 + (this.getHeight() - 387), 233, 171);
+		} catch (Exception e) {
+		}
 	}
 	
 	public void addCommand(String command) {

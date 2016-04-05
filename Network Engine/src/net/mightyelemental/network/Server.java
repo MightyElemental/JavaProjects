@@ -35,7 +35,7 @@ public abstract class Server {
 		initiater.addListener(mls);
 	}
 	
-	public ServerGUI getGUI(){
+	public ServerGUI getGUI() {
 		return serverGUI;
 	}
 	
