@@ -25,6 +25,7 @@ public class ServerGUI extends JFrame {
 	private List list = new List();
 	private Server server;
 	private JTextField textField;
+	private JLabel lblClients;
 	List commands = new List();
 	
 	/** Create the frame. */
@@ -50,7 +51,7 @@ public class ServerGUI extends JFrame {
 		list.setBounds(10, 24, 213, 137);
 		panel.add(list);
 		
-		JLabel lblClients = new JLabel("Clients");
+		lblClients = new JLabel("Clients");
 		lblClients.setHorizontalAlignment(SwingConstants.CENTER);
 		lblClients.setBounds(0, 4, 233, 14);
 		panel.add(lblClients);
@@ -103,6 +104,7 @@ public class ServerGUI extends JFrame {
 				String temp = "IP:" + ip.toString().replace('/', '\0') + ":" + port + " (" + key.toString() + ")";
 				list.add(temp);
 			}
+			lblClients.setText("Clients (" + ((UDPServer) server).getAttachedClients().size() + ")");
 		} else {
 			Object[] keys = ((TCPServer) server).getTcpConnections().keySet().toArray();
 			for (Object key : keys) {
@@ -111,6 +113,7 @@ public class ServerGUI extends JFrame {
 				String temp = "IP:" + ip.toString().replace('/', '\0') + ":" + port + " (" + key.toString() + ")";
 				list.add(temp);
 			}
+			lblClients.setText("Clients (" + ((TCPServer) server).getTcpConnections().size() + ")");
 		}
 		
 		this.repaint();
