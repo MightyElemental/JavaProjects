@@ -11,6 +11,7 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -57,8 +58,10 @@ public class TCPConnection {
 					try {
 						Object obj = objectIn.readObject();
 						SI.onObjectRecieved(ip, port, obj);
-					} catch (ClassNotFoundException e) {
+					} catch (ClassNotFoundException | SocketException e) {
 						SI.onClientDisconnect(ip, port, getUID());
+						stopThread();
+						break;
 					}
 					// if (usesEncryption) {
 					// System.out.println("Before decryp: " + message);// SENDS BYTE ARRAYS! DO NOT DECRYPT THEM!
@@ -77,9 +80,8 @@ public class TCPConnection {
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
-				stopThread();
 			}
-			
+			stopThread();
 		}
 	};
 	
