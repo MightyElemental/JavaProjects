@@ -28,6 +28,7 @@ public class TCPClient extends Client {
 				
 				try {
 					Object obj = ois.readObject();
+					lastObject = obj;
 					initiater.onObjectRecieved(obj);
 					
 					if (((Map<String, Object>) obj).containsKey("UID")) { // Sets

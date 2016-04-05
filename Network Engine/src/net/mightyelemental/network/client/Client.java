@@ -35,7 +35,7 @@ public abstract class Client {
 	
 	protected ClientInitiater initiater = new ClientInitiater();
 	
-	protected String lastMessage = "";
+	protected Object lastObject = "";
 	protected ArrayList<String> recievedMessages = new ArrayList<String>();
 	
 	public void setDebugMode(boolean state) {
@@ -111,8 +111,8 @@ public abstract class Client {
 	}
 	
 	/** @return lastRecievedMessage - the message the the client last received */
-	public String getLastRecievedMessage() {
-		return lastMessage;
+	public Object getLastRecievedObject() {
+		return lastObject;
 	}
 	
 	/** @return the recievedMessages */

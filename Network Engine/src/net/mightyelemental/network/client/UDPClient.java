@@ -47,7 +47,7 @@ public class UDPClient extends Client {
 					clientSocket.receive(receivePacket);
 					
 					Object obj = ois.readObject();
-					
+					lastObject = obj;
 					initiater.onObjectRecieved(obj);
 					
 					if (((Map<String, Object>) obj).containsKey("UID")) { // Sets
