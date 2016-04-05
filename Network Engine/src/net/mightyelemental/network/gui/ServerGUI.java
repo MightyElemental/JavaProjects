@@ -109,7 +109,7 @@ public class ServerGUI extends JFrame {
 		commands.setBounds(10, 23, 429, this.getHeight() - (387 - 121));
 		panel_2.add(commands);
 		
-		JLabel lblClientCommands = new JLabel("Client Commands");
+		JLabel lblClientCommands = new JLabel("Console");
 		lblClientCommands.setHorizontalAlignment(SwingConstants.CENTER);
 		lblClientCommands.setBounds(10, 2, 429, 14);
 		panel_2.add(lblClientCommands);
