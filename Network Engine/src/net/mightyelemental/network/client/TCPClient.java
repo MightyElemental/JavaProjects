@@ -63,12 +63,7 @@ public class TCPClient extends Client {
 				// recievedMessages.add(lastMessage);
 				// }
 			}
-			try {
-				clientSocket.close();
-				stopClient();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			stopClient();
 		}
 	};
 	
@@ -110,7 +105,6 @@ public class TCPClient extends Client {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		System.exit(0);
 	}
 	
 	/** @return the usesEncryption */
