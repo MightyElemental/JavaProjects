@@ -66,16 +66,16 @@ public class TCPServer extends Server {
 		this.maxBytes = maxBytes;
 	}
 	
-	public synchronized void setupServer() {
+	public synchronized void setupServer() throws BindException, IOException {
 		
-		try {
-			serverSocket = new ServerSocket(port);
-		} catch (BindException e) {
-			System.err.println("There is already a server running on that port!");
-			System.err.println("Make sure you are not using the same port as any other server on your network.");
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}
+		// try {
+		serverSocket = new ServerSocket(port);
+		// } catch (BindException e) {
+		// System.err.println("There is already a server running on that port!");
+		// System.err.println("Make sure you are not using the same port as any other server on your network.");
+		// } catch (IOException e1) {
+		// e1.printStackTrace();
+		// }
 		this.running = true;
 		
 		serverTick.start();

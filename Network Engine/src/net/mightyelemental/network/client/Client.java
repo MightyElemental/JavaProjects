@@ -13,10 +13,6 @@ import net.mightyelemental.network.listener.MessageListenerClient;
 public abstract class Client {
 	
 	
-	protected long timeOfPingRequest = 0l;
-	protected long timeOfPingResponse = 0l;
-	protected long pingTime = 0l;
-	
 	protected ObjectInputStream ois;
 	protected ObjectOutputStream ous;
 	
@@ -52,18 +48,6 @@ public abstract class Client {
 	
 	public boolean isRunning() {
 		return this.running;
-	}
-	
-	/** Pings the server */
-	@Deprecated
-	public void sendPingRequest() {
-		timeOfPingRequest = System.currentTimeMillis();
-		// sendMessage("JLB1F0_PING_SERVER");
-	}
-	
-	/** @return the time it took to ping the server */
-	public long getPingTime() {
-		return timeOfPingResponse - timeOfPingRequest;
 	}
 	
 	/** @return the port the client is running on */
@@ -115,10 +99,7 @@ public abstract class Client {
 		return recievedMessages;
 	}
 	
-	public abstract void setup();
-	
-	@Deprecated
-	public abstract void sendMessage(String message);
+	public abstract void setup() throws IOException;
 	
 	public abstract void sendObject(String varName, Object obj) throws IOException;
 	

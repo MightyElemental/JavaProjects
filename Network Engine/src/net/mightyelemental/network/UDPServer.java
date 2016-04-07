@@ -5,6 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.BindException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -79,74 +80,6 @@ public class UDPServer extends Server {
 						e.printStackTrace();
 					}
 					checkIfNewClient(IPAddress, port);
-					
-					// String
-					// data
-					// = new
-					// String(receivePacket.getData()).trim();
-					// if
-					// (usesEncryption)
-					// {
-					// data
-					// =
-					// BasicCommands.decryptMessageBase64(data);
-					// }
-					//
-					// String[]
-					// dataArray
-					// =
-					// data.split("
-					// : ");
-					//
-					// StringBuilder
-					// sb =
-					// new
-					// StringBuilder();
-					//
-					// for
-					// (int
-					// i =
-					// 1; i
-					// <
-					// dataArray.length;
-					// i++)
-					// {
-					// sb.append(dataArray[i]);
-					// }
-					//
-					// String
-					// message
-					// =
-					// sb.toString();
-					// lastMessage
-					// =
-					// message;
-					// if
-					// (message.contains("JLB1F0_TEST_CONNECTION
-					// RETURN_UID"))
-					// {
-					// sendMessage("JLB1F0_CLIENT_UID
-					// " +
-					// getClientUIDFromIP(IPAddress,
-					// port),
-					// IPAddress,
-					// port);
-					// }
-					// else
-					// if
-					// (message.contains("JLB1F0_PING_SERVER"))
-					// {
-					// returnPingRequest(IPAddress,
-					// port);
-					// }
-					// else
-					// {
-					// serverGUI.addCommand(getClientUIDFromIP(IPAddress,
-					// port)
-					// + " :
-					// " +
-					// message);
-					// }
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -187,13 +120,9 @@ public class UDPServer extends Server {
 	}
 	
 	/** This is required to start the server thread & to create a new socket */
-	public synchronized void setupServer() {
+	public synchronized void setupServer() throws BindException, IOException, SocketException {
 		
-		try {
-			serverSocket = new DatagramSocket(port);
-		} catch (SocketException e1) {
-			e1.printStackTrace();
-		}
+		serverSocket = new DatagramSocket(port);
 		this.running = true;
 		
 		serverTick.start();

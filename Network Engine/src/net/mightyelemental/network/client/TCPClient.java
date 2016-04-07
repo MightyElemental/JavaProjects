@@ -63,7 +63,11 @@ public class TCPClient extends Client {
 				// recievedMessages.add(lastMessage);
 				// }
 			}
-			stopClient();
+			try {
+				stopClient();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
 	};
 	
@@ -74,38 +78,26 @@ public class TCPClient extends Client {
 		this.maxBytes = maxBytes;
 	}
 	
-	public synchronized void setup() {
-		try {
-			clientSocket = new Socket(address, port);
-		} catch (IOException e) {
-			System.err.println("Could not connect to server!");
-			stopClient();
-			return;
-		}
-		try {
-			clientSocket.setReceiveBufferSize(maxBytes);
-			clientSocket.setSendBufferSize(maxBytes);
-			clientSocket.setKeepAlive(true);
-			// in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-			// out = new PrintStream(clientSocket.getOutputStream());
-			// byteOut = new DataOutputStream(clientSocket.getOutputStream());
-			ois = new ObjectInputStream(clientSocket.getInputStream());
-			ous = new ObjectOutputStream(clientSocket.getOutputStream());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+	public synchronized void setup() throws IOException {
+		clientSocket = new Socket(address, port);
+		
+		clientSocket.setReceiveBufferSize(maxBytes);
+		clientSocket.setSendBufferSize(maxBytes);
+		clientSocket.setKeepAlive(true);
+		// in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+		// out = new PrintStream(clientSocket.getOutputStream());
+		// byteOut = new DataOutputStream(clientSocket.getOutputStream());
+		ois = new ObjectInputStream(clientSocket.getInputStream());
+		ous = new ObjectOutputStream(clientSocket.getOutputStream());
+		
 		clientTick.start();
 		hasBeenSetup = true;
 	}
 	
 	/** Used to stop the client thread */
-	public synchronized void stopClient() {// make a listener method instead of this
+	public synchronized void stopClient() throws InterruptedException {// make a listener method instead of this
 		running = false;
-		try {
-			clientTick.join(2000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+		clientTick.join(2000);
 	}
 	
 	/** @return the usesEncryption */

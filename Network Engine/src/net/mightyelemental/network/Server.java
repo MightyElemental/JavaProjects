@@ -1,7 +1,9 @@
 package net.mightyelemental.network;
 
 import java.io.IOException;
+import java.net.BindException;
 import java.net.InetAddress;
+import java.net.SocketException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -59,7 +61,7 @@ public abstract class Server {
 	@Deprecated
 	public abstract void sendMessage(String message, InetAddress ip, int port);
 	
-	public abstract void setupServer();
+	public abstract void setupServer() throws BindException, IOException, SocketException;
 	
 	public abstract void stopServer() throws InterruptedException, IOException;
 	

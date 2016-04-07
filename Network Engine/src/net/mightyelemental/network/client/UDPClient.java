@@ -13,8 +13,6 @@ import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.mightyelemental.network.BasicCommands;
-
 public class UDPClient extends Client {
 	
 	
@@ -104,59 +102,17 @@ public class UDPClient extends Client {
 		this.maxBytes = maxBytes;
 	}
 	
-	/** @return the clients name */
-	public String getUID() {
-		return this.clientUID;
-	}
-	
-	/** @return the IP address in the form of String */
-	public String getAddress() {
-		return this.address;
-	}
-	
-	/** @return the full IP address */
-	public String getFullIPAddress() {
-		return getAddress() + ":" + getPort();
-	}
-	
-	/** @return the port the client is running on */
-	public int getPort() {
-		return port;
-	}
-	
 	/** Used to connect the client to server as well as setting up the data pipes. */
-	public synchronized void setup() {
-		try {
-			clientSocket = new DatagramSocket();
-			IPAddress = InetAddress.getByName(getAddress());
-			
-			sendData = new byte[maxBytes];
-			receiveData = new byte[maxBytes];
-		} catch (SocketException | UnknownHostException e) {
-			e.printStackTrace();
-		}
+	public synchronized void setup() throws SocketException, UnknownHostException {
+		
+		clientSocket = new DatagramSocket();
+		IPAddress = InetAddress.getByName(getAddress());
+		
+		sendData = new byte[maxBytes];
+		receiveData = new byte[maxBytes];
+		
 		clientTick.start();
 		hasBeenSetup = true;
-	}
-	
-	/** Sends a message to the connected server
-	 * 
-	 * @param message
-	 *            the message to send to the server */
-	@Deprecated
-	public void sendMessage(String message) {
-		sendData = null;
-		String messageOut = this.clientUID + " : " + message;
-		if (usesEncryption) {
-			messageOut = BasicCommands.encryptMessageBase64(messageOut);
-		}
-		sendData = messageOut.getBytes();
-		
-		try {
-			clientSocket.send(new DatagramPacket(sendData, sendData.length, this.IPAddress, this.port));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 	
 	/** Used to stop the client thread */
@@ -164,18 +120,6 @@ public class UDPClient extends Client {
 		this.running = false;
 		sendData = null;
 		receiveData = null;
-	}
-	
-	/** Pings the server */
-	@Deprecated
-	public void sendPingRequest() {
-		timeOfPingRequest = System.currentTimeMillis();
-		// sendMessage("JLB1F0_PING_SERVER");
-	}
-	
-	/** @return the time it took to ping the server */
-	public long getPingTime() {
-		return pingTime;
 	}
 	
 	/** @return the usesEncryption */
