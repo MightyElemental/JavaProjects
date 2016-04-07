@@ -159,21 +159,6 @@ public class UDPClient extends Client {
 		}
 	}
 	
-	/** Sends the specified client a byte array
-	 * 
-	 * @param bytes
-	 *            the byte array to send */
-	@Deprecated
-	public synchronized void sendBytes(byte[] bytes) {
-		try {
-			sendData = bytes;
-			DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, this.IPAddress, this.port);
-			this.clientSocket.send(sendPacket);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-	
 	/** Used to stop the client thread */
 	public synchronized void stopClient() {
 		this.running = false;

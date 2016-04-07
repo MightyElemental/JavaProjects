@@ -120,13 +120,6 @@ public abstract class Client {
 	@Deprecated
 	public abstract void sendMessage(String message);
 	
-	/** Sends the specified client a byte array
-	 * 
-	 * @param bytes
-	 *            the byte array to send */
-	@Deprecated
-	public abstract void sendBytes(byte[] bytes);
-	
 	public abstract void sendObject(String varName, Object obj) throws IOException;
 	
 	/** Send a map of objects to server

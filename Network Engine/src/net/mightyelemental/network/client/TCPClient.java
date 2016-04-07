@@ -80,6 +80,7 @@ public class TCPClient extends Client {
 		} catch (IOException e) {
 			System.err.println("Could not connect to server!");
 			stopClient();
+			return;
 		}
 		try {
 			clientSocket.setReceiveBufferSize(maxBytes);
@@ -128,16 +129,12 @@ public class TCPClient extends Client {
 	}
 	
 	@Override
-	@Deprecated
-	public void sendBytes(byte[] bytes) {
-	}
-	
-	@Override
 	public void sendObject(String varName, Object obj) throws IOException {
 		if (!hasBeenSetup) {
 			System.err.println("FATAL ERROR: Client has not been setup yet!");
 			return;
 		}
+		if (!running) { return; }
 		objectToSend.clear();
 		objectToSend.put(varName, obj);
 		ous.writeObject(objectToSend);
@@ -152,6 +149,7 @@ public class TCPClient extends Client {
 			System.err.println("FATAL ERROR: Client has not been setup yet!");
 			return;
 		}
+		if (!running) { return; }
 		ous.writeObject(objects);
 		objectToSend.clear();
 		objectToSend = null;
