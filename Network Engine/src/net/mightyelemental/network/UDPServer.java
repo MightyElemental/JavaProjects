@@ -227,29 +227,6 @@ public class UDPServer extends Server {
 		sendInstantMessage(message, ip, port);
 	}
 	
-	/** Sends the specified client a byte array
-	 * 
-	 * @param bytes
-	 *            the byte array to send
-	 * @param ip
-	 *            the IP address of the client
-	 * @param port
-	 *            the port of the client */
-	@Deprecated
-	public synchronized void sendBytes(byte[] bytes, InetAddress ip, int port) {
-		String cUID = getClientUIDFromIP(ip, port);
-		
-		serverGUI.addCommand("Console > " + cUID + " : Byte Array");
-		
-		try {
-			sendData = bytes;
-			DatagramPacket sendPacket = new DatagramPacket(this.sendData, this.sendData.length, ip, port);
-			this.serverSocket.send(sendPacket);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-	
 	/** Broadcast a message to every client
 	 * 
 	 * @param message

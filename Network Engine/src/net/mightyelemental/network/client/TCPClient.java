@@ -7,8 +7,6 @@ import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
 
-import net.mightyelemental.network.BasicCommands;
-
 public class TCPClient extends Client {
 	
 	
@@ -109,15 +107,6 @@ public class TCPClient extends Client {
 	 *            the usesEncryption to set */
 	public void setUseEncryption(boolean usesEncryption) {
 		this.usesEncryption = usesEncryption;
-	}
-	
-	@Deprecated
-	public void sendMessage(String message) {
-		message = message + '\n';
-		if (usesEncryption) {
-			message = BasicCommands.encryptMessageBase64(message);
-		}
-		// out.println(message);
 	}
 	
 	@Override

@@ -1,14 +1,8 @@
 package net.mightyelemental.network;
 
-import java.io.BufferedReader;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketException;
@@ -26,19 +20,8 @@ public class TCPConnection {
 	private int port;
 	private String UID;
 	
-	@Deprecated
-	public BufferedReader in;
-	@Deprecated
-	public DataInputStream is;
-	@Deprecated
-	public DataOutputStream byteOut;
-	@Deprecated
-	public PrintWriter pout;
-	
 	public ObjectOutputStream objectOut;
 	public ObjectInputStream objectIn;
-	
-	private boolean usesEncryption = false;
 	
 	@SuppressWarnings( "unused" )
 	private ServerGUI serverGUI;
@@ -85,34 +68,17 @@ public class TCPConnection {
 		}
 	};
 	
-	/** Returns a clients ping request */
-	@Deprecated
-	public void returnPingRequest() {
-		try {
-			sendMessage("JLB1F0_RETURN_PING");
-			sendMessage("JLB1F0_CLIENT_UID " + UID);
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}
-	}
-	
 	public TCPConnection( Socket client, ServerInitiater initiater, ServerGUI serverGUI, boolean usesEncryption, int maxBytes ) {
 		this.client = client;
 		this.ip = client.getInetAddress();
 		this.port = client.getPort();
 		this.SI = initiater;
 		this.serverGUI = serverGUI;
-		this.usesEncryption = usesEncryption;
 		this.maxBytes = maxBytes;
 		try {
-			OutputStreamWriter out = new OutputStreamWriter(client.getOutputStream());
-			byteOut = new DataOutputStream(client.getOutputStream());
-			in = new BufferedReader(new InputStreamReader(client.getInputStream()));
-			is = new DataInputStream(client.getInputStream());
 			objectOut = new ObjectOutputStream(client.getOutputStream());
 			objectIn = new ObjectInputStream(client.getInputStream());
-			pout = new PrintWriter(out);
-		} catch (Exception e) {
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		try {
@@ -123,29 +89,6 @@ public class TCPConnection {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	}
-	
-	/** Send a message to the client */
-	@Deprecated
-	public synchronized void sendMessage(String message) throws IOException {
-		if (message == null) { return; }
-		if (usesEncryption) {
-			message = BasicCommands.encryptMessageBase64(message);
-		}
-		pout.println(message);// Socket closed issue
-	}
-	
-	/** Send a byte array to the client
-	 * 
-	 * @throws IndexOutOfBoundsException
-	 *             if byte array contains negative values */
-	@Deprecated
-	public synchronized void sendBytes(byte[] bytes) throws IOException {
-		if (bytes == null) { return; }
-		for (byte b : bytes) {
-			if (b < 0) { throw new IndexOutOfBoundsException(""); }
-		}
-		byteOut.write(bytes);// Socket closed issue
 	}
 	
 	/** Start the clients thread */

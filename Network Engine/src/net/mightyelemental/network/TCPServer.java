@@ -95,23 +95,6 @@ public class TCPServer extends Server {
 		return null;
 	}
 	
-	/** Sends a message to a client
-	 * 
-	 * @param message
-	 *            the message to send
-	 * @param ip
-	 *            the IP address of the client
-	 * @param port
-	 *            the port of the client */
-	@Deprecated
-	public synchronized void sendMessage(String message, InetAddress ip, int port) {
-		try {
-			getTCPConnectionFromIP(ip, port).sendMessage(message);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-	
 	/** Adds client UID to array and makes sure its unique
 	 * 
 	 * @return uid the client's UID */
@@ -131,31 +114,9 @@ public class TCPServer extends Server {
 	}
 	
 	@Override
-	@Deprecated
-	public void broadcastmessage(String message) {
-		for (String key : getTcpConnections().keySet()) {
-			try {
-				getTcpConnections().get(key).sendMessage(message);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-	}
-	
-	@Override
 	public void stopServer() throws InterruptedException, IOException {
 		this.serverTick.join(1000);
 		serverSocket.close();
-	}
-	
-	@Override
-	@Deprecated
-	public void sendBytes(byte[] bytes, InetAddress ip, int port) {
-		try {
-			getTCPConnectionFromIP(ip, port).sendBytes(bytes);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 	
 	/** @return the usesEncryption */

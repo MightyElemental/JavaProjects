@@ -2,7 +2,6 @@ package net.mightyelemental.network;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.net.InetAddress;
 import java.net.URL;
 import java.util.Random;
 
@@ -10,35 +9,6 @@ import javax.xml.bind.DatatypeConverter;
 
 public class BasicCommands {
 	
-	
-	/** Send a message to a client
-	 * 
-	 * @param server
-	 *            is the Server instance
-	 * @param message
-	 *            the message to be sent
-	 * @param clientSendIP
-	 *            the IP address of the client that is sending the message
-	 * @param clientSendPort
-	 *            the port of the client that is sending the message
-	 * @param clientReceivceIP
-	 *            the IP of the client that receives the message
-	 * @param cliRecPort
-	 *            the port of the client that receives the message
-	 * @throws InterruptedException
-	 *             if the sleep is interrupted */
-	@Deprecated
-	public static void cToSToCMessage(Server server, String message, InetAddress clientSendIP, int clientSendPort,
-			InetAddress clientReceivceIP, int cliRecPort) throws InterruptedException {
-		String sendMessage = "";
-		if (server instanceof UDPServer) {
-			sendMessage = ((UDPServer) server).getClientUIDFromIP(clientSendIP, clientSendPort);
-		} else {
-			sendMessage = ((TCPServer) server).getTCPConnectionFromIP(clientSendIP, clientSendPort).getUID();
-		}
-		sendMessage += "> " + message;
-		server.sendMessage(sendMessage, clientReceivceIP, cliRecPort);
-	}
 	
 	/** Used to encrypt messages using Base64
 	 * 
