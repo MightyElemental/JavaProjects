@@ -61,10 +61,14 @@ public class TCPConnection {
 					// serverGUI.addCommand(UID + " : " + message);
 					// }
 				}
-			} catch (IOException e) {
+			} catch (IOException | InterruptedException e) {
 				e.printStackTrace();
 			}
-			stopThread();
+			try {
+				stopThread();
+			} catch (IOException | InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
 	};
 	
@@ -97,13 +101,10 @@ public class TCPConnection {
 		run.start();
 	}
 	
-	public synchronized void stopThread() {
+	public synchronized void stopThread() throws IOException, InterruptedException {
+		client.close();
 		running = false;
-		try {
-			run.join();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+		run.join();
 	}
 	
 	/** @return the client */

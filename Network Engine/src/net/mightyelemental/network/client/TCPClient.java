@@ -63,7 +63,7 @@ public class TCPClient extends Client {
 			}
 			try {
 				stopClient();
-			} catch (InterruptedException e) {
+			} catch (InterruptedException | IOException e) {
 				e.printStackTrace();
 			}
 		}
@@ -92,8 +92,11 @@ public class TCPClient extends Client {
 		hasBeenSetup = true;
 	}
 	
-	/** Used to stop the client thread */
-	public synchronized void stopClient() throws InterruptedException {// make a listener method instead of this
+	/** Used to stop the client thread
+	 * 
+	 * @throws IOException */
+	public synchronized void stopClient() throws InterruptedException, IOException {
+		clientSocket.close();
 		running = false;
 		clientTick.join(2000);
 	}
