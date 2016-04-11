@@ -96,7 +96,9 @@ public class TCPClient extends Client {
 	 * 
 	 * @throws IOException */
 	public synchronized void stopClient() throws InterruptedException, IOException {
-		clientSocket.close();
+		if (clientSocket != null) {
+			clientSocket.close();
+		}
 		running = false;
 		clientTick.join(2000);
 	}

@@ -102,7 +102,9 @@ public class TCPConnection {
 	}
 	
 	public synchronized void stopThread() throws IOException, InterruptedException {
-		client.close();
+		if (client != null) {
+			client.close();
+		}
 		running = false;
 		run.join();
 	}
