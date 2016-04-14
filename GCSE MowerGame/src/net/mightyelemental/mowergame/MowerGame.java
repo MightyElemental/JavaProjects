@@ -8,7 +8,6 @@ import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.StateBasedGame;
 
-import net.mightyelemental.mowergame.grass.GrassController;
 import net.mightyelemental.mowergame.states.GameState;
 import net.mightyelemental.mowergame.states.LoadState;
 import net.mightyelemental.mowergame.states.MenuState;
@@ -20,14 +19,12 @@ public class MowerGame extends StateBasedGame {
 	public static ResourceLoader resLoader = new ResourceLoader();
 	public static Random rand = new Random();
 	
-	public static GrassController grassCon = new GrassController(rand);
-	
 	public static final int STATE_GAME = 0;
 	public static final int STATE_MENU = 1;
 	public static final int STATE_SHOP = 2;
 	public static final int STATE_LOAD = 3;
 	
-	public GameState gameState = new GameState(STATE_GAME);
+	public GameState gameState = new GameState(STATE_GAME, rand);
 	public MenuState menuState = new MenuState(STATE_MENU);
 	public ShopState shopState = new ShopState(STATE_SHOP);
 	public LoadState loadState = new LoadState(STATE_LOAD);
@@ -74,7 +71,7 @@ public class MowerGame extends StateBasedGame {
 	
 	@Override
 	public void initStatesList(GameContainer gc) throws SlickException {
-		this.enterState(STATE_LOAD);
+		this.enterState(STATE_GAME);
 	}
 	
 }
