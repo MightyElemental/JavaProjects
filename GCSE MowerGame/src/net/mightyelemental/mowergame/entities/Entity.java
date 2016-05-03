@@ -12,7 +12,7 @@ public abstract class Entity extends Rectangle {
 
 	private static final long serialVersionUID = 1193830639910816843L;
 
-	protected Image displayIcon;
+	protected Image displayIcon = MowerGame.NULL_IMAGE;
 
 	protected World worldObj;
 

@@ -12,6 +12,7 @@ import org.newdawn.slick.state.StateBasedGame;
 
 import net.mightyelemental.mowergame.entities.EntityMower;
 import net.mightyelemental.mowergame.entities.avoid.EntityAvoid;
+import net.mightyelemental.mowergame.entities.avoid.EntityCat;
 import net.mightyelemental.mowergame.grass.Grass;
 import net.mightyelemental.mowergame.grass.GrassController;
 
@@ -19,6 +20,8 @@ public class World {
 
 	protected Image grassImg;
 	protected Image grassMowImg;
+
+	protected Random rand;
 
 	public GrassController grassCon;
 
@@ -31,6 +34,7 @@ public class World {
 
 	public World(Random rand) {
 		grassCon = new GrassController(rand);
+		this.rand = rand;
 	}
 
 	public void spawnEntity(EntityAvoid e) {
@@ -57,6 +61,7 @@ public class World {
 		grassImg = MowerGame.resLoader.loadImage("grass");
 		grassMowImg = MowerGame.resLoader.loadImage("grass_mow");
 		lawnMower = new EntityMower(50, 50, this);
+		generateEntities(); // Entities do not work
 	}
 
 	public void draw(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
@@ -69,11 +74,21 @@ public class World {
 			}
 		}
 		for (EntityAvoid ea : liveEntities) {
+			if (ea == null) {
+				continue;
+			}
 			g.drawImage(ea.getIcon().getScaledCopy((int) ea.getWidth(), (int) ea.getHeight()), ea.getX(), ea.getY());
 		}
 		g.drawImage(lawnMower.getIcon().getScaledCopy((int) lawnMower.getWidth(), (int) lawnMower.getHeight()),
 				lawnMower.getX(), lawnMower.getY());
 
+	}
+
+	public void generateEntities() {
+		int randAmount = rand.nextInt(10) + 10;
+		for (int i = 0; i < randAmount; i++) {
+			this.spawnEntity(new EntityCat(rand.nextInt(1000) + 280, 50, this));
+		}
 	}
 
 }

@@ -1,13 +1,14 @@
 package net.mightyelemental.mowergame.entities.avoid;
 
+import net.mightyelemental.mowergame.World;
 import net.mightyelemental.mowergame.entities.Entity;
 
 public abstract class EntityAvoid extends Entity {
 
 	private static final long serialVersionUID = 3671860235445980129L;
 
-	public EntityAvoid(float x, float y, float width, float height) {
-		super(x, y, width, height);
+	public EntityAvoid(float x, float y, float width, float height, World worldObj) {
+		super(x, y, width, height, worldObj);
 	}
 
 	/** The amount of money that the entity gives when killed */

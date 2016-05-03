@@ -26,11 +26,23 @@ public class EntityMower extends Entity {
 		int y = (int) this.getY();
 		int amountToMoveX = x - mouseX;
 		int amountToMoveY = y - mouseY;
-		this.setX(x - amountToMoveX / maxSpeed);
-		this.setY(y - amountToMoveY / maxSpeed);
+		float shiftX = amountToMoveX / maxSpeed;
+		float shiftY = amountToMoveY / maxSpeed;
+		if (amountToMoveX / maxSpeed > maxSpeed) {
+			shiftX = maxSpeed;
+		} else if (amountToMoveX / maxSpeed < -maxSpeed) {
+			shiftX = -maxSpeed;
+		}
+		if (amountToMoveY / maxSpeed > maxSpeed) {
+			shiftY = maxSpeed;
+		} else if (amountToMoveY / maxSpeed < -maxSpeed) {
+			shiftY = -maxSpeed;
+		}
+		this.setX(x - shiftX);
+		this.setY(y - shiftY);
 		x = (int) this.getX();
 		y = (int) this.getY();
-
+		
 		worldObj.grassCon.setMowed(x, y);
 	}
 
