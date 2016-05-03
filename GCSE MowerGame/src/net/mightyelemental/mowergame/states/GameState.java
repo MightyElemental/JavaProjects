@@ -33,10 +33,7 @@ public class GameState extends BasicGameState {
 
 	@Override
 	public void update(GameContainer gc, StateBasedGame sbg, int delta) throws SlickException {
-		int x = gc.getInput().getMouseX();
-		int y = gc.getInput().getMouseY();
 		worldObj.update(gc, delta);
-		worldObj.grassCon.setMowed(x, y);
 	}
 
 	@Override

@@ -10,7 +10,8 @@ import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.StateBasedGame;
 
-import net.mightyelemental.mowergame.entities.Entity;
+import net.mightyelemental.mowergame.entities.EntityMower;
+import net.mightyelemental.mowergame.entities.avoid.EntityAvoid;
 import net.mightyelemental.mowergame.grass.Grass;
 import net.mightyelemental.mowergame.grass.GrassController;
 
@@ -21,21 +22,33 @@ public class World {
 
 	public GrassController grassCon;
 
-	protected int size = 20;
+	/** The entity that is the player */
+	public EntityMower lawnMower;
 
-	protected List<Entity> entities = new ArrayList<Entity>();
+	protected List<EntityAvoid> liveEntities = new ArrayList<EntityAvoid>();
+
+	protected int size = 20;
 
 	public World(Random rand) {
 		grassCon = new GrassController(rand);
 	}
 
-	/** Used to update the world objects */
-	public void update(GameContainer gc, int delta) {
-		for (int i = 0; i < entities.size(); i++) {
-			if (entities.get(i) != null) {
-				entities.get(i).update(gc, delta);
+	public void spawnEntity(EntityAvoid e) {
+		liveEntities.add(e);
+	}
+
+	/**
+	 * Used to update the world objects
+	 * 
+	 * @throws SlickException
+	 */
+	public void update(GameContainer gc, int delta) throws SlickException {
+		for (int i = 0; i < liveEntities.size(); i++) {
+			if (liveEntities.get(i) != null) {
+				liveEntities.get(i).update(gc, delta);
 			}
 		}
+		lawnMower.update(gc, delta);
 	}
 
 	/** Initialise world objects */
@@ -43,6 +56,7 @@ public class World {
 		grassCon.generateGrass(gc, size);
 		grassImg = MowerGame.resLoader.loadImage("grass");
 		grassMowImg = MowerGame.resLoader.loadImage("grass_mow");
+		lawnMower = new EntityMower(50, 50, this);
 	}
 
 	public void draw(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
@@ -54,6 +68,12 @@ public class World {
 				g.drawImage(grassImg, grass.getX(), grass.getY(), size, size, 0, 0);
 			}
 		}
+		for (EntityAvoid ea : liveEntities) {
+			g.drawImage(ea.getIcon().getScaledCopy((int) ea.getWidth(), (int) ea.getHeight()), ea.getX(), ea.getY());
+		}
+		g.drawImage(lawnMower.getIcon().getScaledCopy((int) lawnMower.getWidth(), (int) lawnMower.getHeight()),
+				lawnMower.getX(), lawnMower.getY());
+
 	}
 
 }
