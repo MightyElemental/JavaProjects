@@ -38,11 +38,11 @@ public class MowerGame extends StateBasedGame {
 	public MowerGame(String name) {
 		super(name);
 
-		for (int i = 0; i <= 1312; i++) {
-			if (i / 16.0 * 9.0 - Math.round(i / 16.0 * 9.0) == 0) {
-				System.out.println("Width: " + i + " Height:" + (i / 16.0 * 9.0));
-			}
-		}
+		// for (int i = 0; i <= 1312; i++) {
+		// if (i / 16.0 * 9.0 - Math.round(i / 16.0 * 9.0) == 0) {
+		// System.out.println("Width: " + i + " Height:" + (i / 16.0 * 9.0));
+		// }
+		// }
 
 		addState(loadState);
 		addState(gameState);
@@ -72,7 +72,7 @@ public class MowerGame extends StateBasedGame {
 
 	@Override
 	public void initStatesList(GameContainer gc) throws SlickException {
-		this.enterState(STATE_GAME);
+		this.enterState(STATE_LOAD);
 	}
 
 }
