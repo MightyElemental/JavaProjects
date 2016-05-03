@@ -17,35 +17,34 @@ import net.mightyelemental.mowergame.grass.Grass;
 import net.mightyelemental.mowergame.grass.GrassController;
 
 public class World {
-
+	
+	
 	protected Image grassImg;
 	protected Image grassMowImg;
-
+	
 	protected Random rand;
-
+	
 	public GrassController grassCon;
-
+	
 	/** The entity that is the player */
 	public EntityMower lawnMower;
-
+	
 	protected List<EntityAvoid> liveEntities = new ArrayList<EntityAvoid>();
-
+	
 	protected int size = 20;
-
-	public World(Random rand) {
+	
+	public World( Random rand ) {
 		grassCon = new GrassController(rand);
 		this.rand = rand;
 	}
-
+	
 	public void spawnEntity(EntityAvoid e) {
 		liveEntities.add(e);
 	}
-
-	/**
-	 * Used to update the world objects
+	
+	/** Used to update the world objects
 	 * 
-	 * @throws SlickException
-	 */
+	 * @throws SlickException */
 	public void update(GameContainer gc, int delta) throws SlickException {
 		for (int i = 0; i < liveEntities.size(); i++) {
 			if (liveEntities.get(i) != null) {
@@ -54,7 +53,7 @@ public class World {
 		}
 		lawnMower.update(gc, delta);
 	}
-
+	
 	/** Initialise world objects */
 	public void init(GameContainer gc, StateBasedGame sbg) throws SlickException {
 		grassCon.generateGrass(gc, size);
@@ -63,7 +62,7 @@ public class World {
 		lawnMower = new EntityMower(50, 50, this);
 		generateEntities(); // Entities do not work
 	}
-
+	
 	public void draw(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
 		for (int i = 0; i < grassCon.grassList.size(); i++) {
 			Grass grass = grassCon.grassList.get(i);
@@ -77,18 +76,18 @@ public class World {
 			if (ea == null) {
 				continue;
 			}
-			g.drawImage(ea.getIcon().getScaledCopy((int) ea.getWidth(), (int) ea.getHeight()), ea.getX(), ea.getY());
+			g.drawImage(ea.getIcon().getScaledCopy((int) ea.getWidth(), (int) ea.getHeight()), ea.getCenterX(), ea.getCenterY());
 		}
-		g.drawImage(lawnMower.getIcon().getScaledCopy((int) lawnMower.getWidth(), (int) lawnMower.getHeight()),
-				lawnMower.getX(), lawnMower.getY());
-
+		g.drawImage(lawnMower.getIcon().getScaledCopy((int) lawnMower.getWidth(), (int) lawnMower.getHeight()), lawnMower.getX(),
+			lawnMower.getY());
+		
 	}
-
+	
 	public void generateEntities() {
 		int randAmount = rand.nextInt(10) + 10;
 		for (int i = 0; i < randAmount; i++) {
 			this.spawnEntity(new EntityCat(rand.nextInt(1000) + 280, 50, this));
 		}
 	}
-
+	
 }
