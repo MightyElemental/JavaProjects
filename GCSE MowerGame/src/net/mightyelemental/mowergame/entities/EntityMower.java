@@ -4,6 +4,7 @@ import java.awt.Point;
 
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.SlickException;
+import org.newdawn.slick.geom.Rectangle;
 
 import net.mightyelemental.mowergame.MathHelper;
 import net.mightyelemental.mowergame.World;
@@ -13,12 +14,14 @@ public class EntityMower extends Entity {
 	private static final long serialVersionUID = 4112241142072508351L;
 
 	public float maxSpeed = 5f;
-	public float vel = 5f;
+	public float vel = 8f;
+
+	public Rectangle bladeRect;
 
 	public EntityMower(float x, float y, World worldObj) {
-		super(x, y, 50, 50, worldObj);
+		super(x, y, 70, 70, worldObj);
 		this.setIcon("entities.lawnMower");
-		displayIcon = displayIcon.getScaledCopy((int) width, (int) height);
+		bladeRect = new Rectangle(x + width / 4, y + height / 4, width / 2.5f, height / 2.5f);
 	}
 
 	public float angle = 0;
@@ -42,7 +45,9 @@ public class EntityMower extends Entity {
 			this.setCenterX(this.getCenterX() - amountToMoveX);
 			this.setCenterY(this.getCenterY() - amountToMoveY);
 		}
-		worldObj.grassCon.setMowed(x, y);
+		bladeRect.setCenterX(this.getCenterX());
+		bladeRect.setCenterY(this.getCenterY());
+		worldObj.grassCon.setMowed(bladeRect);
 	}
 
 	public float getAngle() {

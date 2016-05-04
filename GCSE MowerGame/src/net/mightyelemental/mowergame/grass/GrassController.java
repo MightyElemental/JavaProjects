@@ -6,18 +6,18 @@ import java.util.Random;
 
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.SlickException;
+import org.newdawn.slick.geom.Rectangle;
 
 public class GrassController {
-	
-	
+
 	public List<Grass> grassList = new ArrayList<Grass>();
-	
+
 	private Random rand;
-	
-	public GrassController( Random rand ) {
+
+	public GrassController(Random rand) {
 		this.rand = rand;
 	}
-	
+
 	public void generateGrass(GameContainer gc, int size) throws SlickException {
 		for (int w = 0; w < gc.getWidth(); w += size) {
 			for (int h = 0; h < gc.getHeight(); h += size) {
@@ -26,7 +26,7 @@ public class GrassController {
 			}
 		}
 	}
-	
+
 	public void setMowed(int x, int y) throws SlickException {
 		for (int i = 0; i < grassList.size(); i++) {
 			if (grassList.get(i).contains(x, y)) {
@@ -34,7 +34,15 @@ public class GrassController {
 			}
 		}
 	}
-	
+
+	public void setMowed(Rectangle rect) throws SlickException {
+		for (int i = 0; i < grassList.size(); i++) {
+			if (grassList.get(i).intersects(rect)) {
+				grassList.get(i).mowGrass();
+			}
+		}
+	}
+
 	@Deprecated
 	protected int generateColor() {
 		if (rand.nextInt(10) == 0) {
@@ -43,5 +51,5 @@ public class GrassController {
 			return rand.nextInt(150) + 106;
 		}
 	}
-	
+
 }
