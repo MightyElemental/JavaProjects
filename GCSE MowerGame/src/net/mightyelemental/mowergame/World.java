@@ -86,7 +86,9 @@ public class World {
 	public void generateEntities() {
 		int randAmount = rand.nextInt(10) + 10;
 		for (int i = 0; i < randAmount; i++) {
-			this.spawnEntity(new EntityCat(rand.nextInt(1000) + 280, 50, this));
+			int randX = rand.nextInt(1200) + 80;
+			int randY = rand.nextInt(700) + 20;
+			this.spawnEntity(new EntityCat(randX, randY, this));
 		}
 	}
 
