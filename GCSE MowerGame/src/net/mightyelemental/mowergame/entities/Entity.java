@@ -25,6 +25,13 @@ public abstract class Entity extends Rectangle {
 		}
 	}
 
+	public float angle = 0;
+
+	/** Use to get the angle of the entity */
+	public float getAngle() {
+		return angle;
+	}
+
 	/** Use to set display icon of entity with an image */
 	public Entity setIcon(Image icon) {
 		displayIcon = icon;

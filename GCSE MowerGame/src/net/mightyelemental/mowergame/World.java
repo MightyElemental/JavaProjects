@@ -10,6 +10,7 @@ import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.StateBasedGame;
 
+import net.mightyelemental.mowergame.entities.Entity;
 import net.mightyelemental.mowergame.entities.EntityMower;
 import net.mightyelemental.mowergame.entities.avoid.EntityAvoid;
 import net.mightyelemental.mowergame.entities.avoid.EntityCat;
@@ -50,6 +51,10 @@ public class World {
 		for (int i = 0; i < liveEntities.size(); i++) {
 			if (liveEntities.get(i) != null) {
 				liveEntities.get(i).update(gc, delta);
+				if (liveEntities.get(i).dead) {
+					liveEntities.remove(i);
+					break;
+				}
 			}
 		}
 		lawnMower.update(gc, delta);
@@ -77,10 +82,18 @@ public class World {
 			if (ea == null) {
 				continue;
 			}
-			g.drawImage(ea.getIcon().getScaledCopy((int) ea.getWidth(), (int) ea.getHeight()), ea.getCenterX(),
-					ea.getCenterY());
+			g.drawImage(ea.getIcon(), ea.getCenterX(), ea.getCenterY());
 		}
 		g.drawImage(lawnMower.getIcon(), lawnMower.getX(), lawnMower.getY());
+	}
+
+	public EntityAvoid getCollidingEntity(Entity ent) {
+		for (EntityAvoid ea : liveEntities) {
+			if (ent.intersects(ea)) {
+				return ea;
+			}
+		}
+		return null;
 	}
 
 	public void generateEntities() {
@@ -88,7 +101,7 @@ public class World {
 		for (int i = 0; i < randAmount; i++) {
 			int randX = rand.nextInt(1200) + 80;
 			int randY = rand.nextInt(700) + 20;
-			this.spawnEntity(new EntityCat(randX, randY, this));
+			this.spawnEntity(new EntityCat(randX, randY, this, rand));
 		}
 	}
 

@@ -18,7 +18,9 @@ public abstract class EntityAvoid extends Entity {
 	public float timeGain = 0;
 
 	/** The amount of damage the mower takes when entity is hit */
-	public int damageToMower = 0;
+	public int damageToMower = 10;
+
+	public boolean dead;
 
 	public float getMoneyGain() {
 		return moneyGain;
@@ -42,6 +44,10 @@ public abstract class EntityAvoid extends Entity {
 
 	public void setDamageToMower(int damageToMower) {
 		this.damageToMower = damageToMower;
+	}
+
+	public void setDead() {
+		this.dead = true;
 	}
 
 }

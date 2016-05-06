@@ -16,15 +16,15 @@ public class EntityMower extends Entity {
 	public float maxSpeed = 5f;
 	public float vel = 8f;
 
+	public float health = 100f;
+
 	public Rectangle bladeRect;
 
 	public EntityMower(float x, float y, World worldObj) {
-		super(x, y, 70, 70, worldObj);
+		super(x, y, 75, 75, worldObj);
 		this.setIcon("entities.lawnMower");
 		bladeRect = new Rectangle(x + width / 4, y + height / 4, width / 2.5f, height / 2.5f);
 	}
-
-	public float angle = 0;
 
 	@Override
 	public void update(GameContainer gc, int delta) throws SlickException {
@@ -45,13 +45,13 @@ public class EntityMower extends Entity {
 			this.setCenterX(this.getCenterX() - amountToMoveX);
 			this.setCenterY(this.getCenterY() - amountToMoveY);
 		}
+		if (worldObj.getCollidingEntity(this) != null) {
+			health -= worldObj.getCollidingEntity(this).damageToMower;
+			worldObj.getCollidingEntity(this).setDead();
+		}
 		bladeRect.setCenterX(this.getCenterX());
 		bladeRect.setCenterY(this.getCenterY());
 		worldObj.grassCon.setMowed(bladeRect);
-	}
-
-	public float getAngle() {
-		return angle;
 	}
 
 }
