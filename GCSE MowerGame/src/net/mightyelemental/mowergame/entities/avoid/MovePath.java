@@ -10,17 +10,26 @@ public class MovePath {
 
 	public boolean hasReached;
 
+	public float speed = 2f;
+
 	public MovePath(float x, float y) {
 		this.destination = new Point((int) x, (int) y);
 	}
 
+	public MovePath(float x, float y, float speed) {
+		this(x, y);
+		this.speed = speed;
+	}
+
 	public void update(GameContainer gc, int delta, EntityAvoid ent) {
-		float amountToMoveX = (2 * (float) Math.cos(Math.toRadians(ent.angle)));
-		float amountToMoveY = (2 * (float) Math.sin(Math.toRadians(ent.angle)));
-		ent.setCenterX(ent.getCenterX() + amountToMoveX);
-		ent.setCenterY(ent.getCenterY() + amountToMoveY);
-		if (ent.getY() > destination.getY() - 5 && ent.getY() < destination.getY() + 5) {
-			if (ent.getX() > destination.getX() - 5 && ent.getX() < destination.getX() + 5) {
+		float amountToMoveX = (speed * (float) Math.cos(Math.toRadians(ent.angle)));
+		float amountToMoveY = (speed * (float) Math.sin(Math.toRadians(ent.angle)));
+		if (!hasReached) {
+			ent.setCenterX(ent.getCenterX() + amountToMoveX);
+			ent.setCenterY(ent.getCenterY() + amountToMoveY);
+		}
+		if (ent.getCenterY() > destination.getY() - 5 && ent.getCenterY() < destination.getY() + 5) {
+			if (ent.getCenterX() > destination.getX() - 5 && ent.getCenterX() < destination.getX() + 5) {
 				hasReached = true;
 			}
 		}

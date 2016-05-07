@@ -12,8 +12,6 @@ public class EntityCat extends EntityAvoid {
 
 	private static final long serialVersionUID = -3701251139422836127L;
 
-	protected MovePath path;
-
 	private Random rand;
 
 	public EntityCat(float x, float y, World worldObj, Random rand) {
@@ -27,11 +25,23 @@ public class EntityCat extends EntityAvoid {
 			path = new MovePath(rand.nextInt(1280), rand.nextInt(720));
 		}
 		if (path.hasReached) {
-			path = null;
-			path = new MovePath(rand.nextInt(1280), rand.nextInt(720));
+			if (rand.nextInt(1000) < 15) {
+				path = null;
+				path = new MovePath(rand.nextInt(1280), rand.nextInt(720));
+			}
 		}
 		path.update(gc, delta, this);
-		angle = MathHelper.getAngle(new Point(path.getX(), path.getY()), new Point((int) x, (int) y));
+		if (!path.hasReached) {
+			angle = MathHelper.getAngle(new Point(path.getX(), path.getY()),
+					new Point((int) getCenterX(), (int) getCenterY()));
+		}
+		/*
+		 * if (worldObj.getCollidingEntity(this) != null) { path = null; // if
+		 * (worldObj.getCollidingEntity(this).path != null) { float newX =
+		 * worldObj.getCollidingEntity(this).getX() - rand.nextInt(100) + 50;
+		 * float newY = worldObj.getCollidingEntity(this).getY() -
+		 * rand.nextInt(100) + 50; path = new MovePath(newX, newY, 3f); // } }
+		 */
 		this.getIcon().setRotation(angle + 90);
 	}
 

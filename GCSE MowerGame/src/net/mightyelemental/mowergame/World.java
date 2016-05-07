@@ -4,13 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
+import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.state.StateBasedGame;
 
-import net.mightyelemental.mowergame.entities.Entity;
 import net.mightyelemental.mowergame.entities.EntityMower;
 import net.mightyelemental.mowergame.entities.avoid.EntityAvoid;
 import net.mightyelemental.mowergame.entities.avoid.EntityCat;
@@ -82,13 +83,20 @@ public class World {
 			if (ea == null) {
 				continue;
 			}
-			g.drawImage(ea.getIcon(), ea.getCenterX(), ea.getCenterY());
+			g.drawImage(ea.getIcon(), ea.getX(), ea.getY());
+			if (ea.getPath() != null) {
+				g.setColor(Color.black);
+				g.drawLine(ea.getPath().getX(), ea.getPath().getY(), ea.getCenterX(), ea.getCenterY());
+			}
 		}
 		g.drawImage(lawnMower.getIcon(), lawnMower.getX(), lawnMower.getY());
 	}
 
-	public EntityAvoid getCollidingEntity(Entity ent) {
+	public EntityAvoid getCollidingEntity(Rectangle ent) {
 		for (EntityAvoid ea : liveEntities) {
+			if (ent.equals(ea)) {
+				continue;
+			}
 			if (ent.intersects(ea)) {
 				return ea;
 			}

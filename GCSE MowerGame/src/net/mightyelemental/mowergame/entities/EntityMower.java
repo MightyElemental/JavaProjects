@@ -21,7 +21,7 @@ public class EntityMower extends Entity {
 	public Rectangle bladeRect;
 
 	public EntityMower(float x, float y, World worldObj) {
-		super(x, y, 75, 75, worldObj);
+		super(x, y, 85, 85, worldObj);
 		this.setIcon("entities.lawnMower");
 		bladeRect = new Rectangle(x + width / 4, y + height / 4, width / 2.5f, height / 2.5f);
 	}
@@ -45,9 +45,9 @@ public class EntityMower extends Entity {
 			this.setCenterX(this.getCenterX() - amountToMoveX);
 			this.setCenterY(this.getCenterY() - amountToMoveY);
 		}
-		if (worldObj.getCollidingEntity(this) != null) {
-			health -= worldObj.getCollidingEntity(this).damageToMower;
-			worldObj.getCollidingEntity(this).setDead();
+		if (worldObj.getCollidingEntity(bladeRect) != null) {
+			health -= worldObj.getCollidingEntity(bladeRect).damageToMower;
+			worldObj.getCollidingEntity(bladeRect).setDead();
 		}
 		bladeRect.setCenterX(this.getCenterX());
 		bladeRect.setCenterY(this.getCenterY());

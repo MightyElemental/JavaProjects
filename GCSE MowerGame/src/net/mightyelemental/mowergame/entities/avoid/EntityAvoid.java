@@ -7,6 +7,8 @@ public abstract class EntityAvoid extends Entity {
 
 	private static final long serialVersionUID = 3671860235445980129L;
 
+	protected MovePath path;
+
 	public EntityAvoid(float x, float y, float width, float height, World worldObj) {
 		super(x, y, width, height, worldObj);
 	}
@@ -48,6 +50,10 @@ public abstract class EntityAvoid extends Entity {
 
 	public void setDead() {
 		this.dead = true;
+	}
+
+	public MovePath getPath() {
+		return path;
 	}
 
 }
