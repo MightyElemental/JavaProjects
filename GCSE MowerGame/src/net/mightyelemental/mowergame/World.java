@@ -19,34 +19,35 @@ import net.mightyelemental.mowergame.grass.Grass;
 import net.mightyelemental.mowergame.grass.GrassController;
 
 public class World {
-	
-	
+
 	protected Image grassImg;
 	protected Image grassMowImg;
-	
+
 	protected Random rand;
-	
+
 	public GrassController grassCon;
-	
+
 	/** The entity that is the player */
 	public EntityMower lawnMower;
-	
+
 	protected List<EntityAvoid> liveEntities = new ArrayList<EntityAvoid>();
-	
+
 	protected int size = 20;
-	
-	public World( Random rand ) {
+
+	public World(Random rand) {
 		grassCon = new GrassController(rand);
 		this.rand = rand;
 	}
-	
+
 	public void spawnEntity(EntityAvoid e) {
 		liveEntities.add(e);
 	}
-	
-	/** Used to update the world objects
+
+	/**
+	 * Used to update the world objects
 	 * 
-	 * @throws SlickException */
+	 * @throws SlickException
+	 */
 	public void update(GameContainer gc, int delta) throws SlickException {
 		updateEntities(gc, delta);
 		lawnMower.update(gc, delta);
@@ -54,8 +55,11 @@ public class World {
 			updateEntities(gc, delta);
 			MowerGame.gameState.running = false;
 		}
+		if (grassCon.getPercentageMowed() == 100) {
+			MowerGame.gameState.running = false;
+		}
 	}
-	
+
 	public void updateEntities(GameContainer gc, int delta) throws SlickException {
 		for (int i = 0; i < liveEntities.size(); i++) {
 			if (liveEntities.get(i) != null) {
@@ -67,7 +71,7 @@ public class World {
 			}
 		}
 	}
-	
+
 	/** Initialise world objects */
 	public void init(GameContainer gc, StateBasedGame sbg) throws SlickException {
 		grassCon.generateGrass(gc, size);
@@ -76,7 +80,7 @@ public class World {
 		lawnMower = new EntityMower(200, 200, this);
 		generateEntities();
 	}
-	
+
 	public void draw(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
 		for (int i = 0; i < grassCon.grassList.size(); i++) {
 			Grass grass = grassCon.grassList.get(i);
@@ -98,17 +102,19 @@ public class World {
 		}
 		g.drawImage(lawnMower.getIcon(), lawnMower.getX(), lawnMower.getY());
 	}
-	
+
 	public EntityAvoid getCollidingEntity(Rectangle ent) {
 		for (EntityAvoid ea : liveEntities) {
 			if (ent.equals(ea)) {
 				continue;
 			}
-			if (ent.intersects(ea)) { return ea; }
+			if (ent.intersects(ea)) {
+				return ea;
+			}
 		}
 		return null;
 	}
-	
+
 	public void generateEntities() {
 		int randAmount = rand.nextInt(10) + 10;
 		for (int i = 0; i < randAmount; i++) {
@@ -117,5 +123,5 @@ public class World {
 			this.spawnEntity(new EntityCat(randX, randY, this, rand));
 		}
 	}
-	
+
 }

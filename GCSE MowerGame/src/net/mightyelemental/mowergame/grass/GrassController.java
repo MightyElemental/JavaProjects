@@ -42,6 +42,17 @@ public class GrassController {
 			}
 		}
 	}
+	
+	public float getPercentageMowed(){
+		float total = grassList.size();
+		float mowed = 0;
+		for (int i = 0; i < grassList.size(); i++) {
+			if (grassList.get(i).isMowed()) {
+				mowed+=1;
+			}
+		}
+		return mowed / total * 100f;
+	}
 
 	@Deprecated
 	protected int generateColor() {
