@@ -26,7 +26,7 @@ public class MowerGame extends StateBasedGame {
 	public static final int STATE_LOAD = 3;
 	
 	public LoadState loadState = new LoadState(STATE_LOAD);
-	public GameState gameState = new GameState(STATE_GAME, rand);
+	public static GameState gameState = new GameState(STATE_GAME, rand);
 	public MenuState menuState = new MenuState(STATE_MENU);
 	public ShopState shopState = new ShopState(STATE_SHOP);
 	
@@ -57,7 +57,7 @@ public class MowerGame extends StateBasedGame {
 			appGc.setTargetFrameRate(60);
 			appGc.setShowFPS(false);
 			appGc.setAlwaysRender(true);
-			appGc.setFullscreen(true);
+			appGc.setFullscreen(false);
 			appGc.setShowFPS(true);
 			appGc.start();
 		} catch (SlickException e) {
