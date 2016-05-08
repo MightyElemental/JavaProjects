@@ -18,11 +18,13 @@ public class GameState extends BasicGameState {
 
 	public World worldObj;
 
-	public float timeTotalMs = 1000 * 120;
+	public float timeTotalMs = 1000 * 25;
 
 	public float timeMs = timeTotalMs;
 
 	public boolean running = true;
+
+	public EndGameOverlay ego;
 
 	public GameState(int ID, Random rand) {
 		this.ID = ID;
@@ -33,9 +35,6 @@ public class GameState extends BasicGameState {
 	public void init(GameContainer gc, StateBasedGame sbg) throws SlickException {
 		worldObj.init(gc, sbg);
 	}
-
-	public Color blackOverlay = new Color(20, 20, 20, 0);
-	public Color endTextColor = new Color(255, 255, 255, 0);
 
 	@Override
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
@@ -54,19 +53,8 @@ public class GameState extends BasicGameState {
 		g.drawString("Mowed " + MathHelper.round(worldObj.grassCon.getPercentageMowed(), 1) + "%", 20, 81);
 
 		// Game Over Overlay
-		if (!running) {
-			g.setColor(blackOverlay);
-			g.fillRect(0, 0, gc.getWidth(), gc.getHeight());
-			if (blackOverlay.a >= 0.8f) {
-				g.setColor(endTextColor);
-				int wid = g.getFont().getWidth("---GAME OVER---");
-				g.drawString("---GAME OVER---", gc.getWidth() / 2 - wid / 2, gc.getHeight() / 2);
-				String text = "You mowed " + MathHelper.round(worldObj.grassCon.getPercentageMowed(), 1)
-						+ "% of the lawn";
-				wid = g.getFont().getWidth(text);
-				g.drawString(text, gc.getWidth() / 2 - wid / 2, gc.getHeight() / 2 + 30);
-
-			}
+		if (ego != null) {
+			ego.render(gc, sbg, g);
 		}
 	}
 
@@ -83,11 +71,8 @@ public class GameState extends BasicGameState {
 			g.setColor(Color.red);
 			g.fillRoundRect(20, 20, 130f / 100f * worldObj.lawnMower.health, 20, 5);
 		}
-		g.setColor(Color.black);
-		g.drawString("Health", 22, 21);
-		if (worldObj.lawnMower.health > 0) {
-			g.drawString(worldObj.lawnMower.health + "%", 110, 21);
-		}
+		g.setColor(Color.black.brighter());
+		g.drawString("Health " + worldObj.lawnMower.health + "%", 22, 21);
 	}
 
 	public void renderTimeBar(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
@@ -96,7 +81,7 @@ public class GameState extends BasicGameState {
 		if (temp < 0) {
 			temp = 0;
 		}
-		String str = "Time " + temp + "s";// game can be finished in 140
+		String str = "Time " + temp + "s";// game can be finished in 90
 											// seconds
 
 		g.setColor(Color.red.darker());
@@ -105,7 +90,7 @@ public class GameState extends BasicGameState {
 			g.setColor(Color.red);
 			g.fillRoundRect(20, 50, (130f / timeTotalMs) * timeMs, 20, 5);
 		}
-		g.setColor(Color.black);
+		g.setColor(Color.black.brighter());
 		g.drawString(str, 22, 51);
 	}
 
@@ -115,11 +100,10 @@ public class GameState extends BasicGameState {
 			worldObj.update(gc, delta);
 			timeMs -= delta;
 		} else {
-			if (blackOverlay.a <= 0.8f) {
-				blackOverlay.a += (1f / 17f / 6f) * (delta / 17f);
-			} else if (endTextColor.a < 1f) {
-				endTextColor.a += (1f / 17f / 2f) * (delta / 17f);
+			if (ego == null) {
+				ego = new EndGameOverlay(this);
 			}
+			ego.update(delta);
 		}
 		if (timeMs <= 0) {
 			running = false;

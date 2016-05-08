@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
@@ -26,6 +25,8 @@ public class World {
 	protected Random rand;
 
 	public GrassController grassCon;
+	
+	public int animalsKilled;
 
 	/** The entity that is the player */
 	public EntityMower lawnMower;
@@ -95,10 +96,11 @@ public class World {
 				continue;
 			}
 			g.drawImage(ea.getIcon(), ea.getX(), ea.getY());
-			if (ea.getPath() != null) {
-				g.setColor(Color.black);
-				g.drawLine(ea.getPath().getX(), ea.getPath().getY(), ea.getCenterX(), ea.getCenterY());
-			}
+			/*
+			 * if (ea.getPath() != null) { g.setColor(Color.black);
+			 * g.drawLine(ea.getPath().getX(), ea.getPath().getY(),
+			 * ea.getCenterX(), ea.getCenterY()); }
+			 */
 		}
 		g.drawImage(lawnMower.getIcon(), lawnMower.getX(), lawnMower.getY());
 	}
