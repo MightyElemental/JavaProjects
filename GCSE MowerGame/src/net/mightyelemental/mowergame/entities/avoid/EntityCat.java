@@ -17,6 +17,7 @@ public class EntityCat extends EntityAvoid {
 	public EntityCat(float x, float y, World worldObj, Random rand) {
 		super(x, y, 55, 55, worldObj);
 		this.rand = rand;
+		this.setIcon("entities.cat");
 	}
 
 	@Override

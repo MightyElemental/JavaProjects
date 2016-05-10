@@ -21,7 +21,7 @@ public abstract class EntityAvoid extends Entity {
 	public float timeGain = 0;
 	
 	/** The amount of damage the mower takes when entity is hit */
-	public int damageToMower = 10;
+	public int damageToMower = 50;
 	
 	public boolean dead;
 	

@@ -57,7 +57,7 @@ public class MowerGame extends StateBasedGame {
 			appGc.setTargetFrameRate(60);
 			appGc.setShowFPS(false);
 			appGc.setAlwaysRender(true);
-			appGc.setFullscreen(true);
+			appGc.setFullscreen(false);
 			appGc.setShowFPS(true);
 			appGc.start();
 		} catch (SlickException e) {
