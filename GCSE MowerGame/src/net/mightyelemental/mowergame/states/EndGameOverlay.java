@@ -23,7 +23,7 @@ public class EndGameOverlay {
 	
 	public EndGameOverlay( GameState gs ) {
 		this.gs = gs;
-		costPerAnimal = (gs.rand.nextInt(3000) / 100f) + 30f;
+		costPerAnimal = (gs.rand.nextInt(3000) / 100f) + 25f;
 	}
 	
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
@@ -96,7 +96,7 @@ public class EndGameOverlay {
 	}
 	
 	public float getMowerCosts() {
-		return ((100 - gs.worldObj.lawnMower.health) / 10f) * 19.49f;
+		return ((100 - gs.worldObj.lawnMower.health) / 10f) * 20f;
 	}
 	
 	public float costPerAnimal;

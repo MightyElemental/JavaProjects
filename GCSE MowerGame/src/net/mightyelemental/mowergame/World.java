@@ -14,6 +14,7 @@ import org.newdawn.slick.state.StateBasedGame;
 import net.mightyelemental.mowergame.entities.EntityMower;
 import net.mightyelemental.mowergame.entities.avoid.EntityAvoid;
 import net.mightyelemental.mowergame.entities.avoid.EntityCat;
+import net.mightyelemental.mowergame.entities.avoid.EntityDog;
 import net.mightyelemental.mowergame.grass.Grass;
 import net.mightyelemental.mowergame.grass.GrassController;
 
@@ -22,11 +23,14 @@ public class World {
 	protected Image grassImg;
 	protected Image grassMowImg;
 
-	protected Random rand;
+	public Random rand;
 
 	public GrassController grassCon;
-	
+
 	public int animalsKilled;
+
+	/** Use to slow or speed up the game */
+	public float deltaDividor = 1;
 
 	/** The entity that is the player */
 	public EntityMower lawnMower;
@@ -35,9 +39,12 @@ public class World {
 
 	protected int size = 20;
 
-	public World(Random rand) {
+	public boolean mowerHasAI;
+
+	public World(Random rand, boolean mowerHasAI) {
 		grassCon = new GrassController(rand);
 		this.rand = rand;
+		this.mowerHasAI = mowerHasAI;
 	}
 
 	public void spawnEntity(EntityAvoid e) {
@@ -50,6 +57,9 @@ public class World {
 	 * @throws SlickException
 	 */
 	public void update(GameContainer gc, int delta) throws SlickException {
+		if (this.mowerHasAI) {
+			delta /= deltaDividor;
+		}
 		updateEntities(gc, delta);
 		lawnMower.update(gc, delta);
 		if (lawnMower.health <= 0) {
@@ -78,7 +88,7 @@ public class World {
 		grassCon.generateGrass(gc, size);
 		grassImg = MowerGame.resLoader.loadImage("grass");
 		grassMowImg = MowerGame.resLoader.loadImage("grass_mow");
-		lawnMower = new EntityMower(200, 200, this);
+		lawnMower = new EntityMower(200, 200, this, mowerHasAI);
 		generateEntities();
 	}
 
@@ -91,16 +101,19 @@ public class World {
 				g.drawImage(grassImg, grass.getX(), grass.getY(), size, size, 0, 0);
 			}
 		}
+		// System.out.println("bush did 9/11"); // KEEAN'S CODE
 		for (EntityAvoid ea : liveEntities) {
 			if (ea == null) {
 				continue;
 			}
 			g.drawImage(ea.getIcon(), ea.getX(), ea.getY());
-			/*
-			 * if (ea.getPath() != null) { g.setColor(Color.black);
-			 * g.drawLine(ea.getPath().getX(), ea.getPath().getY(),
-			 * ea.getCenterX(), ea.getCenterY()); }
-			 */
+
+			// if (ea.getPath() != null) {
+			// g.setColor(Color.black);
+			// g.drawLine(ea.getPath().getX(), ea.getPath().getY(),
+			// ea.getCenterX(), ea.getCenterY());
+			// }
+
 		}
 		g.drawImage(lawnMower.getIcon(), lawnMower.getX(), lawnMower.getY());
 	}
@@ -118,11 +131,15 @@ public class World {
 	}
 
 	public void generateEntities() {
-		int randAmount = rand.nextInt(10) + 10;
+		int randAmount = rand.nextInt(5) + 7;
 		for (int i = 0; i < randAmount; i++) {
-			int randX = rand.nextInt(1200) + 80;
-			int randY = rand.nextInt(700) + 20;
-			this.spawnEntity(new EntityCat(randX, randY, this, rand));
+			int randX = 1280 + rand.nextInt(200);
+			int randY = rand.nextInt(720);
+			if (rand.nextInt(4) == 0) {
+				this.spawnEntity(new EntityDog(randX, randY, this));
+			} else {
+				this.spawnEntity(new EntityCat(randX, randY, this));
+			}
 		}
 	}
 

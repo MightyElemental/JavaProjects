@@ -7,7 +7,10 @@ import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Rectangle;
 
 import net.mightyelemental.mowergame.MathHelper;
+import net.mightyelemental.mowergame.MowerGame;
 import net.mightyelemental.mowergame.World;
+import net.mightyelemental.mowergame.entities.avoid.EntityAvoid;
+import net.mightyelemental.mowergame.entities.avoid.MovePath;
 
 public class EntityMower extends Entity {
 
@@ -18,18 +21,43 @@ public class EntityMower extends Entity {
 
 	public float health = 100f;
 
+	public MovePath aiPath;
+
 	public Rectangle bladeRect;
 
-	public EntityMower(float x, float y, World worldObj) {
-		super(x, y, 100, 100, worldObj);
+	public boolean mowerHasAI;
+
+	public EntityMower(float x, float y, World worldObj, boolean mowerHasAI) {
+		super(x, y, 110, 110, worldObj);
 		this.setIcon("entities.lawnMower");
 		bladeRect = new Rectangle(x + width / 4, y + height / 4, width / 2.5f, height / 2.5f);
+		this.mowerHasAI = mowerHasAI;
 	}
 
 	@Override
 	public void update(GameContainer gc, int delta) throws SlickException {
+		if (aiPath == null && mowerHasAI) {
+			aiPath = new MovePath(worldObj.rand.nextInt(1280), worldObj.rand.nextInt(720));
+		}
+		if (aiPath != null) {
+			if (this.getCenterY() > aiPath.getY() - 10 && this.getCenterY() < aiPath.getY() + 10) {
+				if (this.getCenterX() > aiPath.getX() - 10 && this.getCenterX() < aiPath.getX() + 10) {
+					aiPath.hasReached = true;
+				}
+			}
+		}
+		if (aiPath != null && aiPath.hasReached) {
+			aiPath = null;
+			aiPath = new MovePath(worldObj.rand.nextInt(1280), worldObj.rand.nextInt(720));
+		}
+
 		int mouseX = gc.getInput().getMouseX();
 		int mouseY = gc.getInput().getMouseY();
+
+		if (mowerHasAI) {
+			mouseX = aiPath.getX();
+			mouseY = aiPath.getY();
+		}
 
 		// Move towards mouse
 		int x = (int) this.getCenterX();
@@ -45,17 +73,30 @@ public class EntityMower extends Entity {
 			this.setCenterX(this.getCenterX() - amountToMoveX);
 			this.setCenterY(this.getCenterY() - amountToMoveY);
 		}
-		if (worldObj.getCollidingEntity(bladeRect) != null) {
-			health -= worldObj.getCollidingEntity(bladeRect).damageToMower;
-			if (health <= 0) {
-				health = 0;
+		if (!mowerHasAI) {
+			processHealth();
+		} else {
+			if (worldObj.getCollidingEntity(bladeRect) != null) {
+				worldObj.getCollidingEntity(bladeRect).setDead();
 			}
-			worldObj.getCollidingEntity(bladeRect).setDead();
-			worldObj.animalsKilled++;
 		}
 		bladeRect.setCenterX(this.getCenterX());
 		bladeRect.setCenterY(this.getCenterY());
 		worldObj.grassCon.setMowed(bladeRect);
+	}
+
+	private void processHealth() {
+		EntityAvoid ent = worldObj.getCollidingEntity(bladeRect);
+		if (ent != null) {
+			health -= ent.damageToMower;
+			if (health <= 0) {
+				health = 0;
+			}
+			worldObj.getCollidingEntity(bladeRect).setDead();
+			MowerGame.gameState.timeTotalMs += ent.timeGain * 1000;
+			MowerGame.gameState.timeMs += ent.timeGain * 1000;
+			worldObj.animalsKilled++;
+		}
 	}
 
 }

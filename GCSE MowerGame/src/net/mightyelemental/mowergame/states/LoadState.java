@@ -73,7 +73,7 @@ public class LoadState extends BasicGameState {
 		if (ticks > 150 && MowerGame.fullLoaded) {
 			alpha -= 0.01f;
 			if (alpha < -0.2f) {
-				sbg.enterState(MowerGame.STATE_GAME);
+				sbg.enterState(MowerGame.STATE_MENU);
 			}
 		} else {
 			alpha += 0.01f;
