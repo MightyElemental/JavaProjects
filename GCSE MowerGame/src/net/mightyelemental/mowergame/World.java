@@ -15,6 +15,7 @@ import net.mightyelemental.mowergame.entities.EntityMower;
 import net.mightyelemental.mowergame.entities.avoid.EntityAvoid;
 import net.mightyelemental.mowergame.entities.avoid.EntityCat;
 import net.mightyelemental.mowergame.entities.avoid.EntityDog;
+import net.mightyelemental.mowergame.entities.avoid.EntityGnome;
 import net.mightyelemental.mowergame.grass.Grass;
 import net.mightyelemental.mowergame.grass.GrassController;
 
@@ -135,8 +136,10 @@ public class World {
 		for (int i = 0; i < randAmount; i++) {
 			int randX = 1280 + rand.nextInt(200);
 			int randY = rand.nextInt(720);
-			if (rand.nextInt(4) == 0) {
+			if (rand.nextInt(5) == 0) {
 				this.spawnEntity(new EntityDog(randX, randY, this));
+			} else if (rand.nextInt(1) == 0) {
+				this.spawnEntity(new EntityGnome(randX, rand.nextInt(1280), this));// FIX
 			} else {
 				this.spawnEntity(new EntityCat(randX, randY, this));
 			}

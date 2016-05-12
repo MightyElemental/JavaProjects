@@ -73,7 +73,7 @@ public class MenuState extends BasicGameState implements GUIListener {
 		menuWorld.update(gc, delta);
 		if (enterPlay) {
 			if (fade.a < 1f) {
-				fade.a += (1f / 17f / 8f) * (delta / 17f);
+				fade.a += (1f / 17f / 4f) * (delta / 17f);
 				menuWorld.deltaDividor += 0.5f;
 			} else {
 				menuWorld.animalsKilled = 0;
