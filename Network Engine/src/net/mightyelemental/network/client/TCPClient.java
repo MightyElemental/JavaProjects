@@ -3,6 +3,7 @@ package net.mightyelemental.network.client;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.ConnectException;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
@@ -77,7 +78,11 @@ public class TCPClient extends Client {
 	}
 	
 	public synchronized void setup() throws IOException {
-		clientSocket = new Socket(address, port);
+		try {
+			clientSocket = new Socket(address, port);
+		} catch (ConnectException e) {
+			this.initiater.onConnectionRefused();
+		}
 		
 		clientSocket.setReceiveBufferSize(maxBytes);
 		clientSocket.setSendBufferSize(maxBytes);
