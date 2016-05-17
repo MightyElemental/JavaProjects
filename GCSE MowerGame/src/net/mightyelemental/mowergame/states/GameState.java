@@ -39,21 +39,18 @@ public class GameState extends BasicGameState {
 		worldObj.init(gc, sbg);
 	}
 
+	Color barColor = new Color(255, 0, 0, 0.5f);
+
 	@Override
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
 		worldObj.draw(gc, sbg, g);
 
+		renderProgBar(g, 20, 20, 160, 100, worldObj.lawnMower.health, "Health " + worldObj.lawnMower.health + "%");
 		renderBars(gc, sbg, g);
 
 		// Grass
-		g.setColor(Color.red.darker());
-		g.fillRoundRect(20, 80, 130, 20, 5);
-		if (worldObj.lawnMower.health >= 0) {
-			g.setColor(Color.red);
-			g.fillRoundRect(20, 80, (130f * (100 - worldObj.grassCon.getPercentageMowed()) / 100f), 20, 5);
-		}
-		g.setColor(Color.black);
-		g.drawString("Mowed " + MathHelper.round(worldObj.grassCon.getPercentageMowed(), 1) + "%", 20, 81);
+		renderProgBar(g, 20, 80, 300, 100, (100 - worldObj.grassCon.getPercentageMowed()),
+				"Mowed " + MathHelper.round(worldObj.grassCon.getPercentageMowed(), 1) + "%");
 
 		// Game Over Overlay
 		if (ego != null) {
@@ -62,20 +59,18 @@ public class GameState extends BasicGameState {
 	}
 
 	public void renderBars(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
-		renderHealthBar(gc, sbg, g);
 		renderTimeBar(gc, sbg, g);
 	}
 
-	public void renderHealthBar(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
-		// Health
-		g.setColor(Color.red.darker());
-		g.fillRoundRect(20, 20, 130, 20, 5);
-		if (worldObj.lawnMower.health >= 0) {
-			g.setColor(Color.red);
-			g.fillRoundRect(20, 20, 130f / 100f * worldObj.lawnMower.health, 20, 5);
+	public void renderProgBar(Graphics g, float x, float y, float width, float max, float val, String text) {
+		g.setColor(barColor.darker());
+		g.fillRoundRect(x, y, width, 20, 5);
+		if (val >= 0) {
+			g.setColor(barColor);
+			g.fillRoundRect(x, y, width / max * val, 20, 5);
 		}
 		g.setColor(Color.black.brighter());
-		g.drawString("Health " + worldObj.lawnMower.health + "%", 22, 21);
+		g.drawString(text, x + 2, y + 1);
 	}
 
 	public void renderTimeBar(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
@@ -83,18 +78,9 @@ public class GameState extends BasicGameState {
 		float temp = MathHelper.round(timeMs / 1000f, 1);
 		if (temp < 0) {
 			temp = 0;
-		}
-		String str = "Time " + temp + "s";// game can be finished in 90
-											// seconds
+		} // game can be finished in 90 seconds
 
-		g.setColor(Color.red.darker());
-		g.fillRoundRect(20, 50, 130, 20, 5);
-		if (worldObj.lawnMower.health >= 0) {
-			g.setColor(Color.red);
-			g.fillRoundRect(20, 50, (130f / timeTotalMs) * timeMs, 20, 5);
-		}
-		g.setColor(Color.black.brighter());
-		g.drawString(str, 22, 51);
+		renderProgBar(g, 20, 50, 300, timeTotalMs, timeMs, "Time " + temp + "s");
 	}
 
 	@Override

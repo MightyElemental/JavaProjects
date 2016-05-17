@@ -10,6 +10,7 @@ import net.mightyelemental.mowergame.MathHelper;
 import net.mightyelemental.mowergame.MowerGame;
 import net.mightyelemental.mowergame.World;
 import net.mightyelemental.mowergame.entities.avoid.EntityAvoid;
+import net.mightyelemental.mowergame.entities.avoid.EntityGnome;
 import net.mightyelemental.mowergame.entities.avoid.MovePath;
 
 public class EntityMower extends Entity {
@@ -24,6 +25,10 @@ public class EntityMower extends Entity {
 	public MovePath aiPath;
 
 	public Rectangle bladeRect;
+
+	public int animalsKilled;
+
+	public int gnomesKilled;
 
 	public boolean mowerHasAI;
 
@@ -95,7 +100,11 @@ public class EntityMower extends Entity {
 			worldObj.getCollidingEntity(bladeRect).setDead();
 			MowerGame.gameState.timeTotalMs += ent.timeGain * 1000;
 			MowerGame.gameState.timeMs += ent.timeGain * 1000;
-			worldObj.animalsKilled++;
+			if (ent instanceof EntityGnome) {
+				gnomesKilled++;
+			} else {
+				animalsKilled++;
+			}
 		}
 	}
 

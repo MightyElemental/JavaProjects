@@ -28,15 +28,13 @@ public class World {
 
 	public GrassController grassCon;
 
-	public int animalsKilled;
-
 	/** Use to slow or speed up the game */
 	public float deltaDividor = 1;
 
 	/** The entity that is the player */
 	public EntityMower lawnMower;
 
-	protected List<EntityAvoid> liveEntities = new ArrayList<EntityAvoid>();
+	public List<EntityAvoid> liveEntities = new ArrayList<EntityAvoid>();
 
 	protected int size = 20;
 
@@ -109,6 +107,16 @@ public class World {
 			}
 			g.drawImage(ea.getIcon(), ea.getX(), ea.getY());
 
+			// Draw circle
+			// if (ea instanceof EntityGnome) {
+			// g.setColor(new Color(0, 0, 0, 0.5f));
+			// g.fillOval(ea.getCenterX() - MathHelper.getDistance(ea,
+			// lawnMower) / 2,
+			// ea.getCenterY() - MathHelper.getDistance(ea, lawnMower) / 2,
+			// MathHelper.getDistance(ea, lawnMower) * 2,
+			// MathHelper.getDistance(ea, lawnMower) * 2);
+			// }
+
 			// if (ea.getPath() != null) {
 			// g.setColor(Color.black);
 			// g.drawLine(ea.getPath().getX(), ea.getPath().getY(),
@@ -138,11 +146,13 @@ public class World {
 			int randY = rand.nextInt(720);
 			if (rand.nextInt(5) == 0) {
 				this.spawnEntity(new EntityDog(randX, randY, this));
-			} else if (rand.nextInt(1) == 0) {
-				this.spawnEntity(new EntityGnome(randX, rand.nextInt(1280), this));// FIX
 			} else {
 				this.spawnEntity(new EntityCat(randX, randY, this));
 			}
+		}
+		randAmount = rand.nextInt(2) + 1;
+		for (int i = 0; i < randAmount; i++) {
+			this.spawnEntity(new EntityGnome(rand.nextInt(1280), rand.nextInt(720), this));
 		}
 	}
 
