@@ -48,7 +48,7 @@ public class MenuState extends BasicGameState implements GUIListener {
 		objects.add(playButton);
 	}
 
-	private Color cloak = new Color(0, 0, 0, 0.9f);
+	private Color cloak = new Color(0, 0, 0, 0.7f);
 	private Color fade = new Color(0, 0, 0, 0f);
 
 	@Override
@@ -58,9 +58,9 @@ public class MenuState extends BasicGameState implements GUIListener {
 		}
 		g.setColor(cloak);
 		g.fillRect(0, 0, gc.getWidth(), gc.getHeight());
-		int wid = g.getFont().getWidth(":P");
+		int wid = g.getFont().getWidth("GCSE Lawn Mower Game");
 		g.setColor(Color.white);
-		g.drawString(":P", gc.getWidth() / 2 - wid / 2, gc.getHeight() / 2 - 150);
+		g.drawString("GCSE Lawn Mower Game", gc.getWidth() / 2 - wid / 2, gc.getHeight() / 2 - 150);
 		for (GUIObject obj : objects) {
 			obj.draw(g);
 		}
