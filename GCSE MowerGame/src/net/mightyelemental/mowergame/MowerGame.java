@@ -30,7 +30,7 @@ public class MowerGame extends StateBasedGame {
 	public LoadState loadState = new LoadState(STATE_LOAD);
 	public static GameState gameState = new GameState(STATE_GAME, rand);
 	public MenuState menuState = new MenuState(STATE_MENU, rand);
-	public ShopState shopState = new ShopState(STATE_SHOP);
+	public static ShopState shopState = new ShopState(STATE_SHOP);
 
 	public static final String TITLE = "GCSE Mower Game";
 

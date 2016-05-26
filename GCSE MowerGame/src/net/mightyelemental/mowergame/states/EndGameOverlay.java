@@ -15,7 +15,7 @@ public class EndGameOverlay {
 
 	public Color blackOverlay = new Color(20, 20, 20, 0);
 	public Color endTextColor = new Color(255, 255, 255, 0);
-	public float pauseTime = 800;
+	public float pauseTime = 400;
 	public float textOffset = 0;
 	public Color income = new Color(50, 255, 50, 0);
 	public Color outgoings = new Color(255, 50, 50, 0);
