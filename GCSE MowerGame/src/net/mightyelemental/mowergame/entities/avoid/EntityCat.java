@@ -11,7 +11,7 @@ public class EntityCat extends EntityAvoid {
 
 	public EntityCat(float x, float y, World worldObj) {
 		super(x, y, 55, 55, worldObj);
-		this.setIcon("entities.cat");
+		this.setIcon("entities.trump");
 		this.timeGain = 5;
 	}
 

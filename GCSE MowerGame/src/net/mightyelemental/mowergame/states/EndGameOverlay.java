@@ -83,9 +83,9 @@ public class EndGameOverlay {
 	public float getGrassIncome() {
 		float moneyEarned = 0;
 		if (gs.worldObj.grassCon.getPercentageMowed() > 85) {
-			moneyEarned = 0.07f * gs.worldObj.grassCon.grassList.size()
+			moneyEarned =  gs.worldObj.grassCon.grassList.size()
 					* (gs.worldObj.grassCon.getPercentageMowed() / 100f);
-			// moneyEarned = moneyEarned / 806f * 200f;
+			moneyEarned = moneyEarned / 2304f * 150f;
 		}
 		moneyEarned = MathHelper.round(moneyEarned, 2);
 		return moneyEarned;

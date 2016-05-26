@@ -14,7 +14,7 @@ public class EntityDog extends EntityAvoid {
 		this.damageToMower = 60;
 		this.timeGain = -10;
 		this.moneyGain = 10;
-		this.setIcon("entities.dog");
+		this.setIcon("entities.trump2");
 	}
 
 	@Override

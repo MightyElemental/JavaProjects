@@ -29,6 +29,7 @@ public class MenuState extends BasicGameState implements GUIListener {
 	private World menuWorld;
 
 	public Button playButton;
+	public Button shopButton;
 
 	public Random rand;
 
@@ -45,7 +46,10 @@ public class MenuState extends BasicGameState implements GUIListener {
 		menuWorld.deltaDividor = 2.5f;
 		playButton = new Button(gc.getWidth() / 2 - 100, gc.getHeight() / 2 - 25, 200, 50)
 				.setText("Play", gc.getGraphics()).setColor(new Color(255, 255, 255, 0.9f));
+		shopButton = new Button(gc.getWidth() / 2 - 100, gc.getHeight() / 2 + 25, 200, 50).setText("Shop",
+				gc.getGraphics());
 		objects.add(playButton);
+		objects.add(shopButton);
 	}
 
 	private Color cloak = new Color(0, 0, 0, 0.7f);
@@ -83,6 +87,9 @@ public class MenuState extends BasicGameState implements GUIListener {
 				sbg.enterState(MowerGame.STATE_GAME);
 			}
 		}
+		if (enterShop) {
+			sbg.enterState(MowerGame.STATE_SHOP);
+		}
 	}
 
 	@Override
@@ -91,11 +98,15 @@ public class MenuState extends BasicGameState implements GUIListener {
 	}
 
 	public boolean enterPlay;
+	public boolean enterShop;
 
 	@Override
 	public void onButtonPushed(Button b, int button) {
 		if (b.equals(playButton) && button == 0) {
 			enterPlay = true;
+		}
+		if (b.equals(shopButton) & button == 0) {
+			enterShop = true;
 		}
 		System.out.println(button);
 	}
