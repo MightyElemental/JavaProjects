@@ -14,7 +14,7 @@ public class EntityGnome extends EntityAvoid {
 
 	public EntityGnome(float x, float y, World worldObj) {
 		super(x, y, 50, 50, worldObj);
-		this.setIcon("entities.bush");
+		this.setIcon("entities.gnome");
 		this.damageToMower = 2;
 		this.timeGain = 8;
 	}

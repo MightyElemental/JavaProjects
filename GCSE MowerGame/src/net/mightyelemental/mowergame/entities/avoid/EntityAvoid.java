@@ -9,6 +9,7 @@ import org.newdawn.slick.SlickException;
 import net.mightyelemental.mowergame.MathHelper;
 import net.mightyelemental.mowergame.World;
 import net.mightyelemental.mowergame.entities.Entity;
+import net.mightyelemental.mowergame.entities.EntityBloodSplat;
 
 public class EntityAvoid extends Entity {
 
@@ -59,6 +60,7 @@ public class EntityAvoid extends Entity {
 	}
 
 	public void setDead() {
+		worldObj.spawnEntity(new EntityBloodSplat(this.getCenterX(), this.getCenterY(), worldObj));
 		this.dead = true;
 	}
 

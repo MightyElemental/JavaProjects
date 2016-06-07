@@ -11,7 +11,7 @@ public class EntityCat extends EntityAvoid {
 
 	public EntityCat(float x, float y, World worldObj) {
 		super(x, y, 55, 55, worldObj);
-		this.setIcon("entities.trump");
+		this.setIcon("entities.cat");
 		this.timeGain = 5;
 	}
 
@@ -24,7 +24,7 @@ public class EntityCat extends EntityAvoid {
 		if (path.hasReached) {
 			if (rand.nextInt(1000) < 15) {
 				path = null;
-				int x = (int) (rand.nextInt(200) - 100 + this.getX());
+				int x = (int) (rand.nextInt(400) - 200 + this.getX());
 				if (x <= 0) {
 					x = 0;
 				}

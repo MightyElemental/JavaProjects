@@ -11,6 +11,8 @@ import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.state.StateBasedGame;
 
+import net.mightyelemental.mowergame.entities.Entity;
+import net.mightyelemental.mowergame.entities.EntityBloodSplat;
 import net.mightyelemental.mowergame.entities.EntityMower;
 import net.mightyelemental.mowergame.entities.avoid.EntityAvoid;
 import net.mightyelemental.mowergame.entities.avoid.EntityCat;
@@ -35,6 +37,7 @@ public class World {
 	public EntityMower lawnMower;
 
 	public List<EntityAvoid> liveEntities = new ArrayList<EntityAvoid>();
+	public List<EntityBloodSplat> bloodSplats = new ArrayList<EntityBloodSplat>();
 
 	protected int size = 20;
 
@@ -46,8 +49,12 @@ public class World {
 		this.mowerHasAI = mowerHasAI;
 	}
 
-	public void spawnEntity(EntityAvoid e) {
-		liveEntities.add(e);
+	public void spawnEntity(Entity e) {
+		if (e instanceof EntityAvoid) {
+			liveEntities.add((EntityAvoid) e);
+		} else if (e instanceof EntityBloodSplat) {
+			bloodSplats.add((EntityBloodSplat) e);
+		}
 	}
 
 	/**
@@ -61,12 +68,26 @@ public class World {
 		}
 		updateEntities(gc, delta);
 		lawnMower.update(gc, delta);
+		updateBlood(gc, delta);
 		if (lawnMower.health <= 0) {
 			updateEntities(gc, delta);
 			MowerGame.gameState.running = false;
 		}
+
 		if (grassCon.getPercentageMowed() == 100) {
 			MowerGame.gameState.running = false;
+		}
+	}
+
+	public void updateBlood(GameContainer gc, int delta) throws SlickException {
+		for (int i = 0; i < bloodSplats.size(); i++) {
+			if (bloodSplats.get(i) != null) {
+				bloodSplats.get(i).update(gc, delta);
+				if (bloodSplats.get(i).getIcon().getAlpha() <= 0f) {
+					bloodSplats.remove(i);
+					break;
+				}
+			}
 		}
 	}
 
@@ -77,6 +98,7 @@ public class World {
 				if (liveEntities.get(i).dead) {
 					liveEntities.remove(i);
 					break;
+
 				}
 			}
 		}
@@ -101,21 +123,17 @@ public class World {
 			}
 		}
 		// System.out.println("bush did 9/11"); // KEEAN'S CODE
+		for (EntityBloodSplat ebs : bloodSplats) {
+			if (ebs == null) {
+				continue;
+			}
+			g.drawImage(ebs.getIcon(), ebs.getX(), ebs.getY());
+		}
 		for (EntityAvoid ea : liveEntities) {
 			if (ea == null) {
 				continue;
 			}
 			g.drawImage(ea.getIcon(), ea.getX(), ea.getY());
-
-			// Draw circle
-			// if (ea instanceof EntityGnome) {
-			// g.setColor(new Color(0, 0, 0, 0.5f));
-			// g.fillOval(ea.getCenterX() - MathHelper.getDistance(ea,
-			// lawnMower) / 2,
-			// ea.getCenterY() - MathHelper.getDistance(ea, lawnMower) / 2,
-			// MathHelper.getDistance(ea, lawnMower) * 2,
-			// MathHelper.getDistance(ea, lawnMower) * 2);
-			// }
 
 			// if (ea.getPath() != null) {
 			// g.setColor(Color.black);
@@ -128,12 +146,12 @@ public class World {
 	}
 
 	public EntityAvoid getCollidingEntity(Rectangle ent) {
-		for (EntityAvoid ea : liveEntities) {
+		for (Entity ea : liveEntities) {
 			if (ent.equals(ea)) {
 				continue;
 			}
 			if (ent.intersects(ea)) {
-				return ea;
+				return (EntityAvoid) ea;
 			}
 		}
 		return null;
