@@ -9,6 +9,7 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Rectangle;
+import org.newdawn.slick.geom.Shape;
 import org.newdawn.slick.state.StateBasedGame;
 
 import net.mightyelemental.mowergame.entities.Entity;
@@ -127,7 +128,12 @@ public class World {
 			if (ebs == null) {
 				continue;
 			}
-			g.drawImage(ebs.getIcon(), ebs.getX(), ebs.getY());
+			for (int i = 0; i < ebs.splatParts.size(); i++) {
+				Shape s = ebs.splatParts.get(i);
+				g.setColor(ebs.splatColors.get(i));
+				g.fill(s);
+			}
+			// g.drawImage(ebs.getIcon(), ebs.getX(), ebs.getY());
 		}
 		for (EntityAvoid ea : liveEntities) {
 			if (ea == null) {

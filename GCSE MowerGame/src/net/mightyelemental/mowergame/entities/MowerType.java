@@ -1,26 +1,27 @@
 package net.mightyelemental.mowergame.entities;
 
-public class MowerTypes {
+public class MowerType {
 
 	private String name;
-	private int durability = 100;
+	private float durability = 100;
 	private float speed = 5f;
 	private int size = 110;
 
-	private MowerTypes(String name, int size, int durability, float maxSpeed) {
+	private MowerType(String name, int size, int durability, float maxSpeed) {
 		this.name = name;
 		this.durability = durability;
 		this.speed = maxSpeed;
 		this.size = size;
 	}
 
-	public MowerTypes MowveMonster = new MowerTypes("Mowve Monster", 120, 140, 4f);
+	public static MowerType MowveMonster = new MowerType("Mowve Monster", 120, 140, 4f);
+	public static MowerType Hacker = new MowerType("Hack", 120, 500, 6f);
 
 	public String getName() {
 		return name;
 	}
 
-	public int getDurability() {
+	public float getDurability() {
 		return durability;
 	}
 

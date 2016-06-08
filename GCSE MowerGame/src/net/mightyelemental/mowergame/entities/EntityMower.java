@@ -17,10 +17,12 @@ public class EntityMower extends Entity {
 
 	private static final long serialVersionUID = 4112241142072508351L;
 
-	public float maxSpeed = 5f;
+	public MowerType mowerType = MowerType.Hacker;
+
+	public float maxSpeed = mowerType.getSpeed(); // 5f
 	public float vel = 8f;
 
-	public float health = 100f;
+	public float health = mowerType.getDurability(); // 100f
 
 	public MovePath aiPath;
 
@@ -34,6 +36,8 @@ public class EntityMower extends Entity {
 
 	public EntityMower(float x, float y, World worldObj, boolean mowerHasAI) {
 		super(x, y, 110, 110, worldObj);
+		this.setWidth(mowerType.getSize());
+		this.setHeight(mowerType.getSize());
 		this.setIcon("entities.lawnMower");
 		bladeRect = new Rectangle(x + width / 4, y + height / 4, width / 2.5f, height / 2.5f);
 		this.mowerHasAI = mowerHasAI;
