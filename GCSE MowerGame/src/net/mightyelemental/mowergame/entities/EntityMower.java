@@ -17,7 +17,7 @@ public class EntityMower extends Entity {
 
 	private static final long serialVersionUID = 4112241142072508351L;
 
-	public MowerType mowerType = MowerType.MowveMonster;
+	public MowerType mowerType = MowerType.Hacker;
 
 	public float maxSpeed = mowerType.getSpeed(); // 5f
 	public float vel = 0f; // 8f

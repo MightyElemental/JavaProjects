@@ -13,7 +13,6 @@ import org.newdawn.slick.geom.Shape;
 import org.newdawn.slick.state.StateBasedGame;
 
 import net.mightyelemental.mowergame.entities.Entity;
-import net.mightyelemental.mowergame.entities.EntityBloodSplat;
 import net.mightyelemental.mowergame.entities.EntityMower;
 import net.mightyelemental.mowergame.entities.living.EntityCat;
 import net.mightyelemental.mowergame.entities.living.EntityDog;
@@ -21,6 +20,7 @@ import net.mightyelemental.mowergame.entities.living.EntityGnome;
 import net.mightyelemental.mowergame.entities.living.EntityLiving;
 import net.mightyelemental.mowergame.grass.Grass;
 import net.mightyelemental.mowergame.grass.GrassController;
+import net.mightyelemental.mowergame.particles.ParticleBloodSplat;
 
 public class World {
 
@@ -38,7 +38,7 @@ public class World {
 	public EntityMower lawnMower;
 
 	public List<EntityLiving> liveEntities = new ArrayList<EntityLiving>();
-	public List<EntityBloodSplat> bloodSplats = new ArrayList<EntityBloodSplat>();
+	public List<ParticleBloodSplat> bloodSplats = new ArrayList<ParticleBloodSplat>();
 
 	protected int size = 20;
 
@@ -53,8 +53,8 @@ public class World {
 	public void spawnEntity(Entity e) {
 		if (e instanceof EntityLiving) {
 			liveEntities.add((EntityLiving) e);
-		} else if (e instanceof EntityBloodSplat) {
-			bloodSplats.add((EntityBloodSplat) e);
+		} else if (e instanceof ParticleBloodSplat) {
+			bloodSplats.add((ParticleBloodSplat) e);
 		}
 	}
 
@@ -84,7 +84,12 @@ public class World {
 		for (int i = 0; i < bloodSplats.size(); i++) {
 			if (bloodSplats.get(i) != null) {
 				bloodSplats.get(i).update(gc, delta);
-				if (bloodSplats.get(i).getIcon().getAlpha() <= 0f) {
+				for (int j = 0; j < bloodSplats.get(i).splatParts.size(); j++) {
+					if (bloodSplats.get(i).splatColors.get(j).a <= 0f) {
+						bloodSplats.get(i).splatParts.remove(j);
+					}
+				}
+				if (bloodSplats.get(i).splatParts.isEmpty()) {
 					bloodSplats.remove(i);
 					break;
 				}
@@ -124,7 +129,7 @@ public class World {
 			}
 		}
 		// System.out.println("bush did 9/11"); // KEEAN'S CODE
-		for (EntityBloodSplat ebs : bloodSplats) {
+		for (ParticleBloodSplat ebs : bloodSplats) {
 			if (ebs == null) {
 				continue;
 			}
@@ -132,8 +137,7 @@ public class World {
 				Shape s = ebs.splatParts.get(i);
 				g.setColor(ebs.splatColors.get(i));
 				g.fill(s);
-				// g.drawImage(MowerGame.resLoader.loadImage("entities.trump").getScaledCopy(25,
-				// 25), s.getX(), s.getY());
+				//g.drawImage(MowerGame.resLoader.loadImage("entities.trump").getScaledCopy(25, 25), s.getX(), s.getY());
 			}
 			// g.drawImage(ebs.getIcon(), ebs.getX(), ebs.getY());
 		}

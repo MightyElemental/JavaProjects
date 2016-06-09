@@ -9,7 +9,7 @@ import org.newdawn.slick.SlickException;
 import net.mightyelemental.mowergame.MathHelper;
 import net.mightyelemental.mowergame.World;
 import net.mightyelemental.mowergame.entities.Entity;
-import net.mightyelemental.mowergame.entities.EntityBloodSplat;
+import net.mightyelemental.mowergame.particles.ParticleBloodSplat;
 
 public class EntityLiving extends Entity {
 
@@ -60,7 +60,7 @@ public class EntityLiving extends Entity {
 	}
 
 	public void setDead() {
-		worldObj.spawnEntity(new EntityBloodSplat(this.getCenterX(), this.getCenterY(), worldObj));
+		worldObj.spawnEntity(new ParticleBloodSplat(this.getCenterX(), this.getCenterY(), worldObj));
 		this.dead = true;
 	}
 

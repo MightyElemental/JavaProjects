@@ -43,4 +43,9 @@ public class EntityGnome extends EntityLiving {
 		}
 	}
 
+	@Override
+	public void setDead() {
+		this.dead = true;
+	}
+
 }

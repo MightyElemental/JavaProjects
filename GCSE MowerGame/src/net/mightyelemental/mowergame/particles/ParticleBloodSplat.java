@@ -1,4 +1,4 @@
-package net.mightyelemental.mowergame.entities;
+package net.mightyelemental.mowergame.particles;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,16 +11,16 @@ import org.newdawn.slick.geom.Shape;
 
 import net.mightyelemental.mowergame.World;
 
-public class EntityBloodSplat extends Entity {
+public class ParticleBloodSplat extends Particle {
 
 	private static final long serialVersionUID = 2375105190211764804L;
 
 	public List<Shape> splatParts = new ArrayList<Shape>();
 	public List<Color> splatColors = new ArrayList<Color>();
 
-	public EntityBloodSplat(float x, float y, World worldObj) {
+	public ParticleBloodSplat(float x, float y, World worldObj) {
 		super(x, y, 70, 70, worldObj);
-		this.setIcon("entities.bloodsplat");
+		this.setIcon("particles.bloodsplat");
 		// this.setWidth(worldObj.rand.nextInt(70) + 70);
 		// this.setHeight(this.getWidth());
 		this.setCenterX(x);
