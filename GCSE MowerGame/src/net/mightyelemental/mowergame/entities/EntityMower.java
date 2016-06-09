@@ -9,18 +9,18 @@ import org.newdawn.slick.geom.Rectangle;
 import net.mightyelemental.mowergame.MathHelper;
 import net.mightyelemental.mowergame.MowerGame;
 import net.mightyelemental.mowergame.World;
-import net.mightyelemental.mowergame.entities.avoid.EntityAvoid;
-import net.mightyelemental.mowergame.entities.avoid.EntityGnome;
-import net.mightyelemental.mowergame.entities.avoid.MovePath;
+import net.mightyelemental.mowergame.entities.living.EntityGnome;
+import net.mightyelemental.mowergame.entities.living.EntityLiving;
+import net.mightyelemental.mowergame.entities.living.MovePath;
 
 public class EntityMower extends Entity {
 
 	private static final long serialVersionUID = 4112241142072508351L;
 
-	public MowerType mowerType = MowerType.Hacker;
+	public MowerType mowerType = MowerType.MowveMonster;
 
 	public float maxSpeed = mowerType.getSpeed(); // 5f
-	public float vel = 8f;
+	public float vel = 0f; // 8f
 
 	public float health = mowerType.getDurability(); // 100f
 
@@ -72,16 +72,26 @@ public class EntityMower extends Entity {
 		int x = (int) this.getCenterX();
 		int y = (int) this.getCenterY();
 
-		angle = MathHelper.getAngle(new Point(x, y), new Point(mouseX, mouseY));
+		vel += mowerType.getAcceleration();
+		if (vel >= maxSpeed) {
+			vel = maxSpeed;
+		}
+		if (Math.abs(x - mouseX) + Math.abs(y - mouseY) > 100) {
+			angle = MathHelper.getAngle(new Point(x, y), new Point(mouseX, mouseY));
+			getIcon().setRotation(angle - 90);
+		} else {
+			vel -= mowerType.getAcceleration() * 2.2f;
+		}
+		if (vel <= 0) {
+			vel = 0;
+		}
 
 		float amountToMoveX = (vel / 25f * delta * (float) Math.cos(Math.toRadians(angle)));
 		float amountToMoveY = (vel / 25f * delta * (float) Math.sin(Math.toRadians(angle)));
 
-		if (Math.abs(x - mouseX) + Math.abs(y - mouseY) > 8) {
-			getIcon().setRotation(angle - 90);
-			this.setCenterX(this.getCenterX() - amountToMoveX);
-			this.setCenterY(this.getCenterY() - amountToMoveY);
-		}
+		this.setCenterX(this.getCenterX() - amountToMoveX);
+		this.setCenterY(this.getCenterY() - amountToMoveY);
+
 		if (!mowerHasAI) {
 			processHealth();
 		} else {
@@ -95,7 +105,7 @@ public class EntityMower extends Entity {
 	}
 
 	private void processHealth() {
-		EntityAvoid ent = worldObj.getCollidingEntity(bladeRect);
+		EntityLiving ent = worldObj.getCollidingEntity(bladeRect);
 		if (ent != null) {
 			health -= ent.damageToMower;
 			if (health <= 0) {

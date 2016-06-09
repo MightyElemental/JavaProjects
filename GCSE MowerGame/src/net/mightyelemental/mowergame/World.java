@@ -15,10 +15,10 @@ import org.newdawn.slick.state.StateBasedGame;
 import net.mightyelemental.mowergame.entities.Entity;
 import net.mightyelemental.mowergame.entities.EntityBloodSplat;
 import net.mightyelemental.mowergame.entities.EntityMower;
-import net.mightyelemental.mowergame.entities.avoid.EntityAvoid;
-import net.mightyelemental.mowergame.entities.avoid.EntityCat;
-import net.mightyelemental.mowergame.entities.avoid.EntityDog;
-import net.mightyelemental.mowergame.entities.avoid.EntityGnome;
+import net.mightyelemental.mowergame.entities.living.EntityCat;
+import net.mightyelemental.mowergame.entities.living.EntityDog;
+import net.mightyelemental.mowergame.entities.living.EntityGnome;
+import net.mightyelemental.mowergame.entities.living.EntityLiving;
 import net.mightyelemental.mowergame.grass.Grass;
 import net.mightyelemental.mowergame.grass.GrassController;
 
@@ -37,7 +37,7 @@ public class World {
 	/** The entity that is the player */
 	public EntityMower lawnMower;
 
-	public List<EntityAvoid> liveEntities = new ArrayList<EntityAvoid>();
+	public List<EntityLiving> liveEntities = new ArrayList<EntityLiving>();
 	public List<EntityBloodSplat> bloodSplats = new ArrayList<EntityBloodSplat>();
 
 	protected int size = 20;
@@ -51,8 +51,8 @@ public class World {
 	}
 
 	public void spawnEntity(Entity e) {
-		if (e instanceof EntityAvoid) {
-			liveEntities.add((EntityAvoid) e);
+		if (e instanceof EntityLiving) {
+			liveEntities.add((EntityLiving) e);
 		} else if (e instanceof EntityBloodSplat) {
 			bloodSplats.add((EntityBloodSplat) e);
 		}
@@ -132,10 +132,12 @@ public class World {
 				Shape s = ebs.splatParts.get(i);
 				g.setColor(ebs.splatColors.get(i));
 				g.fill(s);
+				// g.drawImage(MowerGame.resLoader.loadImage("entities.trump").getScaledCopy(25,
+				// 25), s.getX(), s.getY());
 			}
 			// g.drawImage(ebs.getIcon(), ebs.getX(), ebs.getY());
 		}
-		for (EntityAvoid ea : liveEntities) {
+		for (EntityLiving ea : liveEntities) {
 			if (ea == null) {
 				continue;
 			}
@@ -151,13 +153,13 @@ public class World {
 		g.drawImage(lawnMower.getIcon(), lawnMower.getX(), lawnMower.getY());
 	}
 
-	public EntityAvoid getCollidingEntity(Rectangle ent) {
+	public EntityLiving getCollidingEntity(Rectangle ent) {
 		for (Entity ea : liveEntities) {
 			if (ent.equals(ea)) {
 				continue;
 			}
 			if (ent.intersects(ea)) {
-				return (EntityAvoid) ea;
+				return (EntityLiving) ea;
 			}
 		}
 		return null;

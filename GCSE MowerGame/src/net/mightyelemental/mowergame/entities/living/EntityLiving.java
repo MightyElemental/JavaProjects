@@ -1,4 +1,4 @@
-package net.mightyelemental.mowergame.entities.avoid;
+package net.mightyelemental.mowergame.entities.living;
 
 import java.awt.Point;
 import java.util.Random;
@@ -11,13 +11,13 @@ import net.mightyelemental.mowergame.World;
 import net.mightyelemental.mowergame.entities.Entity;
 import net.mightyelemental.mowergame.entities.EntityBloodSplat;
 
-public class EntityAvoid extends Entity {
+public class EntityLiving extends Entity {
 
 	private static final long serialVersionUID = 3671860235445980129L;
 
 	public Random rand;
 
-	public EntityAvoid(float x, float y, float width, float height, World worldObj) {
+	public EntityLiving(float x, float y, float width, float height, World worldObj) {
 		super(x, y, width, height, worldObj);
 		this.rand = worldObj.rand;
 	}

@@ -32,7 +32,7 @@ public class MowerGame extends StateBasedGame {
 	public MenuState menuState = new MenuState(STATE_MENU, rand);
 	public static ShopState shopState = new ShopState(STATE_SHOP);
 
-	public static final String TITLE = "GCSE Mower Game";
+	public static final String TITLE = "IT Mower Game";
 
 	public static final int WIDTH = 1280;
 

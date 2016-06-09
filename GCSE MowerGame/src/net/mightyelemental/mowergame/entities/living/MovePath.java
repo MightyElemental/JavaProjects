@@ -1,4 +1,4 @@
-package net.mightyelemental.mowergame.entities.avoid;
+package net.mightyelemental.mowergame.entities.living;
 
 import java.awt.Point;
 
@@ -31,7 +31,7 @@ public class MovePath {
 		this.destEnt = ent;
 	}
 
-	public void update(GameContainer gc, int delta, EntityAvoid ent) {
+	public void update(GameContainer gc, int delta, EntityLiving ent) {
 
 		if (destEnt != null) {
 			this.destination.x = (int) destEnt.getCenterX();

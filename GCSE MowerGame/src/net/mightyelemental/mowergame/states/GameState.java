@@ -46,7 +46,7 @@ public class GameState extends BasicGameState {
 		worldObj.draw(gc, sbg, g);
 		int health = (int) (worldObj.lawnMower.health / worldObj.lawnMower.mowerType.getDurability() * 100);
 		renderProgBar(g, 20, 20, 160, 100, health, "Health " + health + "%");
-		renderBars(gc, sbg, g);
+		renderTimeBar(gc, sbg, g);
 
 		// Grass
 		renderProgBar(g, 20, 80, 300, 100, (100 - worldObj.grassCon.getPercentageMowed()),
@@ -56,10 +56,6 @@ public class GameState extends BasicGameState {
 		if (ego != null) {
 			ego.render(gc, sbg, g);
 		}
-	}
-
-	public void renderBars(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
-		renderTimeBar(gc, sbg, g);
 	}
 
 	public void renderProgBar(Graphics g, float x, float y, float width, float max, float val, String text) {

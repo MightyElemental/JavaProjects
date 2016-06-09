@@ -7,7 +7,7 @@ import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.StateBasedGame;
 
 import net.mightyelemental.mowergame.MathHelper;
-import net.mightyelemental.mowergame.entities.avoid.EntityGnome;
+import net.mightyelemental.mowergame.entities.living.EntityGnome;
 
 public class EndGameOverlay {
 

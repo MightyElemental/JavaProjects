@@ -1,11 +1,11 @@
-package net.mightyelemental.mowergame.entities.avoid;
+package net.mightyelemental.mowergame.entities.living;
 
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.SlickException;
 
 import net.mightyelemental.mowergame.World;
 
-public class EntityCat extends EntityAvoid {
+public class EntityCat extends EntityLiving {
 
 	private static final long serialVersionUID = -3701251139422836127L;
 
