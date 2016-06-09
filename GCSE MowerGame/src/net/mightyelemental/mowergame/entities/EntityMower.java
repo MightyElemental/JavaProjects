@@ -12,6 +12,7 @@ import net.mightyelemental.mowergame.World;
 import net.mightyelemental.mowergame.entities.living.EntityGnome;
 import net.mightyelemental.mowergame.entities.living.EntityLiving;
 import net.mightyelemental.mowergame.entities.living.MovePath;
+import net.mightyelemental.mowergame.particles.ParticleGrass;
 
 public class EntityMower extends Entity {
 
@@ -101,7 +102,12 @@ public class EntityMower extends Entity {
 		}
 		bladeRect.setCenterX(this.getCenterX());
 		bladeRect.setCenterY(this.getCenterY());
-		worldObj.grassCon.setMowed(bladeRect);
+
+		boolean mowed = worldObj.grassCon.setMowed(bladeRect);
+
+		if (mowed) {
+			worldObj.createParticle(new ParticleGrass(getCenterX(), getCenterY(), worldObj));
+		}
 	}
 
 	private void processHealth() {

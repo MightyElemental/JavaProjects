@@ -9,7 +9,6 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Rectangle;
-import org.newdawn.slick.geom.Shape;
 import org.newdawn.slick.state.StateBasedGame;
 
 import net.mightyelemental.mowergame.entities.Entity;
@@ -20,6 +19,7 @@ import net.mightyelemental.mowergame.entities.living.EntityGnome;
 import net.mightyelemental.mowergame.entities.living.EntityLiving;
 import net.mightyelemental.mowergame.grass.Grass;
 import net.mightyelemental.mowergame.grass.GrassController;
+import net.mightyelemental.mowergame.particles.Particle;
 import net.mightyelemental.mowergame.particles.ParticleBloodSplat;
 
 public class World {
@@ -38,7 +38,7 @@ public class World {
 	public EntityMower lawnMower;
 
 	public List<EntityLiving> liveEntities = new ArrayList<EntityLiving>();
-	public List<ParticleBloodSplat> bloodSplats = new ArrayList<ParticleBloodSplat>();
+	public List<Particle> particles = new ArrayList<Particle>();
 
 	protected int size = 20;
 
@@ -50,12 +50,12 @@ public class World {
 		this.mowerHasAI = mowerHasAI;
 	}
 
-	public void spawnEntity(Entity e) {
-		if (e instanceof EntityLiving) {
-			liveEntities.add((EntityLiving) e);
-		} else if (e instanceof ParticleBloodSplat) {
-			bloodSplats.add((ParticleBloodSplat) e);
-		}
+	public void spawnEntity(EntityLiving e) {
+		liveEntities.add(e);
+	}
+
+	public void createParticle(Particle p) {
+		particles.add(p);
 	}
 
 	/**
@@ -74,6 +74,9 @@ public class World {
 			updateEntities(gc, delta);
 			MowerGame.gameState.running = false;
 		}
+		for (Particle p : particles) {
+			p.update(gc, delta);
+		}
 
 		if (grassCon.getPercentageMowed() == 100) {
 			MowerGame.gameState.running = false;
@@ -81,16 +84,16 @@ public class World {
 	}
 
 	public void updateBlood(GameContainer gc, int delta) throws SlickException {
-		for (int i = 0; i < bloodSplats.size(); i++) {
-			if (bloodSplats.get(i) != null) {
-				bloodSplats.get(i).update(gc, delta);
-				for (int j = 0; j < bloodSplats.get(i).splatParts.size(); j++) {
-					if (bloodSplats.get(i).splatColors.get(j).a <= 0f) {
-						bloodSplats.get(i).splatParts.remove(j);
+		for (int i = 0; i < particles.size(); i++) {
+			if (particles.get(i) instanceof ParticleBloodSplat) {
+				ParticleBloodSplat pbs = (ParticleBloodSplat) particles.get(i);
+				for (int j = 0; j < pbs.splatParts.size(); j++) {
+					if (pbs.splatColors.get(j).a <= 0f) {
+						pbs.splatParts.remove(j);
 					}
 				}
-				if (bloodSplats.get(i).splatParts.isEmpty()) {
-					bloodSplats.remove(i);
+				if (pbs.splatParts.isEmpty()) {
+					particles.remove(i);
 					break;
 				}
 			}
@@ -129,16 +132,11 @@ public class World {
 			}
 		}
 		// System.out.println("bush did 9/11"); // KEEAN'S CODE
-		for (ParticleBloodSplat ebs : bloodSplats) {
-			if (ebs == null) {
+		for (Particle p : particles) {
+			if (p == null) {
 				continue;
 			}
-			for (int i = 0; i < ebs.splatParts.size(); i++) {
-				Shape s = ebs.splatParts.get(i);
-				g.setColor(ebs.splatColors.get(i));
-				g.fill(s);
-				//g.drawImage(MowerGame.resLoader.loadImage("entities.trump").getScaledCopy(25, 25), s.getX(), s.getY());
-			}
+			p.draw(gc, sbg, g);
 			// g.drawImage(ebs.getIcon(), ebs.getX(), ebs.getY());
 		}
 		for (EntityLiving ea : liveEntities) {

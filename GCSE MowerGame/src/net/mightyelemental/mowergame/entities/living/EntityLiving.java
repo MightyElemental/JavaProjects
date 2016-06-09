@@ -60,7 +60,7 @@ public class EntityLiving extends Entity {
 	}
 
 	public void setDead() {
-		worldObj.spawnEntity(new ParticleBloodSplat(this.getCenterX(), this.getCenterY(), worldObj));
+		worldObj.createParticle(new ParticleBloodSplat(this.getCenterX(), this.getCenterY(), worldObj));
 		this.dead = true;
 	}
 

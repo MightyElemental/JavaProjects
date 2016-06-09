@@ -35,12 +35,17 @@ public class GrassController {
 		}
 	}
 
-	public void setMowed(Rectangle rect) throws SlickException {
+	public boolean setMowed(Rectangle rect) throws SlickException {
+		boolean flag = false;
 		for (int i = 0; i < grassList.size(); i++) {
 			if (grassList.get(i).intersects(rect)) {
-				grassList.get(i).mowGrass();
+				boolean temp = grassList.get(i).mowGrass();
+				if (temp) {
+					flag = true;
+				}
 			}
 		}
+		return flag;
 	}
 
 	public float getPercentageMowed() {

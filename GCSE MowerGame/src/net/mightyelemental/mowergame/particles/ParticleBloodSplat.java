@@ -5,9 +5,11 @@ import java.util.List;
 
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
+import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Circle;
 import org.newdawn.slick.geom.Shape;
+import org.newdawn.slick.state.StateBasedGame;
 
 import net.mightyelemental.mowergame.World;
 
@@ -45,6 +47,15 @@ public class ParticleBloodSplat extends Particle {
 			Shape s = splatParts.get(i);
 			splatColors.get(i).a -= (0.025f / s.getHeight()) * (delta / 17f);
 			System.out.println(splatColors.get(i).a);
+		}
+	}
+
+	@Override
+	public void draw(GameContainer gc, StateBasedGame sbg, Graphics g) {
+		for (int i = 0; i < splatParts.size(); i++) {
+			Shape s = splatParts.get(i);
+			g.setColor(splatColors.get(i));
+			g.fill(s);
 		}
 	}
 
