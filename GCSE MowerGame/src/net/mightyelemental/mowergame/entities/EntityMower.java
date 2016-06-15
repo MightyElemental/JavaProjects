@@ -15,27 +15,27 @@ import net.mightyelemental.mowergame.entities.living.MovePath;
 import net.mightyelemental.mowergame.particles.ParticleGrass;
 
 public class EntityMower extends Entity {
-
+	
+	
 	private static final long serialVersionUID = 4112241142072508351L;
-
+	
 	public MowerType mowerType = MowerType.Hacker;
-
-	public float maxSpeed = mowerType.getSpeed(); // 5f
+	
 	public float vel = 0f; // 8f
-
+	
 	public float health = mowerType.getDurability(); // 100f
-
+	
 	public MovePath aiPath;
-
+	
 	public Rectangle bladeRect;
-
+	
 	public int animalsKilled;
-
+	
 	public int gnomesKilled;
-
+	
 	public boolean mowerHasAI;
-
-	public EntityMower(float x, float y, World worldObj, boolean mowerHasAI) {
+	
+	public EntityMower( float x, float y, World worldObj, boolean mowerHasAI ) {
 		super(x, y, 110, 110, worldObj);
 		this.setWidth(mowerType.getSize());
 		this.setHeight(mowerType.getSize());
@@ -43,7 +43,7 @@ public class EntityMower extends Entity {
 		bladeRect = new Rectangle(x + width / 4, y + height / 4, width / 2.5f, height / 2.5f);
 		this.mowerHasAI = mowerHasAI;
 	}
-
+	
 	@Override
 	public void update(GameContainer gc, int delta) throws SlickException {
 		if (aiPath == null && mowerHasAI) {
@@ -59,23 +59,24 @@ public class EntityMower extends Entity {
 		if (aiPath != null && aiPath.hasReached) {
 			aiPath = null;
 			aiPath = new MovePath(worldObj.rand.nextInt(1280), worldObj.rand.nextInt(720));
+			
 		}
-
+		
 		int mouseX = gc.getInput().getMouseX();
 		int mouseY = gc.getInput().getMouseY();
-
+		
 		if (mowerHasAI) {
 			mouseX = aiPath.getX();
 			mouseY = aiPath.getY();
 		}
-
+		
 		// Move towards mouse
 		int x = (int) this.getCenterX();
 		int y = (int) this.getCenterY();
-
+		
 		vel += mowerType.getAcceleration();
-		if (vel >= maxSpeed) {
-			vel = maxSpeed;
+		if (vel >= mowerType.getSpeed()) {
+			vel = mowerType.getSpeed(); // 5f
 		}
 		if (Math.abs(x - mouseX) + Math.abs(y - mouseY) > 100) {
 			angle = MathHelper.getAngle(new Point(x, y), new Point(mouseX, mouseY));
@@ -86,13 +87,13 @@ public class EntityMower extends Entity {
 		if (vel <= 0) {
 			vel = 0;
 		}
-
+		
 		float amountToMoveX = (vel / 25f * delta * (float) Math.cos(Math.toRadians(angle)));
 		float amountToMoveY = (vel / 25f * delta * (float) Math.sin(Math.toRadians(angle)));
-
+		
 		this.setCenterX(this.getCenterX() - amountToMoveX);
 		this.setCenterY(this.getCenterY() - amountToMoveY);
-
+		
 		if (!mowerHasAI) {
 			processHealth();
 		} else {
@@ -102,14 +103,16 @@ public class EntityMower extends Entity {
 		}
 		bladeRect.setCenterX(this.getCenterX());
 		bladeRect.setCenterY(this.getCenterY());
-
+		
 		boolean mowed = worldObj.grassCon.setMowed(bladeRect);
-
+		
 		if (mowed) {
-			worldObj.createParticle(new ParticleGrass(getCenterX(), getCenterY(), worldObj));
+			for (int i = 0; i < worldObj.rand.nextInt(5) + 3; i++) {
+				worldObj.createParticle(new ParticleGrass(getCenterX(), getCenterY(), worldObj));
+			}
 		}
 	}
-
+	
 	private void processHealth() {
 		EntityLiving ent = worldObj.getCollidingEntity(bladeRect);
 		if (ent != null) {
@@ -127,5 +130,5 @@ public class EntityMower extends Entity {
 			}
 		}
 	}
-
+	
 }

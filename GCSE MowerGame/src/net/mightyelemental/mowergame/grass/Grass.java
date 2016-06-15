@@ -13,7 +13,7 @@ public class Grass extends Rectangle {
 	}
 
 	public boolean mowGrass() {
-		boolean flag = mowed;
+		boolean flag = !mowed;
 		mowed = true;
 		return flag;
 	}
