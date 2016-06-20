@@ -5,6 +5,7 @@ import org.newdawn.slick.SlickException;
 
 import net.mightyelemental.mowergame.MathHelper;
 import net.mightyelemental.mowergame.World;
+import net.mightyelemental.mowergame.particles.ParticleShatter;
 
 public class EntityGnome extends EntityLiving {
 
@@ -45,6 +46,9 @@ public class EntityGnome extends EntityLiving {
 
 	@Override
 	public void setDead() {
+		for (int i = 0; i < worldObj.rand.nextInt(5) + 20; i++) {
+			worldObj.createParticle(new ParticleShatter(this.getCenterX(), getCenterY(), worldObj));
+		}
 		this.dead = true;
 	}
 

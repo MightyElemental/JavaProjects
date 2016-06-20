@@ -44,8 +44,8 @@ public class GameState extends BasicGameState {
 	@Override
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
 		worldObj.draw(gc, sbg, g);
-		int health = (int) (worldObj.lawnMower.health / worldObj.lawnMower.mowerType.getDurability() * 100);
-		renderProgBar(g, 20, 20, 160, 100, health, "Health " + health + "%");
+		int health = (int) (worldObj.lawnMower.health / worldObj.lawnMower.maxHealth * 100);
+		renderProgBar(g, 20, 20, 160, 100, health, "Health " + worldObj.lawnMower.health + "%");
 		renderTimeBar(gc, sbg, g);
 
 		// Grass

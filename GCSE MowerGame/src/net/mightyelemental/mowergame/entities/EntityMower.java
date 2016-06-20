@@ -23,6 +23,7 @@ public class EntityMower extends Entity {
 	
 	public float vel = 0f; // 8f
 	
+	public float maxHealth = mowerType.getDurability();
 	public float health = mowerType.getDurability(); // 100f
 	
 	public MovePath aiPath;
