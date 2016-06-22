@@ -1,4 +1,4 @@
-package net.mightyelemental.mowergame.states;
+package net.mightyelemental.mowergame.states.shop;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package net.mightyelemental.mowergame.states;
+package net.mightyelemental.mowergame.states.shop;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,9 +18,6 @@ public class ShopUpgradeButtons {
 	public Button speed;
 	public Button durability;
 	public Button back;
-
-	public int durabilityLevel = 0;
-	public int speedLevel = 0;
 
 	public ShopUpgradeButtons(GameContainer gc) {
 		int x = gc.getWidth() - 400;

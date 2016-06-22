@@ -40,7 +40,7 @@ public class EntityMower extends Entity {
 		super(x, y, 110, 110, worldObj);
 		this.setWidth(mowerType.getSize());
 		this.setHeight(mowerType.getSize());
-		this.setIcon("entities.lawnMower");
+		this.setIcon(mowerType.getImgPath());
 		bladeRect = new Rectangle(x + width / 4, y + height / 4, width / 2.5f, height / 2.5f);
 		this.mowerHasAI = mowerHasAI;
 	}

@@ -12,7 +12,7 @@ import net.mightyelemental.mowergame.gui.GUIListenerHandler;
 import net.mightyelemental.mowergame.states.GameState;
 import net.mightyelemental.mowergame.states.LoadState;
 import net.mightyelemental.mowergame.states.MenuState;
-import net.mightyelemental.mowergame.states.ShopState;
+import net.mightyelemental.mowergame.states.shop.ShopState;
 
 public class MowerGame extends StateBasedGame {
 

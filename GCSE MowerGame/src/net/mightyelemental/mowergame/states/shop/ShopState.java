@@ -1,4 +1,4 @@
-package net.mightyelemental.mowergame.states;
+package net.mightyelemental.mowergame.states.shop;
 
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
@@ -27,6 +27,8 @@ public class ShopState extends BasicGameState implements GUIListener {
 	public ShopButtons shopButtons;
 	public ShopUpgradeButtons upgradeButtons;
 
+	public Purchases purchase;
+
 	public static final int STATE_MAIN = 0;
 	public static final int STATE_UPGRADE = 1;
 	public static final int STATE_CHARACTERS = 2;
@@ -42,6 +44,7 @@ public class ShopState extends BasicGameState implements GUIListener {
 	public void init(GameContainer gc, StateBasedGame sbg) throws SlickException {
 		shopButtons = new ShopButtons(gc);
 		upgradeButtons = new ShopUpgradeButtons(gc);
+		purchase = new Purchases();
 		background = MowerGame.resLoader.loadImage("shop.background").getScaledCopy(gc.getWidth(), gc.getHeight());
 		trump = MowerGame.resLoader.loadImage("shop.trumpApproved").getScaledCopy(0.8f);
 		sign = MowerGame.resLoader.loadImage("shop.sign").getScaledCopy(0.4f);
@@ -123,8 +126,8 @@ public class ShopState extends BasicGameState implements GUIListener {
 			this.menuState = STATE_MAIN;
 		}
 		if (b.equals(upgradeButtons.durability)) {
-			if (upgradeButtons.durabilityLevel < 4) {
-				upgradeButtons.durabilityLevel++;
+			if (purchase.durabilityLevel < 4) {
+				purchase.durabilityLevel++;
 				MowerGame.gameState.worldObj.lawnMower.maxHealth += 10;
 				MowerGame.gameState.worldObj.lawnMower.health += 10;
 				upgradeButtons.durability
@@ -132,8 +135,8 @@ public class ShopState extends BasicGameState implements GUIListener {
 			}
 		}
 		if (b.equals(upgradeButtons.speed)) {
-			if (upgradeButtons.speedLevel < 4) {
-				upgradeButtons.speedLevel++;
+			if (purchase.speedLevel < 4) {
+				purchase.speedLevel++;
 				MowerGame.gameState.worldObj.lawnMower.maxVel += 1;
 				upgradeButtons.speed.setText("Speed Upgrade (" + MowerGame.gameState.worldObj.lawnMower.maxVel + "+1)");
 			}
