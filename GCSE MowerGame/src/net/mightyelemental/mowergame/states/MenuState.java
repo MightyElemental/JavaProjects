@@ -63,14 +63,19 @@ public class MenuState extends BasicGameState implements GUIListener {
 		}
 		g.setColor(cloak);
 		g.fillRect(0, 0, gc.getWidth(), gc.getHeight());
-		int wid = g.getFont().getWidth("GCSE Lawn Mower Game");
-		g.setColor(Color.white);
-		g.drawString("GCSE Lawn Mower Game", gc.getWidth() / 2 - wid / 2, gc.getHeight() / 2 - 150);
+		drawCenterString(g, gc, gc.getHeight() / 2 - 150, "GCSE Lawn Mower Game");
+		drawCenterString(g, gc, gc.getHeight() / 2 - 130, "\u00a92016 James Burnell");
 		for (GUIObject obj : objects) {
 			obj.draw(g);
 		}
 		g.setColor(fade);
 		g.fillRect(0, 0, gc.getWidth(), gc.getHeight());
+	}
+
+	public void drawCenterString(Graphics g, GameContainer gc, int y, String s) {
+		int wid = g.getFont().getWidth(s);
+		g.setColor(Color.white);
+		g.drawString(s, gc.getWidth() / 2 - wid / 2, y);
 	}
 
 	@Override

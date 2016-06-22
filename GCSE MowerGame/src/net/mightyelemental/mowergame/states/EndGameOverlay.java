@@ -100,7 +100,7 @@ public class EndGameOverlay {
 	}
 
 	public float getMowerCosts() {
-		return ((100 - gs.worldObj.lawnMower.health) / 10f) * 9.5f;
+		return ((gs.worldObj.lawnMower.maxHealth - gs.worldObj.lawnMower.health) / 10f) * 9.5f;
 	}
 
 	public float costPerAnimal;

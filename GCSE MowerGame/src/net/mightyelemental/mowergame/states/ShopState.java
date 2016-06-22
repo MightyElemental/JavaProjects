@@ -69,6 +69,16 @@ public class ShopState extends BasicGameState implements GUIListener {
 			}
 			break;
 		}
+		renderMoney(gc, sbg, g);
+	}
+
+	public void renderMoney(GameContainer gc, StateBasedGame sbg, Graphics g) {
+		int x = 200;
+		int y = 50;
+		g.setColor(Color.white);
+		g.fillRect(x, gc.getHeight() - y, 100, 20);
+		g.setColor(Color.black);
+		g.drawString("\u00A30", x, gc.getHeight() - y);
 	}
 
 	@Override
@@ -78,6 +88,7 @@ public class ShopState extends BasicGameState implements GUIListener {
 			returnToMenu = false;
 		}
 		upgradeButtons.durability.setText(upgradeButtons.durability.getText(), gc.getGraphics());
+		upgradeButtons.speed.setText(upgradeButtons.speed.getText(), gc.getGraphics());
 	}
 
 	@Override
@@ -112,10 +123,20 @@ public class ShopState extends BasicGameState implements GUIListener {
 			this.menuState = STATE_MAIN;
 		}
 		if (b.equals(upgradeButtons.durability)) {
-			MowerGame.gameState.worldObj.lawnMower.maxHealth += 10;
-			MowerGame.gameState.worldObj.lawnMower.health += 10;
-			upgradeButtons.durability
-					.setText("Upgrade Durability (" + MowerGame.gameState.worldObj.lawnMower.maxHealth + "+10)");
+			if (upgradeButtons.durabilityLevel < 4) {
+				upgradeButtons.durabilityLevel++;
+				MowerGame.gameState.worldObj.lawnMower.maxHealth += 10;
+				MowerGame.gameState.worldObj.lawnMower.health += 10;
+				upgradeButtons.durability
+						.setText("Upgrade Durability (" + MowerGame.gameState.worldObj.lawnMower.maxHealth + "+10)");
+			}
+		}
+		if (b.equals(upgradeButtons.speed)) {
+			if (upgradeButtons.speedLevel < 4) {
+				upgradeButtons.speedLevel++;
+				MowerGame.gameState.worldObj.lawnMower.maxVel += 1;
+				upgradeButtons.speed.setText("Speed Upgrade (" + MowerGame.gameState.worldObj.lawnMower.maxVel + "+1)");
+			}
 		}
 	}
 

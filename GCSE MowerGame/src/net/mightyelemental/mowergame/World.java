@@ -169,17 +169,17 @@ public class World {
 	}
 
 	public void generateEntities() {
-		int randAmount = rand.nextInt(2) + 10;
+		int randAmount = rand.nextInt(2) + 1;
 		for (int i = 0; i < randAmount; i++) {
 			this.spawnEntity(new EntityGnome(rand.nextInt(1280), rand.nextInt(720), this));
 		}
 		randAmount = rand.nextInt(2) + 1;
 		for (int i = 0; i < randAmount; i++) {
-			this.spawnEntity(new EntityDog(rand.nextInt(1280), rand.nextInt(720), this));
+			this.spawnEntity(new EntityDog(rand.nextInt(1280)+800, rand.nextInt(720), this));
 		}
 		randAmount = rand.nextInt(5) + 5;
 		for (int i = 0; i < randAmount; i++) {
-			this.spawnEntity(new EntityCat(rand.nextInt(1280), rand.nextInt(720), this));
+			this.spawnEntity(new EntityCat(rand.nextInt(1280)+800, rand.nextInt(720), this));
 		}
 	}
 

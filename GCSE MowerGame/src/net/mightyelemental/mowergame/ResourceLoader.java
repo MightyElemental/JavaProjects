@@ -14,9 +14,11 @@ import org.newdawn.slick.Sound;
  */
 public class ResourceLoader {
 
-	private Map<String, Image> imageLoads = new HashMap<String, Image>();
-	private Map<String, Sound> soundLoads = new HashMap<String, Sound>();
-	private Map<String, Music> musicLoads = new HashMap<String, Music>();
+	/* DO NOT USE THIS FOR ANYTHING BUT CONSOLE STOCKS */
+
+	private static Map<String, Image> imageLoads = new HashMap<String, Image>();
+	private static Map<String, Sound> soundLoads = new HashMap<String, Sound>();
+	private static Map<String, Music> musicLoads = new HashMap<String, Music>();
 
 	/**
 	 * Loads an image from the 'assets/textures' package
@@ -32,7 +34,7 @@ public class ResourceLoader {
 
 		String location = imagePath.replaceAll("[.]", "/");
 		location += ".png";
-		location = "assets/textures/" + location;
+		location = "./assets/textures/" + location;
 		if (imageLoads.get(location) != null) {
 			return imageLoads.get(location);
 		} else {
@@ -55,14 +57,6 @@ public class ResourceLoader {
 		return loadedImage;
 	}
 
-	public String getPath(String loc) {
-		String location = loc.replaceAll("[.]", "/");
-		location += ".png";
-		location = "assets/textures/" + location;
-		location = this.getClass().getClassLoader().getResource(location).getPath();
-		return location;
-	}
-
 	/**
 	 * Loads a music file from the 'assets/sounds/music' package
 	 * 
@@ -78,7 +72,7 @@ public class ResourceLoader {
 
 		String location = musicPath.replaceAll("[.]", "/");
 		location += ".ogg";
-		location = "assets/sounds/music/" + location;
+		location = "./assets/sounds/music/" + location;
 		if (imageLoads.get(location) != null) {
 			return musicLoads.get(location);
 		} else {
@@ -108,23 +102,23 @@ public class ResourceLoader {
 	 *            Remember that you can replace slashes '/' with dots '.'
 	 * @return Sound the newly loaded sound
 	 */
-	public Sound loadSound(String soundPath) {
+	public static Sound loadSound(String soundPath) {
 
 		Sound loadedSound = null;
 
 		String location = soundPath.replaceAll("[.]", "/");
 		location += ".ogg";
-		location = "assets/sounds/" + location;
-		if (imageLoads.get(location) != null) {
+		location = "./assets/sounds/" + location;
+		if (imageLoads.containsKey(location)) {
 			return soundLoads.get(location);
 		} else {
 			try {
-				File temp = new File(this.getClass().getClassLoader().getResource(location).toURI());
+				File temp = new File(location);
 				if (temp.exists()) {
-					loadedSound = new Sound(this.getClass().getClassLoader().getResourceAsStream(location), location);
+					loadedSound = new Sound(location);
 					System.out.println("Added sound\t'" + location + "'");
 				} else {
-					throw new Exception("Missing sound\t'" + location + "'");
+					throw new Exception("Missing sound\t'" + location + "' ");
 				}
 			} catch (Exception e) {
 				System.out.println("Missing sound\t'" + location + "'");

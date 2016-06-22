@@ -19,6 +19,9 @@ public class ShopUpgradeButtons {
 	public Button durability;
 	public Button back;
 
+	public int durabilityLevel = 0;
+	public int speedLevel = 0;
+
 	public ShopUpgradeButtons(GameContainer gc) {
 		int x = gc.getWidth() - 400;
 		selectMower = new Button(x, 50, 340, 100).setText("Select", gc.getGraphics());
