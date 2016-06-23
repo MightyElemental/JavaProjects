@@ -43,7 +43,7 @@ public class MenuState extends BasicGameState implements GUIListener {
 	public void init(GameContainer gc, StateBasedGame sbg) throws SlickException {
 		menuWorld = new World(rand, true);
 		menuWorld.init(gc, sbg);
-		menuWorld.deltaDividor = 2.5f;
+		menuWorld.deltaDividor = 2.2f;
 		int buttonBase = gc.getHeight() / 2 - 25;
 		playButton = new Button(gc.getWidth() / 2 - 100, buttonBase - 30, 200, 50).setText("Play", gc.getGraphics())
 				.setColor(new Color(255, 255, 255, 0.9f));
@@ -78,8 +78,20 @@ public class MenuState extends BasicGameState implements GUIListener {
 		g.drawString(s, gc.getWidth() / 2 - wid / 2, y);
 	}
 
+	public void resetMenu(GameContainer gc, StateBasedGame sbg, int delta) throws SlickException {
+		menuWorld = new World(rand, true);
+		menuWorld.init(gc, sbg);
+		fade.a = 0;
+		menuWorld.deltaDividor = 2.2f;
+		enterPlay = false;
+		enterShop = false;
+	}
+
 	@Override
 	public void update(GameContainer gc, StateBasedGame sbg, int delta) throws SlickException {
+		if (menuWorld == null) {
+			resetMenu(gc, sbg, delta);
+		}
 		menuWorld.update(gc, delta);
 		if (enterPlay) {
 			if (fade.a < 1f) {
@@ -90,6 +102,7 @@ public class MenuState extends BasicGameState implements GUIListener {
 				menuWorld.lawnMower = null;
 				menuWorld.grassCon = null;
 				menuWorld = null;
+				MowerGame.gameState.init(gc, sbg);
 				sbg.enterState(MowerGame.STATE_GAME);
 				enterPlay = false;
 			}
@@ -116,7 +129,6 @@ public class MenuState extends BasicGameState implements GUIListener {
 		if (b.equals(shopButton) & button == 0) {
 			enterShop = true;
 		}
-		System.out.println(button);
 	}
 
 	public void guiPush(int button, int x, int y, List<GUIObject> list) {

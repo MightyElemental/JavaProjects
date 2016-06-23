@@ -70,6 +70,16 @@ public class ShopState extends BasicGameState implements GUIListener {
 			for (GUIObject b : upgradeButtons.objects) {
 				b.draw(g);
 			}
+			int h = (int) (upgradeButtons.selectMower.getHeight() - 20);
+			float x = upgradeButtons.selectMower.getX() + upgradeButtons.selectMower.getWidth() - h - 10;
+			float y = upgradeButtons.selectMower.getY() + 10;
+			g.setColor(Color.white.darker());
+			g.fillRoundRect(x, y, h + 1, h + 1, 15, 15);
+			g.setColor(Color.black);
+			g.drawRoundRect(x, y, h + 1, h + 1, 15, 15);
+			g.drawImage(
+					purchase.boughtMowers.get(upgradeButtons.mowerNumber).getDisplayIcon().getScaledCopy(h - 1, h - 1),
+					x, y + 1);
 			break;
 		}
 		renderMoney(gc, sbg, g);
@@ -139,6 +149,12 @@ public class ShopState extends BasicGameState implements GUIListener {
 				purchase.speedLevel++;
 				MowerGame.gameState.worldObj.lawnMower.maxVel += 1;
 				upgradeButtons.speed.setText("Speed Upgrade (" + MowerGame.gameState.worldObj.lawnMower.maxVel + "+1)");
+			}
+		}
+		if (b.equals(upgradeButtons.selectMower)) {
+			upgradeButtons.mowerNumber++;
+			if (upgradeButtons.mowerNumber >= purchase.boughtMowers.size()) {
+				upgradeButtons.mowerNumber = 0;
 			}
 		}
 	}

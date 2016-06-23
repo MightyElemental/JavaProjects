@@ -1,5 +1,9 @@
 package net.mightyelemental.mowergame.entities;
 
+import org.newdawn.slick.Image;
+
+import net.mightyelemental.mowergame.MowerGame;
+
 public class MowerType {
 
 	private String name;
@@ -22,6 +26,7 @@ public class MowerType {
 	public static MowerType MowveMonster = new MowerType("Mowve Monster", 110, 120, 5f, 0.2f,
 			"entities.mowers.mowveMonster");
 	public static MowerType Hacker = new MowerType("Hack", 120, 500, 9f, 1f, "entities.mowers.mowveMonster");
+	public static MowerType DonaldMower = new MowerType("Donald Mower", 100, 1, 6f, 1f, "entities.trump");
 
 	public String getName() {
 		return name;
@@ -45,6 +50,10 @@ public class MowerType {
 
 	public String getImgPath() {
 		return imgPath;
+	}
+
+	public Image getDisplayIcon() {
+		return MowerGame.resLoader.loadImage(getImgPath());
 	}
 
 }

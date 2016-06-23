@@ -16,10 +16,15 @@ public class EndGameOverlay {
 	public Color blackOverlay = new Color(20, 20, 20, 0);
 	public Color endTextColor = new Color(255, 255, 255, 0);
 	public float pauseTime = 400;
+	public float pauseTime2 = 400;
 	public float textOffset = 0;
 	public Color income = new Color(50, 255, 50, 0);
 	public Color outgoings = new Color(255, 50, 50, 0);
 	public Color totalMoney = new Color(255, 255, 255, 0);
+	public Color spaceContinue = new Color(255, 255, 255, 0);
+	public boolean speedUp = false;
+
+	public boolean canSkip = false;
 
 	public EndGameOverlay(GameState gs) {
 		this.gs = gs;
@@ -50,7 +55,11 @@ public class EndGameOverlay {
 				}
 				text = "Total | " + min + "\u00A3" + Math.abs(totalMoney);
 				wid = g.getFont().getWidth(text);
-				g.drawString(text, gc.getWidth() / 2 - wid / 2, gc.getHeight() / 2 + 60);
+				g.drawString(text, gc.getWidth() / 2 - wid / 2, gc.getHeight() / 2 + 55);
+				g.setColor(spaceContinue);
+				text = "Press Space To Continue";
+				wid = g.getFont().getWidth(text);
+				g.drawString(text, gc.getWidth() / 2 - wid / 2, gc.getHeight() / 2 + 90);
 			}
 		}
 	}
@@ -83,8 +92,7 @@ public class EndGameOverlay {
 	public float getGrassIncome() {
 		float moneyEarned = 0;
 		if (gs.worldObj.grassCon.getPercentageMowed() > 85) {
-			moneyEarned =  gs.worldObj.grassCon.grassList.size()
-					* (gs.worldObj.grassCon.getPercentageMowed() / 100f);
+			moneyEarned = gs.worldObj.grassCon.grassList.size() * (gs.worldObj.grassCon.getPercentageMowed() / 100f);
 			moneyEarned = moneyEarned / 2304f * 150f;
 		}
 		moneyEarned = MathHelper.round(moneyEarned, 2);
@@ -118,20 +126,29 @@ public class EndGameOverlay {
 	}
 
 	public void update(int delta) {
+		float s = 1;
+		if (speedUp) {
+			s = 1.5f;
+		}
 		if (blackOverlay.a <= 0.8f) {
-			blackOverlay.a += (1f / 17f / 6f) * (delta / 17f);
+			blackOverlay.a += s * (1f / 17f / 6f) * (delta / 17f);
 		} else if (endTextColor.a < 1f) {
-			endTextColor.a += (1f / 17f / 2f) * (delta / 17f);
+			endTextColor.a += s * (1f / 17f / 2f) * (delta / 17f);
 		} else if (pauseTime >= 0) {
-			pauseTime -= delta;
+			pauseTime -= s * delta;
 		} else if (textOffset < 90) {
-			textOffset += 1.2f * (delta / 17f);
+			textOffset += s * 1.2f * (delta / 17f);
 		} else if (income.a < 1f) {
-			income.a += (1f / 17f / 3f) * (delta / 17f);
+			income.a += s * (1f / 17f / 3f) * (delta / 17f);
 		} else if (outgoings.a < 1f) {
-			outgoings.a += (1f / 17f / 4f) * (delta / 17f);
+			outgoings.a += s * (1f / 17f / 4f) * (delta / 17f);
 		} else if (totalMoney.a < 1f) {
-			totalMoney.a += (1f / 17f / 1f) * (delta / 17f);
+			totalMoney.a += s * (1f / 17f / 1f) * (delta / 17f);
+		} else if (pauseTime2 >= 0) {
+			pauseTime2 -= s * delta;
+		} else if (spaceContinue.a <= 1f) {
+			spaceContinue.a += s * (1f / 19f) * (delta / 17f);
+			canSkip = true;
 		}
 	}
 

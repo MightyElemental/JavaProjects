@@ -18,7 +18,7 @@ public class EntityMower extends Entity {
 
 	private static final long serialVersionUID = 4112241142072508351L;
 
-	public MowerType mowerType = MowerType.MowveMonster;
+	public MowerType mowerType = MowerType.DonaldMower;
 
 	public float vel = 0f; // 8f
 	public float maxVel = mowerType.getSpeed();
@@ -51,8 +51,8 @@ public class EntityMower extends Entity {
 			aiPath = new MovePath(worldObj.rand.nextInt(1280), worldObj.rand.nextInt(720));
 		}
 		if (aiPath != null) {
-			if (this.getCenterY() > aiPath.getY() - 10 && this.getCenterY() < aiPath.getY() + 10) {
-				if (this.getCenterX() > aiPath.getX() - 10 && this.getCenterX() < aiPath.getX() + 10) {
+			if (this.getCenterY() > aiPath.getY() - 60 && this.getCenterY() < aiPath.getY() + 60) {
+				if (this.getCenterX() > aiPath.getX() - 60 && this.getCenterX() < aiPath.getX() + 60) {
 					aiPath.hasReached = true;
 				}
 			}
@@ -60,7 +60,6 @@ public class EntityMower extends Entity {
 		if (aiPath != null && aiPath.hasReached) {
 			aiPath = null;
 			aiPath = new MovePath(worldObj.rand.nextInt(1280), worldObj.rand.nextInt(720));
-
 		}
 
 		int mouseX = gc.getInput().getMouseX();
@@ -74,6 +73,8 @@ public class EntityMower extends Entity {
 		// Move towards mouse
 		int x = (int) this.getCenterX();
 		int y = (int) this.getCenterY();
+
+		// System.out.println(Math.abs(x - mouseX) + Math.abs(y - mouseY));
 
 		vel += mowerType.getAcceleration();
 		if (vel >= maxVel) {

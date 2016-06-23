@@ -10,6 +10,7 @@ import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 
 import net.mightyelemental.mowergame.MathHelper;
+import net.mightyelemental.mowergame.MowerGame;
 import net.mightyelemental.mowergame.World;
 
 public class GameState extends BasicGameState {
@@ -35,6 +36,10 @@ public class GameState extends BasicGameState {
 
 	@Override
 	public void init(GameContainer gc, StateBasedGame sbg) throws SlickException {
+		worldObj = null;
+		returnToMenu = false;
+		running = true;
+		ego = null;
 		worldObj = new World(rand, false);
 		worldObj.init(gc, sbg);
 	}
@@ -89,6 +94,9 @@ public class GameState extends BasicGameState {
 				ego = new EndGameOverlay(this);
 			}
 			ego.update(delta);
+			if (returnToMenu) {
+				sbg.enterState(MowerGame.STATE_MENU);
+			}
 		}
 		if (timeMs <= 0) {
 			running = false;
@@ -98,6 +106,19 @@ public class GameState extends BasicGameState {
 	@Override
 	public int getID() {
 		return ID;
+	}
+
+	boolean returnToMenu;
+
+	@Override
+	public void keyPressed(int key, char c) {
+		if (ego != null) {
+			ego.speedUp = true;
+			if (key == 57 && ego.canSkip) {
+				returnToMenu = true;
+			}
+		}
+
 	}
 
 }
