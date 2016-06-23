@@ -13,13 +13,15 @@ public class ParticleGrass extends Particle {
 	
 	private static final long serialVersionUID = 1L;
 	
+	private int angleSpread = 150;
+	
 	public Color color = new Color(0, 0.5f, 0, 1f);
 	
 	public ParticleGrass( float x, float y, World worldObj ) {
 		super(x, y, 6, 8, worldObj);
 		this.setIcon("grass");
 		setIcon(getIcon().getScaledCopy((int) getWidth(), (int) getHeight()));
-		angle = worldObj.lawnMower.angle - 180 + worldObj.rand.nextInt(100) - 50;
+		angle = worldObj.lawnMower.angle - 180 + worldObj.rand.nextInt(angleSpread * 2) - angleSpread;
 	}
 	
 	@Override
