@@ -26,6 +26,7 @@ public class ShopState extends BasicGameState implements GUIListener {
 
 	public ShopButtons shopButtons;
 	public ShopUpgradeButtons upgradeButtons;
+	public MowerInfo mowerInfo;
 
 	public Purchases purchase;
 
@@ -45,6 +46,7 @@ public class ShopState extends BasicGameState implements GUIListener {
 		shopButtons = new ShopButtons(gc);
 		upgradeButtons = new ShopUpgradeButtons(gc);
 		purchase = new Purchases();
+		mowerInfo = new MowerInfo(20, gc.getHeight() - 320, this);
 		background = MowerGame.resLoader.loadImage("shop.background").getScaledCopy(gc.getWidth(), gc.getHeight());
 		trump = MowerGame.resLoader.loadImage("shop.trumpApproved").getScaledCopy(0.8f);
 		sign = MowerGame.resLoader.loadImage("shop.sign").getScaledCopy(0.4f);
@@ -83,6 +85,7 @@ public class ShopState extends BasicGameState implements GUIListener {
 			break;
 		}
 		renderMoney(gc, sbg, g);
+		mowerInfo.draw(gc, sbg, g, purchase.boughtMowers.get(upgradeButtons.mowerNumber));
 	}
 
 	public void renderMoney(GameContainer gc, StateBasedGame sbg, Graphics g) {

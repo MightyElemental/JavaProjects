@@ -10,6 +10,16 @@ public class Button extends GUIObject {
 	private int textX;
 	private int textY;
 
+	private boolean enabled = true;
+
+	public boolean isEnabled() {
+		return enabled;
+	}
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
+
 	public Button(float x, float y, float width, float height) {
 		super(x, y, width, height);
 	}
@@ -50,11 +60,14 @@ public class Button extends GUIObject {
 	 */
 	public void draw(Graphics g) {
 		g.setColor(getColor());
-		g.fill(this);
+		if (!enabled) {
+			g.setColor(getColor().darker());
+		}
+		g.fillRoundRect(x, y, width, height, 15);
 		g.setColor(getTextColor());
 		g.drawString(getText(), getTextX(), getTextY());
 		g.setColor(getTextColor());
-		g.draw(this);
+		g.drawRoundRect(x, y, width, height, 15);
 	}
 
 }
