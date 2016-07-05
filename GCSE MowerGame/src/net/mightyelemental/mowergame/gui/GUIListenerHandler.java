@@ -11,24 +11,10 @@ public class GUIListenerHandler {
 		listeners.add(toAdd);
 	}
 
-	public void onButtonPushed(Button b, int button) {
+	public void onObjectPushed(GUIObject b, int button, int x, int y) {
 		// Notify everybody that may be interested.
 		for (GUIListener bl : listeners) {
-			bl.onButtonPushed(b, button);
-		}
-	}
-
-	public void onCheckBoxClicked(CheckBox cb) {
-		cb.setChecked(!cb.isChecked());
-		for (GUIListener bl : listeners) {
-			bl.onCheckBoxClicked(cb);
-		}
-	}
-
-	public void onScrollBarClicked(ScrollBar sb, float x) {
-		sb.changeBarPos(x - sb.getBar().getWidth() / 2);
-		for (GUIListener bl : listeners) {
-			bl.onScrollBarClicked(sb, x);
+			bl.onObjectPushed(b, button, x, y);
 		}
 	}
 
@@ -36,12 +22,6 @@ public class GUIListenerHandler {
 		sb.changeBarPos(x - sb.getBar().getWidth() / 2);
 		for (GUIListener bl : listeners) {
 			bl.onScrollBarDragged(sb, x);
-		}
-	}
-
-	public void onTextBoxClicked(TextBox tb, int x, int y) {
-		for (GUIListener bl : listeners) {
-			bl.onTextBoxClicked(tb, x, y);
 		}
 	}
 
