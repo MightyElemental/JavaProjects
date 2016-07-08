@@ -146,15 +146,16 @@ public class ShopState extends BasicGameState implements GUIListener {
 				purchase.durabilityLevel++;
 				MowerGame.gameState.worldObj.lawnMower.maxHealth += 10;
 				MowerGame.gameState.worldObj.lawnMower.health += 10;
-				upgradeButtons.durability
+				upgradeButtons.durability //please fix this
 						.setText("Upgrade Durability (" + MowerGame.gameState.worldObj.lawnMower.maxHealth + "+10)");
 			}
 		}
 		if (b.equals(upgradeButtons.speed)) {
 			if (purchase.speedLevel < 4) {
 				purchase.speedLevel++;
-				MowerGame.gameState.worldObj.lawnMower.maxVel += 1;
-				upgradeButtons.speed.setText("Speed Upgrade (" + MowerGame.gameState.worldObj.lawnMower.maxVel + "+1)");
+				purchase.boughtMowers.get(upgradeButtons.mowerNumber)
+						.setSpeed(purchase.boughtMowers.get(upgradeButtons.mowerNumber).getSpeed() + 1);
+				upgradeButtons.speed.setText("Speed Upgrade");
 			}
 		}
 		if (b.equals(upgradeButtons.selectMower)) {

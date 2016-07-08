@@ -18,13 +18,13 @@ public class EntityMower extends Entity {
 
 	private static final long serialVersionUID = 4112241142072508351L;
 
-	public MowerType mowerType = MowerType.DonaldMower;
+	public MowerType mowerType = MowerType.MowveMonster;
 
 	public float vel = 0f; // 8f
-	public float maxVel = mowerType.getSpeed();
+	public float maxVel = mowerType.getBaseSpeed();
 
-	public float maxHealth = mowerType.getDurability();
-	public float health = mowerType.getDurability(); // 100f
+	public float maxHealth = mowerType.getBaseDurability();
+	public float health = mowerType.getBaseDurability(); // 100f
 
 	public MovePath aiPath;
 
@@ -76,7 +76,7 @@ public class EntityMower extends Entity {
 
 		// System.out.println(Math.abs(x - mouseX) + Math.abs(y - mouseY));
 
-		vel += mowerType.getAcceleration();
+		vel += mowerType.getBaseAcceleration();
 		if (vel >= maxVel) {
 			vel = maxVel; // 5f
 		}
@@ -84,7 +84,7 @@ public class EntityMower extends Entity {
 			angle = MathHelper.getAngle(new Point(x, y), new Point(mouseX, mouseY));
 			getIcon().setRotation(angle - 90);
 		} else {
-			vel -= mowerType.getAcceleration() * 2.2f;
+			vel -= mowerType.getBaseAcceleration() * 2.2f;
 		}
 		if (vel <= 0) {
 			vel = 0;
