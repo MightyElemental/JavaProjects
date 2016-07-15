@@ -7,8 +7,8 @@ import net.mightyelemental.mowergame.MowerGame;
 public class MowerType {
 
 	private String name;
-	private float durabilityBase = 100, durability = durabilityBase;
-	private float speedBase = 8f, speed = speedBase;
+	private float durabilityBase = 100, durability = durabilityBase, durabilityLevel;
+	private float speedBase = 8f, speed = speedBase, speedLevel;
 	private int size = 110;
 	private float accelerationBase = 0.5f, acceleration = accelerationBase;
 	private String imgPath = "entities.mowers.lawnMower";
@@ -24,13 +24,14 @@ public class MowerType {
 		this.accelerationBase = acceleration;
 		this.acceleration = accelerationBase;
 		this.imgPath = imgPath;
-
 	}
 
 	public static MowerType MowveMonster = new MowerType("Mowve Monster", 110, 100, 5f, 0.2f,
-			"entities.mowers.mowveMonster").setDescription("SUCH WOW! MUCH COOL!");
-	public static MowerType Hacker = new MowerType("Hack", 120, 500, 9f, 1f, "entities.mowers.mowveMonster");
+			"entities.mowers.mowveMonster")
+					.setDescription("This powerful mower will slice the grass as if it were a hot knife to butter");
+	public static MowerType Hacker = new MowerType("Hack", 120, 500, 9f, 1f, "entities.trump2");
 	public static MowerType DonaldMower = new MowerType("Donald Mower", 100, 1, 6f, 1f, "entities.trump");
+	public static MowerType SteveMower = new MowerType("SteveTope123", 200, 1200, 6f, 1f, "entities.mowers.steve");
 
 	public String getName() {
 		return name;
@@ -91,6 +92,22 @@ public class MowerType {
 	public MowerType setDescription(String description) {
 		this.description = description;
 		return this;
+	}
+
+	public float getDurabilityLevel() {
+		return durabilityLevel;
+	}
+
+	public void setDurabilityLevel(float durabilityLevel) {
+		this.durabilityLevel = durabilityLevel;
+	}
+
+	public float getSpeedLevel() {
+		return speedLevel;
+	}
+
+	public void setSpeedLevel(float speedLevel) {
+		this.speedLevel = speedLevel;
 	}
 
 }

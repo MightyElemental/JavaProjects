@@ -9,6 +9,7 @@ import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 
 import net.mightyelemental.mowergame.MowerGame;
+import net.mightyelemental.mowergame.entities.MowerType;
 import net.mightyelemental.mowergame.gui.GUIListener;
 import net.mightyelemental.mowergame.gui.GUIObject;
 import net.mightyelemental.mowergame.gui.ScrollBar;
@@ -97,7 +98,10 @@ public class ShopState extends BasicGameState implements GUIListener {
 		g.setColor(Color.white);
 		g.fillRect(x, gc.getHeight() - y, 100, 20);
 		g.setColor(Color.black);
-		g.drawString("\u00A30", x, gc.getHeight() - y);
+		if (MowerGame.money < 0) {
+			g.setColor(Color.red);
+		}
+		g.drawString("\u00A3" + MowerGame.money, x, gc.getHeight() - y);
 	}
 
 	@Override
@@ -141,18 +145,17 @@ public class ShopState extends BasicGameState implements GUIListener {
 		if (b.equals(upgradeButtons.back)) {
 			this.menuState = STATE_MAIN;
 		}
+		MowerType mower = purchase.boughtMowers.get(upgradeButtons.mowerNumber);
 		if (b.equals(upgradeButtons.durability)) {
-			if (purchase.durabilityLevel < 4) {
-				purchase.durabilityLevel++;
-				MowerGame.gameState.worldObj.lawnMower.maxHealth += 10;
-				MowerGame.gameState.worldObj.lawnMower.health += 10;
-				upgradeButtons.durability //please fix this
-						.setText("Upgrade Durability (" + MowerGame.gameState.worldObj.lawnMower.maxHealth + "+10)");
+			if (mower.getDurabilityLevel() < 4) {
+				mower.setDurabilityLevel(mower.getDurabilityLevel() + 1);
+				mower.setDurability(purchase.boughtMowers.get(upgradeButtons.mowerNumber).getDurability() + 1);
+				upgradeButtons.durability.setText("Upgrade Durability");
 			}
 		}
 		if (b.equals(upgradeButtons.speed)) {
-			if (purchase.speedLevel < 4) {
-				purchase.speedLevel++;
+			if (mower.getSpeedLevel() < 4) {
+				mower.setSpeedLevel(mower.getSpeedLevel() + 1);
 				purchase.boughtMowers.get(upgradeButtons.mowerNumber)
 						.setSpeed(purchase.boughtMowers.get(upgradeButtons.mowerNumber).getSpeed() + 1);
 				upgradeButtons.speed.setText("Speed Upgrade");

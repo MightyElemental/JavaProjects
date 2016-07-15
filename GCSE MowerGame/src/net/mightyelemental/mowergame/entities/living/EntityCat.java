@@ -24,7 +24,7 @@ public class EntityCat extends EntityLiving {
 		if (path.hasReached) {
 			if (rand.nextInt(1000) < 15) {
 				path = null;
-				int x = (int) (rand.nextInt(400) - 200 + this.getX());
+				int x = (int) (rand.nextInt(1280));
 				if (x <= 0) {
 					x = 0;
 				}

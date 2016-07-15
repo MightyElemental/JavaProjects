@@ -36,6 +36,8 @@ public class GameState extends BasicGameState {
 
 	@Override
 	public void init(GameContainer gc, StateBasedGame sbg) throws SlickException {
+		timeTotalMs = 1000 * 120;
+		timeMs = timeTotalMs;
 		worldObj = null;
 		returnToMenu = false;
 		running = true;
@@ -44,7 +46,7 @@ public class GameState extends BasicGameState {
 		worldObj.init(gc, sbg);
 	}
 
-	Color barColor = new Color(255, 0, 0, 0.5f);
+	Color barColor = new Color(255, 0, 0, 0.3f);
 
 	@Override
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {

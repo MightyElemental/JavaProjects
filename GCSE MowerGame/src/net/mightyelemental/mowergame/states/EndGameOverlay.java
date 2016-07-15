@@ -7,6 +7,7 @@ import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.StateBasedGame;
 
 import net.mightyelemental.mowergame.MathHelper;
+import net.mightyelemental.mowergame.MowerGame;
 import net.mightyelemental.mowergame.entities.living.EntityGnome;
 
 public class EndGameOverlay {
@@ -29,6 +30,7 @@ public class EndGameOverlay {
 	public EndGameOverlay(GameState gs) {
 		this.gs = gs;
 		costPerAnimal = (gs.rand.nextInt(3000) / 100f) + 25f;
+		MowerGame.money += getTotal();
 	}
 
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {

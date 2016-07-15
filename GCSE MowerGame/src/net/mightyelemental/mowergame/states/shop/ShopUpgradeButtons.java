@@ -17,6 +17,8 @@ public class ShopUpgradeButtons {
 	public Button back;
 
 	public int mowerNumber = 0;
+	
+	public float[] prices = {};
 
 	public ShopUpgradeButtons(GameContainer gc) {
 		int x = gc.getWidth() - 400;
