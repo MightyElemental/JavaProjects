@@ -19,8 +19,8 @@ public class Purchases {
 			if (f[i].getDeclaringClass() == MowerType.class) {
 				try {
 					mowers.add(((MowerType) f[i].get(null)));
-				} catch (IllegalArgumentException | IllegalAccessException e) {
-					e.printStackTrace();
+				} catch (IllegalArgumentException | IllegalAccessException | NullPointerException e) {
+					// e.printStackTrace();
 				}
 			}
 		}

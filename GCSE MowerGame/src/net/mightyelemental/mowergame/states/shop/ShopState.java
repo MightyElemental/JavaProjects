@@ -8,6 +8,7 @@ import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 
+import net.mightyelemental.mowergame.MathHelper;
 import net.mightyelemental.mowergame.MowerGame;
 import net.mightyelemental.mowergame.entities.MowerType;
 import net.mightyelemental.mowergame.gui.GUIListener;
@@ -101,7 +102,9 @@ public class ShopState extends BasicGameState implements GUIListener {
 		if (MowerGame.money < 0) {
 			g.setColor(Color.red);
 		}
-		g.drawString("\u00A3" + MowerGame.money, x, gc.getHeight() - y);
+		MowerGame.money = MathHelper.round(MowerGame.money, 2);
+		String mon = "\u00A3" + MowerGame.money;
+		g.drawString(mon, x + 1, gc.getHeight() - y);
 	}
 
 	@Override

@@ -4,11 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
-import org.newdawn.slick.geom.Rectangle;
+import org.newdawn.slick.geom.Shape;
 import org.newdawn.slick.state.StateBasedGame;
 
 import net.mightyelemental.mowergame.entities.Entity;
@@ -140,10 +141,13 @@ public class World {
 			p.draw(gc, sbg, g);
 			// g.drawImage(ebs.getIcon(), ebs.getX(), ebs.getY());
 		}
+		g.setColor(Color.blue);
 		for (EntityLiving ea : liveEntities) {
 			if (ea == null) {
 				continue;
 			}
+
+			// g.fillRect(ea.getX(), ea.getY(), ea.getWidth(), ea.getHeight());
 			g.drawImage(ea.getIcon(), ea.getX(), ea.getY());
 
 			// if (ea.getPath() != null) {
@@ -154,9 +158,10 @@ public class World {
 
 		}
 		g.drawImage(lawnMower.getIcon(), lawnMower.getX(), lawnMower.getY());
+		// g.fill(lawnMower.bladeArea);
 	}
 
-	public EntityLiving getCollidingEntity(Rectangle ent) {
+	public EntityLiving getCollidingEntity(Shape ent) {
 		for (Entity ea : liveEntities) {
 			if (ent.equals(ea)) {
 				continue;
@@ -175,11 +180,11 @@ public class World {
 		}
 		randAmount = rand.nextInt(2) + 1;
 		for (int i = 0; i < randAmount; i++) {
-			this.spawnEntity(new EntityDog(rand.nextInt(1280)+800, rand.nextInt(720), this));
+			this.spawnEntity(new EntityDog(rand.nextInt(1280) + 800, rand.nextInt(720), this));
 		}
 		randAmount = rand.nextInt(5) + 5;
 		for (int i = 0; i < randAmount; i++) {
-			this.spawnEntity(new EntityCat(rand.nextInt(1280)+800, rand.nextInt(720), this));
+			this.spawnEntity(new EntityCat(rand.nextInt(1280) + 800, rand.nextInt(720), this));
 		}
 	}
 

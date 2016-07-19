@@ -61,7 +61,7 @@ public class MowerGame extends StateBasedGame {
 			appGc.setTargetFrameRate(60);
 			appGc.setShowFPS(false);
 			appGc.setAlwaysRender(true);
-			appGc.setFullscreen(false);
+			appGc.setFullscreen(true);
 			appGc.setIcons(new String[] { "./assets/textures/logo32.png" });
 			appGc.setShowFPS(true);
 			appGc.start();

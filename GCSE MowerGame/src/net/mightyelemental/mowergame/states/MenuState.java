@@ -28,6 +28,7 @@ public class MenuState extends BasicGameState implements GUIListener {
 
 	public Button playButton;
 	public Button shopButton;
+	public Button exitButton;
 
 	public Random rand;
 
@@ -47,8 +48,11 @@ public class MenuState extends BasicGameState implements GUIListener {
 				.setColor(new Color(255, 255, 255, 0.9f));
 		shopButton = new Button(gc.getWidth() / 2 - 100, buttonBase + 30, 200, 50).setText("Shop", gc.getGraphics())
 				.setColor(new Color(255, 255, 255, 0.9f));
+		exitButton = new Button(gc.getWidth() / 2 - 100, buttonBase + 90, 200, 50).setText("Exit", gc.getGraphics())
+				.setColor(new Color(255, 255, 255, 0.9f));
 		objects.add(playButton);
 		objects.add(shopButton);
+		objects.add(exitButton);
 	}
 
 	private Color cloak = new Color(0, 0, 0, 0.7f);
@@ -124,8 +128,11 @@ public class MenuState extends BasicGameState implements GUIListener {
 		if (b.equals(playButton) && button == 0) {
 			enterPlay = true;
 		}
-		if (b.equals(shopButton) & button == 0) {
+		if (b.equals(shopButton) && button == 0) {
 			enterShop = true;
+		}
+		if (b.equals(exitButton) && button == 0) {
+			System.exit(0);
 		}
 	}
 

@@ -7,6 +7,7 @@ import java.util.List;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
+import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.state.StateBasedGame;
 
 import net.mightyelemental.mowergame.entities.MowerType;
@@ -38,12 +39,20 @@ public class MowerInfo {
 		drawSelectedMower(gc, sbg, g, mower);
 		drawDescription(g, mower, 0);
 		int line = 0;
-		line = drawVar(g, "Max Speed", mower.getBaseSpeed() + "+" + (mower.getSpeed() - mower.getBaseSpeed()) + "#= "
-				+ mower.getSpeed() + "/u", "ups", line);
+		line = drawVar(g, "Max Speed",
+				mower.getBaseSpeed() + "+" + (mower.getSpeed() - mower.getBaseSpeed()) + "# " + mower.getSpeed() + "/u",
+				"ups", line);
 		line = drawVar(g, "Durability", mower.getBaseDurability() + "+"
-				+ (mower.getDurability() - mower.getBaseDurability()) + "#= " + mower.getDurability() + "/u", "hp",
+				+ (mower.getDurability() - mower.getBaseDurability()) + "# " + mower.getDurability() + "/u", "hp",
 				line);
-		line = drawVar(g, "Acceleration", mower.getBaseAcceleration() + "/u", "upss", line);
+		line = drawVar(g, "Acceleration", mower.getBaseAcceleration() + "/u", "ups" + pow2, line);
+		line = drawVar(g, "Blade radius", calcBladeRect(mower.getSize()).getWidth() / 2 + "/u", "u", line);
+	}
+
+	char pow2 = Character.toChars(178)[0];
+
+	public static Rectangle calcBladeRect(float size) {
+		return new Rectangle(0, 0, size / 2.5f, size / 2.5f);
 	}
 
 	private Object[] splitEverNumChars(String text, int n) {

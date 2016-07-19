@@ -24,6 +24,7 @@ public class GameState extends BasicGameState {
 	public float timeMs = timeTotalMs;
 
 	public boolean running = true;
+	public boolean paused = false;
 
 	public EndGameOverlay ego;
 
@@ -46,7 +47,7 @@ public class GameState extends BasicGameState {
 		worldObj.init(gc, sbg);
 	}
 
-	Color barColor = new Color(255, 0, 0, 0.3f);
+	Color barColor = new Color(200, 0, 0, 0.3f);
 
 	@Override
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
@@ -63,7 +64,15 @@ public class GameState extends BasicGameState {
 		if (ego != null) {
 			ego.render(gc, sbg, g);
 		}
+		if (paused) {
+			g.setColor(pauseColor);
+			g.fillRect(0, 0, gc.getWidth(), gc.getHeight());
+			g.setColor(Color.black);
+			g.drawString("Paused", gc.getWidth() / 2 - g.getFont().getWidth("Paused") / 2, gc.getHeight() / 2);
+		}
 	}
+
+	Color pauseColor = new Color(0.5f, 0.5f, 0.5f, 0.8f);
 
 	public void renderProgBar(Graphics g, float x, float y, float width, float max, float val, String text) {
 		g.setColor(barColor.darker());
@@ -89,8 +98,10 @@ public class GameState extends BasicGameState {
 	@Override
 	public void update(GameContainer gc, StateBasedGame sbg, int delta) throws SlickException {
 		if (running) {
-			worldObj.update(gc, delta);
-			timeMs -= delta;
+			if (!paused) {
+				worldObj.update(gc, delta);
+				timeMs -= delta;
+			}
 		} else {
 			if (ego == null) {
 				ego = new EndGameOverlay(this);
@@ -116,9 +127,11 @@ public class GameState extends BasicGameState {
 	public void keyPressed(int key, char c) {
 		if (ego != null) {
 			ego.speedUp = true;
-			if (key == 57 && ego.canSkip) {
+			if ((key == 57 || key == 1) && ego.canSkip) {
 				returnToMenu = true;
 			}
+		} else if (key == 1) {
+			paused = !paused;
 		}
 
 	}

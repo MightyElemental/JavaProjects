@@ -6,7 +6,7 @@ import java.util.Random;
 
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.SlickException;
-import org.newdawn.slick.geom.Rectangle;
+import org.newdawn.slick.geom.Shape;
 
 public class GrassController {
 
@@ -35,7 +35,7 @@ public class GrassController {
 		}
 	}
 
-	public boolean setMowed(Rectangle rect) throws SlickException {
+	public boolean setMowed(Shape rect) throws SlickException {
 		boolean flag = false;
 		for (int i = 0; i < grassList.size(); i++) {
 			if (grassList.get(i).intersects(rect)) {

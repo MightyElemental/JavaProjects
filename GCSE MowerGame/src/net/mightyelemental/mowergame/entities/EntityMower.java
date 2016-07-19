@@ -4,7 +4,7 @@ import java.awt.Point;
 
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.SlickException;
-import org.newdawn.slick.geom.Rectangle;
+import org.newdawn.slick.geom.Circle;
 
 import net.mightyelemental.mowergame.MathHelper;
 import net.mightyelemental.mowergame.MowerGame;
@@ -27,7 +27,7 @@ public class EntityMower extends Entity {
 
 	public MovePath aiPath;
 
-	public Rectangle bladeRect;
+	public Circle bladeArea;
 
 	public int animalsKilled;
 
@@ -40,7 +40,9 @@ public class EntityMower extends Entity {
 		this.setWidth(mowerType.getSize());
 		this.setHeight(mowerType.getSize());
 		this.setIcon(mowerType.getImgPath());
-		bladeRect = new Rectangle(x + width / 4, y + height / 4, width / 2.5f, height / 2.5f);
+		// bladeRect = new Rectangle(x + width / 4, y + height / 4, width /
+		// 2.5f, height / 2.5f);
+		bladeArea = new Circle(x + width / 4, y + height / 4, width / 2.5f / 2);
 		this.mowerHasAI = mowerHasAI;
 	}
 
@@ -98,14 +100,14 @@ public class EntityMower extends Entity {
 		if (!mowerHasAI) {
 			processHealth();
 		} else {
-			if (worldObj.getCollidingEntity(bladeRect) != null) {
-				worldObj.getCollidingEntity(bladeRect).setDead();
+			if (worldObj.getCollidingEntity(bladeArea) != null) {
+				worldObj.getCollidingEntity(bladeArea).setDead();
 			}
 		}
-		bladeRect.setCenterX(this.getCenterX());
-		bladeRect.setCenterY(this.getCenterY());
+		bladeArea.setCenterX(this.getCenterX());
+		bladeArea.setCenterY(this.getCenterY());
 
-		boolean mowed = worldObj.grassCon.setMowed(bladeRect);
+		boolean mowed = worldObj.grassCon.setMowed(bladeArea);
 
 		if (mowed) {
 			for (int i = 0; i < worldObj.rand.nextInt(5) + 3; i++) {
@@ -117,13 +119,13 @@ public class EntityMower extends Entity {
 	}
 
 	private void processHealth() {
-		EntityLiving ent = worldObj.getCollidingEntity(bladeRect);
+		EntityLiving ent = worldObj.getCollidingEntity(bladeArea);
 		if (ent != null) {
 			health -= ent.damageToMower;
 			if (health <= 0) {
 				health = 0;
 			}
-			worldObj.getCollidingEntity(bladeRect).setDead();
+			worldObj.getCollidingEntity(bladeArea).setDead();
 			MowerGame.gameState.timeTotalMs += ent.timeGain * 1000;
 			MowerGame.gameState.timeMs += ent.timeGain * 1000;
 			if (ent instanceof EntityGnome) {
