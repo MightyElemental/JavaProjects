@@ -34,7 +34,7 @@ public class MowerGame extends StateBasedGame {
 	public MenuState menuState = new MenuState(STATE_MENU, rand);
 	public static ShopState shopState = new ShopState(STATE_SHOP);
 
-	public static final String TITLE = "IT Mower Game";
+	public static final String TITLE = "Mowve Mania";
 
 	public static final int WIDTH = 1280;
 
@@ -61,7 +61,7 @@ public class MowerGame extends StateBasedGame {
 			appGc.setTargetFrameRate(60);
 			appGc.setShowFPS(false);
 			appGc.setAlwaysRender(true);
-			appGc.setFullscreen(true);
+			appGc.setFullscreen(false);
 			appGc.setIcons(new String[] { "./assets/textures/logo32.png" });
 			appGc.setShowFPS(true);
 			appGc.start();
