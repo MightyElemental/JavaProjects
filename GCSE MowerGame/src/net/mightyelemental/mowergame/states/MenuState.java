@@ -67,7 +67,7 @@ public class MenuState extends BasicGameState implements GUIListener {
 		g.setColor(cloak);
 		g.fillRect(0, 0, gc.getWidth(), gc.getHeight());
 		drawCenterString(g, gc, gc.getHeight() / 2 - 150, "Mowve Mania");
-		g.fillRect(0, 0, gc.getWidth() / 2, 150); //y = 150 x = 640
+		g.fillRect(0, 0, gc.getWidth() / 2, 200); // y = 200 x = 640
 		drawCenterString(g, gc, gc.getHeight() / 2 - 130, "\u00a92016 James Burnell");
 		for (GUIObject obj : objects) {
 			obj.draw(g);
