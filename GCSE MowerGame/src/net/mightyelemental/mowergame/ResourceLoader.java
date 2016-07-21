@@ -4,8 +4,11 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.newdawn.slick.Color;
+import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.Music;
+import org.newdawn.slick.SlickException;
 import org.newdawn.slick.Sound;
 
 /** @author MightyElemental
@@ -26,7 +29,13 @@ public class ResourceLoader {
 	 * @return Image the newly loaded image */
 	public Image loadImage(String imagePath) {
 		
-		Image loadedImage = MowerGame.NULL_IMAGE;
+		if (!imageLoads.containsKey("null")) {
+			loadNullImage();
+		}
+		
+		Image loadedImage = imageLoads.get("null");
+		
+		if (imagePath.equals("null")) { return loadedImage; }
 		
 		String location = imagePath.replaceAll("[.]", "/");
 		location += ".png";
@@ -50,6 +59,27 @@ public class ResourceLoader {
 		}
 		
 		return loadedImage;
+	}
+	
+	public void loadNullImage() {
+		try {
+			imageLoads.put("null", ResourceLoader.getNullImage());
+		} catch (SlickException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static Image getNullImage() throws SlickException {
+		Image nul = new Image(2, 2);
+		Graphics g = nul.getGraphics();
+		g.setColor(Color.red);
+		g.drawRect(0, 0, 0, 0);
+		g.drawRect(1, 1, 0, 0);
+		g.setColor(Color.black);
+		g.drawRect(0, 1, 0, 0);
+		g.drawRect(1, 0, 0, 0);
+		g.destroy();
+		return nul;
 	}
 	
 	/** Loads a music file from the 'assets/sounds/music' package

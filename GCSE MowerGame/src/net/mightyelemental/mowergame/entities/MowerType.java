@@ -27,7 +27,7 @@ public class MowerType {
 	}
 
 	public static MowerType MowveMonster = new MowerType("Mowve Monster", 110, 100, 5f, 0.2f,
-			"entities.mowers.mowveMonster")
+			"entities.mowers.mowveMonster2")
 					.setDescription("This powerful mower will slice the grass as if it were a hot knife to butter");
 	public static MowerType Hacker = new MowerType("Hack", 120, 500, 9f, 1f, "entities.trump2");
 	public static MowerType DonaldMower = new MowerType("Donald Mower", 100, 1, 6f, 1f, "entities.trump");
