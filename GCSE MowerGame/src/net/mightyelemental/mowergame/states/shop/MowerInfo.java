@@ -41,12 +41,13 @@ public class MowerInfo {
 		drawDescription(g, mower, 0);
 		int line = 0;
 		line = drawVar(g, "Max Speed",
-			mower.getBaseSpeed() + "+" + (mower.getSpeed() - mower.getBaseSpeed()) + "# " + mower.getSpeed() + "/u", "ups", line);
+			mower.getBaseSpeed() + "+" + (mower.getSpeed() - mower.getBaseSpeed()) + "#" + mower.getSpeed() + " /u", "ups", line);
 		line = drawVar(g, "Durability",
-			mower.getBaseDurability() + "+" + (mower.getDurability() - mower.getBaseDurability()) + "# " + mower.getDurability() + "/u",
+			mower.getBaseDurability() + "+" + (mower.getDurability() - mower.getBaseDurability()) + "#" + mower.getDurability() + " /u",
 			"hp", line);
-		line = drawVar(g, "Acceleration", mower.getBaseAcceleration() + "/u", "ups" + pow2, line);
-		line = drawVar(g, "Blade radius", calcBladeRect(mower.getSize()).getWidth() / 2 + "/u", "u", line);
+		line = drawVar(g, "Acceleration", mower.getBaseAcceleration() + " /u", "ups" + pow2, line);
+		line = drawVar(g, "Blade radius", calcBladeRect(mower.getSize()).getWidth() / 2 + " /u", "u", line);
+		line = drawVar(g, "Price", "/u" + mower.getPrice(), "\u00A3", line);
 	}
 	
 	char pow2 = Character.toChars(178)[0];
@@ -87,9 +88,8 @@ public class MowerInfo {
 		return lines.toArray();
 	}
 	
-	private void drawDescription(Graphics g, MowerType mower, float y) {// Fix
-																		// word
-																		// splitting
+	private void drawDescription(Graphics g, MowerType mower, float y) {
+		
 		String desc = mower.getDescription();
 		Object[] lines = splitEverNumChars(desc, 21);
 		g.setColor(Color.black);
@@ -103,7 +103,7 @@ public class MowerInfo {
 	
 	/** @return the offset of the next line relative to the first line */
 	public int drawVar(Graphics g, String name, String val, String units, int y) {
-		val = val.replace("/u", " " + units);
+		val = val.replace("/u", units);
 		int nextLine = y;
 		String[] vals = val.split("#");
 		g.setColor(Color.black);
@@ -125,7 +125,7 @@ public class MowerInfo {
 		g.fillRoundRect(x + width - h - 5, y + 4, h + 1, h + 1, 15, 15);
 		g.setColor(Color.black);
 		g.drawRoundRect(x + width - h - 5, y + 4, h + 1, h + 1, 15, 15);
-		g.drawImage(mower.getDisplayIcon().getScaledCopy(h - 1, h - 1), x + width - h - 5, y + 5);
+		g.drawImage(mower.getDisplayIcon().getScaledCopy(h - 10, h - 10), x + width - h + 1, y + 10);
 	}
 	
 }

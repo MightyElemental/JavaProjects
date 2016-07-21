@@ -16,41 +16,44 @@ import net.mightyelemental.mowergame.gui.GUIObject;
 import net.mightyelemental.mowergame.gui.ScrollBar;
 
 public class ShopState extends BasicGameState implements GUIListener {
-
+	
+	
 	public Image background;
 	public Image trump;
 	public Image sign;
-
+	
 	public final int ID;
-
+	
 	public ShopButtons shopButtons;
 	public ShopUpgradeButtons upgradeButtons;
+	public ShopMowerButtons mowerButtons;
 	public MowerInfo mowerInfo;
-
+	
 	public Purchases purchase;
-
+	
 	public static final int STATE_MAIN = 0;
 	public static final int STATE_UPGRADE = 1;
 	public static final int STATE_CHARACTERS = 2;
 	public static final int STATE_MOWERS = 3;
-
+	
 	public int menuState = STATE_MAIN;
-
-	public ShopState(int ID) {
+	
+	public ShopState( int ID ) {
 		this.ID = ID;
 	}
-
+	
 	@Override
 	public void init(GameContainer gc, StateBasedGame sbg) throws SlickException {
 		shopButtons = new ShopButtons(gc);
 		upgradeButtons = new ShopUpgradeButtons(gc);
+		mowerButtons = new ShopMowerButtons(gc);
 		purchase = new Purchases();
 		mowerInfo = new MowerInfo(gc.getWidth() - 700, 100, this);
 		background = MowerGame.resLoader.loadImage("shop.background").getScaledCopy(gc.getWidth(), gc.getHeight());
 		trump = MowerGame.resLoader.loadImage("shop.trumpApproved").getScaledCopy(0.8f);
 		sign = MowerGame.resLoader.loadImage("shop.sign").getScaledCopy(0.4f);
 	}
-
+	
 	@Override
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
 		g.drawImage(background, 0, 0);
@@ -58,41 +61,48 @@ public class ShopState extends BasicGameState implements GUIListener {
 		g.drawImage(sign, 50, -10);
 		g.setColor(Color.white);
 		g.fillRoundRect(0, gc.getHeight() - trump.getHeight() / 4,
-				6 + g.getFont().getWidth("\"My father gave me a small loan of $1,000,000\"") + 5, 20, 3, 3);
+			6 + g.getFont().getWidth("\"My father gave me a small loan of $1,000,000\"") + 5, 20, 3, 3);
 		g.setColor(Color.black);
 		g.drawString("\"My father gave me a small loan of $1,000,000\"", 6, gc.getHeight() - trump.getHeight() / 4);
 		switch (menuState) {
-		case STATE_MAIN:
-			for (GUIObject b : shopButtons.objects) {
-				b.draw(g);
-			}
-			break;
-		case STATE_UPGRADE:
-			for (GUIObject b : upgradeButtons.objects) {
-				b.draw(g);
-			}
-			int h = (int) (upgradeButtons.selectMower.getHeight() - 20);
-			float x = upgradeButtons.selectMower.getX() + upgradeButtons.selectMower.getWidth() - h - 10;
-			float y = upgradeButtons.selectMower.getY() + 10;
-			g.setColor(Color.white.darker());
-			g.fillRoundRect(x, y, h + 1, h + 1, 15, 15);
-			g.setColor(Color.black);
-			g.drawRoundRect(x, y, h + 1, h + 1, 15, 15);
-			g.drawImage(
-					purchase.boughtMowers.get(upgradeButtons.mowerNumber).getDisplayIcon().getScaledCopy(h - 1, h - 1),
-					x, y + 1);
-			break;
+			case STATE_MAIN:
+				for (GUIObject b : shopButtons.objects) {
+					b.draw(g);
+				}
+				break;
+			case STATE_MOWERS:
+				for (GUIObject b : mowerButtons.objects) {
+					b.draw(g);
+				}
+				drawSelectedMower(g);
+				break;
+			case STATE_UPGRADE:
+				for (GUIObject b : upgradeButtons.objects) {
+					b.draw(g);
+				}
+				drawSelectedMower(g);
+				break;
 		}
 		renderMoney(gc, sbg, g);
 		if (infoDisplay) {
 			mowerInfo.draw(gc, sbg, g, purchase.boughtMowers.get(upgradeButtons.mowerNumber), infoY);
 		}
-
 	}
-
+	
+	private void drawSelectedMower(Graphics g) {
+		int h = (int) (upgradeButtons.selectMower.getHeight() - 20);
+		float x = upgradeButtons.selectMower.getX() + upgradeButtons.selectMower.getWidth() - h - 10;
+		float y = upgradeButtons.selectMower.getY() + 10;
+		g.setColor(Color.white.darker());
+		g.fillRoundRect(x, y, h + 1, h + 1, 15, 15);
+		g.setColor(Color.black);
+		g.drawRoundRect(x, y, h + 1, h + 1, 15, 15);
+		g.drawImage(purchase.boughtMowers.get(upgradeButtons.mowerNumber).getDisplayIcon().getScaledCopy(h - 8, h - 8), x + 5, y + 5);
+	}
+	
 	float infoY = 50;
 	boolean infoDisplay = false;
-
+	
 	public void renderMoney(GameContainer gc, StateBasedGame sbg, Graphics g) {
 		int x = 200;
 		int y = 50;
@@ -106,7 +116,7 @@ public class ShopState extends BasicGameState implements GUIListener {
 		String mon = "\u00A3" + MowerGame.money;
 		g.drawString(mon, x + 1, gc.getHeight() - y);
 	}
-
+	
 	@Override
 	public void update(GameContainer gc, StateBasedGame sbg, int delta) throws SlickException {
 		if (returnToMenu) {
@@ -116,27 +126,30 @@ public class ShopState extends BasicGameState implements GUIListener {
 		upgradeButtons.durability.setText(upgradeButtons.durability.getText(), gc.getGraphics());
 		upgradeButtons.speed.setText(upgradeButtons.speed.getText(), gc.getGraphics());
 	}
-
+	
 	@Override
 	public void mousePressed(int button, int x, int y) {
 		switch (this.menuState) {
-		case STATE_MAIN:
-			shopButtons.mousePressed(button, x, y);
-			break;
-		case STATE_UPGRADE:
-			upgradeButtons.mousePressed(button, x, y);
-			break;
+			case STATE_MAIN:
+				shopButtons.mousePressed(button, x, y);
+				break;
+			case STATE_UPGRADE:
+				upgradeButtons.mousePressed(button, x, y);
+				break;
+			case STATE_MOWERS:
+				mowerButtons.mousePressed(button, x, y);
+				break;
 		}
-
+		
 	}
-
+	
 	@Override
 	public int getID() {
 		return ID;
 	}
-
+	
 	public boolean returnToMenu;
-
+	
 	@Override
 	public void onObjectPushed(GUIObject b, int button, int x, int y) {
 		if (b.equals(shopButtons.back)) {
@@ -145,7 +158,10 @@ public class ShopState extends BasicGameState implements GUIListener {
 		if (b.equals(shopButtons.upgrades)) {
 			this.menuState = STATE_UPGRADE;
 		}
-		if (b.equals(upgradeButtons.back)) {
+		if (b.equals(shopButtons.mowers)) {
+			this.menuState = STATE_MOWERS;
+		}
+		if (b.equals(upgradeButtons.back) || b.equals(mowerButtons.back)) {
 			this.menuState = STATE_MAIN;
 		}
 		MowerType mower = purchase.boughtMowers.get(upgradeButtons.mowerNumber);
@@ -160,42 +176,45 @@ public class ShopState extends BasicGameState implements GUIListener {
 			if (mower.getSpeedLevel() < 4) {
 				mower.setSpeedLevel(mower.getSpeedLevel() + 1);
 				purchase.boughtMowers.get(upgradeButtons.mowerNumber)
-						.setSpeed(purchase.boughtMowers.get(upgradeButtons.mowerNumber).getSpeed() + 1);
+					.setSpeed(purchase.boughtMowers.get(upgradeButtons.mowerNumber).getSpeed() + 1);
 				upgradeButtons.speed.setText("Speed Upgrade");
 			}
 		}
-		if (b.equals(upgradeButtons.selectMower)) {
+		if (b.equals(upgradeButtons.selectMower) || b.equals(mowerButtons.select)) {
 			upgradeButtons.mowerNumber++;
 			if (upgradeButtons.mowerNumber >= purchase.boughtMowers.size()) {
 				upgradeButtons.mowerNumber = 0;
 			}
 		}
 	}
-
+	
 	@Override
 	public void mouseMoved(int oldx, int oldy, int newx, int newy) {
 		switch (this.menuState) {
-		case STATE_MAIN:
-			shopButtons.mouseMoved(newx, newy);
-			break;
-		case STATE_UPGRADE:
-			upgradeButtons.mouseMoved(newx, newy);
-			break;
+			case STATE_MAIN:
+				shopButtons.mouseMoved(newx, newy);
+				break;
+			case STATE_UPGRADE:
+				upgradeButtons.mouseMoved(newx, newy);
+				break;
+			case STATE_MOWERS:
+				mowerButtons.mouseMoved(newx, newy);
+				break;
 		}
 	}
-
+	
 	@Override
 	public void onScrollBarDragged(ScrollBar sb, int x) {
 	}
-
+	
 	@Override
 	public void onObjectHovered(GUIObject b, int x, int y) {
-		if (!b.equals(upgradeButtons.back) && menuState == ShopState.STATE_UPGRADE) {
+		if (!b.equals(upgradeButtons.back) && (menuState == ShopState.STATE_UPGRADE || menuState == ShopState.STATE_MOWERS)) {
 			infoY = b.getY();
 			infoDisplay = true;
 		} else {
 			infoDisplay = false;
 		}
 	}
-
+	
 }

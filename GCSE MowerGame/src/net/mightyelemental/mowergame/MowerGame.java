@@ -72,7 +72,7 @@ public class MowerGame extends StateBasedGame {
 			System.exit(1);
 		}
 		
-		NULL_IMAGE = resLoader.loadImage("noImage");
+		NULL_IMAGE = resLoader.loadImage("null");
 		
 	}
 	
@@ -83,7 +83,7 @@ public class MowerGame extends StateBasedGame {
 		if (os.contains("mac")) {
 			path = "macosx";
 		} else if (os.contains("nix") || os.contains("nux") || os.contains("aix")) {
-			path = "linux";
+			path = "linux"; 
 		} else if (os.contains("sunos")) {
 			path = "solaris";
 		}

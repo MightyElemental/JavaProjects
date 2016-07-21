@@ -11,9 +11,10 @@ import net.mightyelemental.mowergame.MowerGame;
 import net.mightyelemental.mowergame.entities.living.EntityGnome;
 
 public class EndGameOverlay {
-
+	
+	
 	private GameState gs;
-
+	
 	public Color blackOverlay = new Color(20, 20, 20, 0);
 	public Color endTextColor = new Color(255, 255, 255, 0);
 	public float pauseTime = 400;
@@ -23,16 +24,16 @@ public class EndGameOverlay {
 	public Color outgoings = new Color(255, 50, 50, 0);
 	public Color totalMoney = new Color(255, 255, 255, 0);
 	public Color spaceContinue = new Color(255, 255, 255, 0);
-	public boolean speedUp = false;
-
+	public int speedUpLevel = 0;
+	
 	public boolean canSkip = false;
-
-	public EndGameOverlay(GameState gs) {
+	
+	public EndGameOverlay( GameState gs ) {
 		this.gs = gs;
-		costPerAnimal = (gs.rand.nextInt(3000) / 100f) + 25f;
+		costPerAnimal = (gs.rand.nextInt(2000) / 100f) + 10;
 		MowerGame.money += getTotal();
 	}
-
+	
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
 		if (!gs.running) {
 			g.setColor(blackOverlay);
@@ -41,14 +42,13 @@ public class EndGameOverlay {
 				g.setColor(endTextColor);
 				int wid = g.getFont().getWidth("---GAME OVER---");
 				g.drawString("---GAME OVER---", gc.getWidth() / 2 - wid / 2, gc.getHeight() / 2 - textOffset);
-				String text = "You mowed " + MathHelper.round(gs.worldObj.grassCon.getPercentageMowed(), 1)
-						+ "% of the lawn";
+				String text = "You mowed " + MathHelper.round(gs.worldObj.grassCon.getPercentageMowed(), 1) + "% of the lawn";
 				wid = g.getFont().getWidth(text);
 				g.drawString(text, gc.getWidth() / 2 - wid / 2, gc.getHeight() / 2 + 30 - textOffset);
-
+				
 				renderGains(gc, sbg, g);
 				renderLosses(gc, sbg, g);
-
+				
 				g.setColor(totalMoney);
 				float totalMoney = getTotal();
 				String min = "";
@@ -65,7 +65,7 @@ public class EndGameOverlay {
 			}
 		}
 	}
-
+	
 	public void renderGains(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
 		float moneyEarned = getGrassIncome();
 		g.setColor(income);
@@ -74,9 +74,9 @@ public class EndGameOverlay {
 		String text = "Gnomes Killed | \u00A3" + getGnomeIncome();
 		wid = g.getFont().getWidth(text);
 		g.drawString(text, gc.getWidth() / 2 - wid / 2, gc.getHeight() / 2 - 10);
-
+		
 	}
-
+	
 	public void renderLosses(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
 		g.setColor(outgoings);
 		float mowerDamage = getMowerCosts();
@@ -90,48 +90,45 @@ public class EndGameOverlay {
 		wid = g.getFont().getWidth(text);
 		g.drawString(text, gc.getWidth() / 2 - wid / 2, gc.getHeight() / 2 + 30);
 	}
-
+	
 	public float getGrassIncome() {
 		float moneyEarned = 0;
-		if (gs.worldObj.grassCon.getPercentageMowed() > 85) {
+		if (gs.worldObj.grassCon.getPercentageMowed() > 25) {
 			moneyEarned = gs.worldObj.grassCon.grassList.size() * (gs.worldObj.grassCon.getPercentageMowed() / 100f);
 			moneyEarned = moneyEarned / 2304f * 150f;
 		}
 		moneyEarned = MathHelper.round(moneyEarned, 2);
 		return moneyEarned;
 	}
-
+	
 	public float getGnomeIncome() {
 		return MathHelper.round(EntityGnome.moneyGain * gs.worldObj.lawnMower.gnomesKilled, 2);
 	}
-
+	
 	public float getIncome() {
 		return getGrassIncome() + getGnomeIncome();
 	}
-
+	
 	public float getMowerCosts() {
-		return ((gs.worldObj.lawnMower.maxHealth - gs.worldObj.lawnMower.health) / 10f) * 9.5f;
+		return ((gs.worldObj.lawnMower.maxHealth - gs.worldObj.lawnMower.health) / 10f) * 9.0f;
 	}
-
+	
 	public float costPerAnimal;
-
+	
 	public float getAnimalCosts() {
 		return gs.worldObj.lawnMower.animalsKilled * costPerAnimal;
 	}
-
+	
 	public float getOutgoings() {
 		return getMowerCosts() + getAnimalCosts();
 	}
-
+	
 	public float getTotal() {
 		return MathHelper.round(getIncome() - getOutgoings(), 2);
 	}
-
+	
 	public void update(int delta) {
-		float s = 1;
-		if (speedUp) {
-			s = 1.5f;
-		}
+		float s = 1 + (speedUpLevel * 0.5f);
 		if (blackOverlay.a <= 0.8f) {
 			blackOverlay.a += s * (1f / 17f / 6f) * (delta / 17f);
 		} else if (endTextColor.a < 1f) {
@@ -153,5 +150,5 @@ public class EndGameOverlay {
 			canSkip = true;
 		}
 	}
-
+	
 }

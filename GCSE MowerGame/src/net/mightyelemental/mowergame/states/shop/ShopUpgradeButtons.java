@@ -10,17 +10,18 @@ import net.mightyelemental.mowergame.gui.Button;
 import net.mightyelemental.mowergame.gui.GUIObject;
 
 public class ShopUpgradeButtons {
-
+	
+	
 	public Button selectMower;
 	public Button speed;
 	public Button durability;
 	public Button back;
-
+	
 	public int mowerNumber = 0;
 	
 	public float[] prices = {};
-
-	public ShopUpgradeButtons(GameContainer gc) {
+	
+	public ShopUpgradeButtons( GameContainer gc ) {
 		int x = gc.getWidth() - 400;
 		selectMower = new Button(x, 50, 340, 100).setText("Select", gc.getGraphics());
 		objects.add(selectMower);
@@ -31,13 +32,13 @@ public class ShopUpgradeButtons {
 		back = new Button(x, 500, 340, 100).setText("Back", gc.getGraphics());
 		objects.add(back);
 	}
-
+	
 	public List<GUIObject> objects = new ArrayList<GUIObject>();
-
+	
 	public void mousePressed(int button, int x, int y) {
 		guiPush(button, x, y, objects);
 	}
-
+	
 	public void mouseMoved(int x, int y) {
 		for (GUIObject b : objects) {
 			if (b.contains(x, y)) {
@@ -46,14 +47,14 @@ public class ShopUpgradeButtons {
 			}
 		}
 	}
-
+	
 	public void guiPush(int button, int x, int y, List<GUIObject> list) {
 		for (GUIObject b : list) {
-			if (b.contains(x, y)) {
+			if (b.contains(x, y) && b.isEnabled()) {
 				MowerGame.shopState.onObjectPushed(b, button, x, y);
 				continue;
 			}
 		}
 	}
-
+	
 }
