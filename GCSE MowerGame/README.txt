@@ -125,12 +125,12 @@ Only instructions for windows users will be listed here.
 	5.   If your version is lower than Java 7 then you may want to consider
 	     updating
 __________________________________________________________________________________
-3.1 [Installing Java]
+3.2 [Installing Java]
 
 To download the latest version of Java, go to the following site:
 https://java.com/en/download/
 __________________________________________________________________________________
-3. CONTACT INFORMATION
+4. CONTACT INFORMATION
 __________________________________________________________________________________
 
 If you have any questions, suggestions, or issues about the game, go to the

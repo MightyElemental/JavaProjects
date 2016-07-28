@@ -16,6 +16,7 @@ public class MowerType {
 	private String description = "";
 	private int price = 100;
 	private boolean hidden = false;
+	private int turnAngle = 2;
 	
 	private MowerType( String name, int size, int durability, float maxSpeed, float acceleration, String imgPath ) {
 		this.name = name;
@@ -29,12 +30,12 @@ public class MowerType {
 		this.imgPath = imgPath;
 	}
 	
-	public static MowerType MowveMonster = new MowerType("Mowve Monster", 120, 100, 5f, 0.2f, "entities.mowers.mowveMonster")
+	public static MowerType MowveMonster = new MowerType("Mowve Monster", 150, 100, 5f, 0.2f, "entities.mowers.mowveMonster")
 		.setDescription("The most expensive mower but the most powerful. This mower is for the professionals.").setPrice(10000);
 	public static MowerType Hacker = new MowerType("Hack", 120, 500, 9f, 1f, "entities.trump2")
-		.setDescription("Don't you dare try and cheat your way through the game ;)").setPrice(1000000000).setHidden(true);;
+		.setDescription("Don't you dare try and cheat your way through the game ;)").setPrice(1000000000).setHidden(true).setTurnAngle(5);
 	public static MowerType DonaldMower = new MowerType("Donald Mower", 100, 1, 6f, 1f, "entities.trump")
-		.setDescription("Use this mower at the cost of a small $1,000,000 dollars").setPrice(1000000).setHidden(false);;
+		.setDescription("Use this mower at the cost of a small $1,000,000 dollars").setPrice(1000000).setHidden(false).setTurnAngle(10);
 	
 	public String getName() {
 		return name;
@@ -128,6 +129,16 @@ public class MowerType {
 	
 	public MowerType setHidden(boolean hidden) {
 		this.hidden = hidden;
+		return this;
+	}
+	
+	public int getTurnAngle() {
+		return turnAngle;
+	}
+	
+	/** The larger the turnAngle the smaller the turn radius */
+	public MowerType setTurnAngle(int turnAngle) {
+		this.turnAngle = turnAngle;
 		return this;
 	}
 	

@@ -47,13 +47,17 @@ public class EntityMower extends Entity {
 		this.setWidth(mowerType.getSize());
 		this.setHeight(mowerType.getSize());
 		this.setIcon(mowerType.getImgPath());
-		maxHealth = mowerType.getDurability();
-		health = mowerType.getDurability();
+		maxHealth = mowerType.getDurability() + 1000;
+		health = mowerType.getDurability() + 1000;
 		// bladeRect = new Rectangle(x + width / 4, y + height / 4, width /
 		// 2.5f, height / 2.5f);
 		bladeArea = new Circle(x + width / 4, y + height / 4, width / 2.5f / 2);
 		this.mowerHasAI = mowerHasAI;
 	}
+	
+	float lastAngle = 360;
+	float angleTemp;
+	float angleDiff;
 	
 	@Override
 	public void update(GameContainer gc, int delta) throws SlickException {
@@ -91,7 +95,35 @@ public class EntityMower extends Entity {
 			vel = mowerType.getSpeed(); // 5f
 		}
 		if (Math.abs(x - mouseX) + Math.abs(y - mouseY) > 60) {
-			angle = MathHelper.getAngle(new Point(x, y), new Point(mouseX, mouseY));
+			angleTemp = MathHelper.getAngle(new Point(x, y), new Point(mouseX, mouseY));
+			
+			if (lastAngle != 0) {
+				angleDiff += lastAngle - angleTemp;
+			}
+			if (angleTemp > 90 || angleTemp < 270) {
+				if (lastAngle > 350 && angleTemp < 10) {
+					angleDiff -= 360;
+				}
+				if (lastAngle < 10 && angleTemp > 350) {
+					angleDiff += 360;
+				}
+			}
+			if (angleDiff > 360) {
+				angleDiff -= 360;
+			} else if (angleDiff < -360) {
+				angleDiff += 360;
+			}
+			
+			lastAngle = angleTemp;
+			
+			if (angleDiff > 0) {
+				angleDiff -= mowerType.getTurnAngle();
+				angle -= mowerType.getTurnAngle();
+			} else {
+				angleDiff += mowerType.getTurnAngle();
+				angle += mowerType.getTurnAngle();
+			}
+			
 			getIcon().setRotation(angle - 90);
 		} else {
 			vel -= mowerType.getAcceleration() * 2.2f;
