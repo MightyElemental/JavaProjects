@@ -14,20 +14,21 @@ import javax.swing.JPanel;
 import net.minegeek360.multisplit.graphics.GamePanel;
 
 public class MultiSplit {
-
+	
+	
 	public static Map<String, ArrayList<String>> scripts = new HashMap<String, ArrayList<String>>();
-
+	
 	/** Give it a var name and it will return a type and value of the var */
 	public static HashMap<String, Object[]> vars = new HashMap<String, Object[]>();
-
-	public static JFrame	frame;
-	public static JPanel	defaultPanel	= new JPanel();
-	public static GamePanel	gamePanel		= new GamePanel();
-
-	public static String	currentLine;
-	public static String	currentScript;
-	public static int		currentLineNum;
-
+	
+	public static JFrame frame;
+	public static JPanel defaultPanel = new JPanel();
+	public static GamePanel gamePanel = new GamePanel();
+	
+	public static String currentLine;
+	public static String currentScript;
+	public static int currentLineNum;
+	
 	public MultiSplit() {
 		try {
 			loadScriptFileToString("main.ms");
@@ -39,16 +40,16 @@ public class MultiSplit {
 		MSLexer lex = new MSLexer("main");
 		lex.handleTokens(temp);
 	}
-
+	
 	private static int scriptNum = -1;
-
+	
 	public static boolean pauseScript = false;
-
+	
 	@Deprecated
 	public static synchronized void createNewInterprateThread(final ArrayList<ArrayList<String>> script) {
 		Thread thread = new Thread() {
-
-			@SuppressWarnings( "static-access" )
+			
+			
 			public void run() {
 				System.out.println("started " + this.getName());
 				MSLexer lex = new MSLexer();
@@ -64,7 +65,7 @@ public class MultiSplit {
 		thread.setName("THREAD_" + scriptNum + " " + script.get(0).get(0));
 		thread.start();
 	}
-
+	
 	public MultiSplit( String file ) {
 		try {
 			loadScriptFileToString(file);
@@ -75,7 +76,7 @@ public class MultiSplit {
 		MSLexer lex = new MSLexer();
 		lex.handleTokens(temp);
 	}
-
+	
 	public static void main(String[] args) {
 		if (args.length > 0) {
 			System.out.println("Attempting to load " + args[0]);
@@ -84,7 +85,7 @@ public class MultiSplit {
 			new MultiSplit();
 		}
 	}
-
+	
 	public static void loadScriptFileToString(String file) throws IOException {
 		File file2 = new File("scripts/" + file);
 		BufferedReader br = new BufferedReader(new FileReader(file2));
@@ -92,7 +93,7 @@ public class MultiSplit {
 		String fileName = file2.getName();
 		try {
 			String line = br.readLine();
-
+			
 			while (line != null) {
 				lines.add(line);
 				line = br.readLine();
@@ -105,5 +106,5 @@ public class MultiSplit {
 			br.close();
 		}
 	}
-
+	
 }

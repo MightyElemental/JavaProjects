@@ -400,6 +400,11 @@ public class Commands {
 				string = string.replace(keys[i] + "", getAllVars().get(keys[i])[1] + "");
 			}
 		}
+		String old = string;
+		string = string.replaceAll("[^0-9.-/*+]", "");
+		if (!old.equals(string)) {
+			Exceptions.expectedSymbol("Only numbers and math functions can be used!");
+		}
 		try {
 			temp = Float.parseFloat(MSLexer.engine.eval(string) + "");
 		} catch (ScriptException e) {

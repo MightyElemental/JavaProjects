@@ -1,22 +1,15 @@
-setVar() @master string James;
-setVar() @loginFunc function {
-getInput() @name Enter your name;
-if() @name == @master 8;
-  addString() Welcome James!!;
-  println();
-goto() 17;
-  addString() INCORRECT!!!;
-  println();
-  clearString();
-goto() 3;
+initGUI() 1600 900 Basic Square;
+setGUIMode() game;
+showGUI();
+setVar() @x number 0;
+
+setVar() @draw function {
+  drawRect() @x 100 50 50;
 }
-
-exec() @loginFunc;
-
-
-setVar() @num number 5;
-clearString();
-setVar() @num number @num*@num;
-addString() @num;
-println();
-goto() 18;
+setVar() @update function {
+  setVar() @x number @x+1;
+  sleep() 50;
+}
+exec() @update;
+drawGUI();
+goto() 13;

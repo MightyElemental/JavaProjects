@@ -136,6 +136,7 @@ public class MSLexer {
 					break;
 				case "createGUI()":
 					Commands.createGUI(arr);
+					Exceptions.deprecated("createGUI() is no longer supported and will not function properly");
 					break;
 				case "halt()":
 					Commands.exit();
