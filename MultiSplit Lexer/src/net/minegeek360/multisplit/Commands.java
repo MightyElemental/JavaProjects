@@ -4,13 +4,15 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.script.ScriptException;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 public class Commands {
-
+	
+	
 	/** Usage of commands:<br>
 	 * addString() - addString() [text];<br>
 	 * print() - print();<br>
@@ -37,9 +39,9 @@ public class Commands {
 	*/
 	private Commands() {
 	}
-
+	
 	private static BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-
+	
 	/** addString() - addString() [text]; */
 	public static void addString(ArrayList<String> arr) {
 		if (arr.size() < 2) {
@@ -55,7 +57,7 @@ public class Commands {
 		sb.deleteCharAt(sb.length() - 1);
 		MSLexer.string = sb.toString();
 	}
-
+	
 	public static void print(boolean newLine) {
 		if (newLine) {
 			System.out.println(MSLexer.string);
@@ -63,11 +65,11 @@ public class Commands {
 			System.out.print(MSLexer.string);
 		}
 	}
-
+	
 	public static void clearString() {
 		MSLexer.string = "";
 	}
-
+	
 	private static String getConsoleInput() {
 		try {
 			return br.readLine();
@@ -76,70 +78,28 @@ public class Commands {
 		}
 		return "INPUT ERROR";
 	}
-
+	
 	public static Object getVarValue(String var) {
 		if (MultiSplit.vars.get(var) == null) {
 			Exceptions.varDoesNotExist();
 		}
 		return MultiSplit.vars.get(var)[1];
 	}
-
+	
+	public static HashMap<String, Object[]> getAllVars() {
+		return MultiSplit.vars;
+	}
+	
 	public static String getVarType(String var) {
 		if (MultiSplit.vars.get(var) == null) {
 			Exceptions.varDoesNotExist();
 		}
 		return MultiSplit.vars.get(var)[0].toString();
 	}
-
-	private static boolean varExists(String var) {
-		return MultiSplit.vars.get(var) != null;
-	}
-
-	private static Object[] wordCases(ArrayList<String> arr, int i) {
-		String word = arr.get(i);
-		if (word.startsWith("@")) {
-			word = getVarValue(word) + "";
-		}
-		if (word.contains("+")) {
-			word = evalMaths(word) + "";
-		}
-		switch (word) {
-			case "<read>":
-				word = getConsoleInput();
-				break;
-			case "getVar()":
-				word = getVarValue(arr.get(i + 1)) + "";
-				i++;
-				break;
-		}
-		return new Object[] { word, i };
-	}
-
-	/** getInput() - getInput() @[varName] [message text]; */
-	public static void getInput(ArrayList<String> args, MSLexer lex) {
-		if (args.size() < 3) {
-			Exceptions.wrongArgs("There are too few arguments!\n\tUsage: getInput() @[varName] [message text];");
-		}
-		String message = "";
-		StringBuilder sb = new StringBuilder(message);
-		for (int i = 2; i < args.size(); i++) {
-			sb.append(wordCases(args, i)[0] + " ");
-		}
-		sb.deleteCharAt(sb.length() - 1);
-		sb.append("> ");
-		message = sb.toString();
-		System.out.print(message);
-		ArrayList<String> var = new ArrayList<String>();
-		var.add("setVar()");
-		var.add(args.get(1));
-		var.add("string");
-		var.add("<read>");
-		setVar(var, lex);
-	}
-
+	
 	/** setVar() - setVar() @[varName] [type] [value]; <br>
 	 * Types include:<br>
-	 * gui<br>
+	 * function<br>
 	 * number<br>
 	 * string<br>
 	*/
@@ -167,7 +127,7 @@ public class Commands {
 				value = sb.toString();
 				break;
 			case "number":
-				value = wordCases(arr, 3)[0].toString().replaceAll("[^0-9.]", "");
+				value = wordCases(arr, 3)[0].toString().replaceAll("[^0-9.-]", "");
 				break;
 			case "function":
 				if (!arr.get(3).equals("{")) {
@@ -179,18 +139,63 @@ public class Commands {
 				value = arr.get(3);
 				break;
 		}
-
+		
 		Object[] args = new Object[] { arr.get(2), value };
-
+		
 		MultiSplit.vars.put(arr.get(1), args);
-
+		
 	}
-
+	
+	private static boolean varExists(String var) {
+		return MultiSplit.vars.get(var) != null;
+	}
+	
+	private static Object[] wordCases(ArrayList<String> arr, int i) {
+		String word = arr.get(i);
+		if (word.contains("+") || word.contains("-") || word.contains("/") || word.contains("*")) {
+			word = evalMaths(word) + "";
+		} else if (word.startsWith("@")) {
+			word = getVarValue(word) + "";
+		}
+		switch (word) {
+			case "<read>":
+				word = getConsoleInput();
+				break;
+			case "getVar()":
+				word = getVarValue(arr.get(i + 1)) + "";
+				i++;
+				break;
+		}
+		return new Object[] { word, i };
+	}
+	
+	/** getInput() - getInput() @[varName] [message text]; */
+	public static void getInput(ArrayList<String> args, MSLexer lex) {
+		if (args.size() < 3) {
+			Exceptions.wrongArgs("There are too few arguments!\n\tUsage: getInput() @[varName] [message text];");
+		}
+		String message = "";
+		StringBuilder sb = new StringBuilder(message);
+		for (int i = 2; i < args.size(); i++) {
+			sb.append(wordCases(args, i)[0] + " ");
+		}
+		sb.deleteCharAt(sb.length() - 1);
+		sb.append("> ");
+		message = sb.toString();
+		System.out.print(message);
+		ArrayList<String> var = new ArrayList<String>();
+		var.add("setVar()");
+		var.add(args.get(1));
+		var.add("string");
+		var.add("<read>");
+		setVar(var, lex);
+	}
+	
 	private static Object defineFunction(ArrayList<String> args, MSLexer lex) {
 		int[] startEnd = new int[2];
-
+		
 		startEnd[0] = lex.currentLine + 2;
-
+		
 		for (int i = lex.currentLine + 1; i < lex.scriptLines.size(); i++) {
 			if (lex.scriptLines.get(i).get(0).startsWith("}")) {
 				break;
@@ -198,10 +203,10 @@ public class Commands {
 			lex.currentLine++;
 		}
 		startEnd[1] = lex.currentLine - 1;
-
+		
 		return startEnd;
 	}
-
+	
 	/** goto() - goto() [integer number]; */
 	public static void gotoLine(ArrayList<String> args, MSLexer lex) {
 		if (args.size() < 2) {
@@ -218,7 +223,7 @@ public class Commands {
 		}
 		lex.currentLine = tempNum - 2;
 	}
-
+	
 	public static void sleep(ArrayList<String> args) {
 		if (args.size() < 2) {
 			Exceptions.wrongArgs("There are too few arguments!\n\tUsage: gotoLine() [integer];");
@@ -235,7 +240,7 @@ public class Commands {
 			e.printStackTrace();
 		}
 	}
-
+	
 	/** createGUI() @[frameVarName] [width] [height] [title]; */
 	@Deprecated
 	public static void createGUI(ArrayList<String> args) {
@@ -274,11 +279,11 @@ public class Commands {
 		Object[] value = new Object[] { "gui", frame };
 		MultiSplit.vars.put(args.get(1), value);
 	}
-
+	
 	public static void exit() {
 		System.exit(0);
 	}
-
+	
 	/** if() @[varName] [== > < !=] @[varName] [lineIfFalse]; */
 	public static void ifStatement(ArrayList<String> args, MSLexer lex) {
 		if (args.size() < 5) {
@@ -312,8 +317,8 @@ public class Commands {
 							gotoLine(gotoArgs, lex);
 						}
 					} catch (Exception e) {
-						Exceptions.invalidNumber(
-								"Make sure you have written the number correctly. It can either be a decimal or an integer.");
+						Exceptions
+							.invalidNumber("Make sure you have written the number correctly. It can either be a decimal or an integer.");
 					}
 				} else {
 					Exceptions.wrongArgs("You cannot use a non-number argument to test greater than with!");
@@ -328,8 +333,8 @@ public class Commands {
 							gotoLine(gotoArgs, lex);
 						}
 					} catch (Exception e) {
-						Exceptions.invalidNumber(
-								"Make sure you have written the number correctly. It can either be a decimal or an integer.");
+						Exceptions
+							.invalidNumber("Make sure you have written the number correctly. It can either be a decimal or an integer.");
 					}
 				} else {
 					Exceptions.wrongArgs("You cannot use a non-number argument to test less than with!");
@@ -340,7 +345,7 @@ public class Commands {
 				break;
 		}
 	}
-
+	
 	/** popup() - popup() [warning / info] [message]; */
 	public static void popup(ArrayList<String> args) {
 		if (args.size() < 3) {
@@ -363,7 +368,7 @@ public class Commands {
 				break;
 		}
 	}
-
+	
 	/** exec() @[funcName]; */
 	public static void executeFunction(ArrayList<String> args, MSLexer lex) {
 		if (args.size() < 2) {
@@ -383,9 +388,18 @@ public class Commands {
 			Exceptions.varDoesNotExist();
 		}
 	}
-
+	
 	private static float evalMaths(String string) {
 		float temp = 0f;
+		Object[] keys = getAllVars().keySet().toArray();
+		for (int i = 0; i < getAllVars().size(); i++) {
+			if (string.contains(keys[i] + "")) {
+				if (!getVarType(keys[i] + "").equals("number")) {
+					Exceptions.varWrongType("A number needs to be used to perform maths!");
+				}
+				string = string.replace(keys[i] + "", getAllVars().get(keys[i])[1] + "");
+			}
+		}
 		try {
 			temp = Float.parseFloat(MSLexer.engine.eval(string) + "");
 		} catch (ScriptException e) {
@@ -393,7 +407,7 @@ public class Commands {
 		}
 		return temp;
 	}
-
+	
 	/** addScript() [scriptName]; */
 	public static void addScript(ArrayList<String> args) {
 		if (args.size() < 2) {
@@ -408,9 +422,9 @@ public class Commands {
 		MSLexer lex = new MSLexer(args.get(1));
 		lex.handleTokens(script);
 	}
-
+	
 	/* GUI */
-
+	
 	/** initGUI() [width] [height] [title]; */
 	public static void initGUI(ArrayList<String> args) {
 		if (args.size() < 4) {
@@ -441,7 +455,7 @@ public class Commands {
 		MultiSplit.frame.setLocationRelativeTo(null);
 		MultiSplit.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
-
+	
 	/** showGUI(); */
 	public static void showGUI() {
 		if (MultiSplit.frame == null) {
@@ -449,7 +463,7 @@ public class Commands {
 		}
 		MultiSplit.frame.setVisible(true);
 	}
-
+	
 	/** hideGUI(); */
 	public static void hideGUI() {
 		if (MultiSplit.frame == null) {
@@ -457,7 +471,7 @@ public class Commands {
 		}
 		MultiSplit.frame.setVisible(false);
 	}
-
+	
 	/** setGUIMode() [guiMode]; - includes game/default */
 	public static void setGUIMode(ArrayList<String> args) {
 		if (args.size() < 2) {
@@ -480,7 +494,7 @@ public class Commands {
 				break;
 		}
 	}
-
+	
 	/** drawRect() [x] [y] [width] [height]; */
 	public static void drawRect(ArrayList<String> args) {
 		if (args.size() < 5) {
@@ -500,7 +514,7 @@ public class Commands {
 		}
 		MultiSplit.gamePanel.addRect((int) x, (int) y, width, height);
 	}
-
+	
 	/** drawGUI(); */
 	public static void drawGUI(MSLexer lex) {
 		ArrayList<String> execFunc = new ArrayList<String>();
@@ -512,5 +526,5 @@ public class Commands {
 		MultiSplit.defaultPanel.repaint();
 		MultiSplit.gamePanel.objects.clear();
 	}
-
+	
 }
