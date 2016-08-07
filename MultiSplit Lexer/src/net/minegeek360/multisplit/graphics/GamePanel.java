@@ -1,5 +1,6 @@
 package net.minegeek360.multisplit.graphics;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.util.ArrayList;
@@ -20,6 +21,9 @@ public class GamePanel extends JPanel {
 	@Override
 	public void paint(Graphics g) {
 		// super.paintComponent(g);
+		g.setColor(Color.BLACK);
+		g.fillRect(0, 0, this.getWidth(), this.getHeight());
+		g.setColor(Color.WHITE);
 		try {
 			for (Object obj : objects) {
 				if (obj instanceof Rectangle) {

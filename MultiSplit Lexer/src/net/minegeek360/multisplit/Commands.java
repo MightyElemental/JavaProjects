@@ -112,7 +112,6 @@ public class Commands {
 	 * string<br>
 	*/
 	public static void setVar(ArrayList<String> arr, MSLexer lex) {
-		System.out.println(arr);
 		if (arr.size() < 4) {
 			Exceptions.wrongArgs("There are too few arguments!\n\tUsage: setVar() @[varName] [type] [value];");
 		}
@@ -552,7 +551,7 @@ public class Commands {
 			width = Integer.parseInt(args.get(3));
 			height = Integer.parseInt(args.get(4));
 		} catch (Exception e) {
-			Exceptions.wrongArgs("Can only accept an integer.\n\tUsage: drawRect() [x] [y] [width] [height];");
+			Exceptions.wrongArgs("Can only accept an integer for width and height.\n\tUsage: drawRect() [x] [y] [width] [height];");
 		}
 		MultiSplit.gamePanel.addRect((int) x, (int) y, width, height);
 	}
@@ -562,11 +561,11 @@ public class Commands {
 		ArrayList<String> execFunc = new ArrayList<String>();
 		execFunc.add("execFunc()");
 		execFunc.add("@draw");
-		executeFunction(execFunc, lex);
-		MultiSplit.gamePanel.repaint();
 		MultiSplit.frame.repaint();
 		MultiSplit.defaultPanel.repaint();
+		MultiSplit.gamePanel.repaint();
 		MultiSplit.gamePanel.objects.clear();
+		executeFunction(execFunc, lex);
 	}
 	
 }

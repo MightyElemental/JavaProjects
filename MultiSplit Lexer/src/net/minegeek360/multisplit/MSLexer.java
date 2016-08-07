@@ -154,16 +154,16 @@ public class MSLexer {
 				case "}":
 					if (MultiSplit.returnToLine > 0) {
 						currentLine = MultiSplit.returnToLine;
+						if (!MultiSplit.returnToScript.equals(scriptName)) { return; }
 					}
 					MultiSplit.returnToLine = -1;
-					if (!MultiSplit.returnToScript.equals(scriptName)) { return; }
 					break;
 				case "break()":
 					if (MultiSplit.returnToLine > 0) {
 						currentLine = MultiSplit.returnToLine;
+						if (!MultiSplit.returnToScript.equals(scriptName)) { return; }
 					}
 					MultiSplit.returnToLine = -1;
-					if (!MultiSplit.returnToScript.equals(scriptName)) { return; }
 					break;
 				case "showGUI()":
 					Commands.showGUI();
