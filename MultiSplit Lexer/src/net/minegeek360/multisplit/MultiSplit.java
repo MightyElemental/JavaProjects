@@ -17,6 +17,7 @@ public class MultiSplit {
 	
 	
 	public static Map<String, ArrayList<String>> scripts = new HashMap<String, ArrayList<String>>();
+	public static Map<String, MSLexer> lexers = new HashMap<String, MSLexer>();
 	
 	/** Give it a var name and it will return a type and value of the var */
 	public static HashMap<String, Object[]> vars = new HashMap<String, Object[]>();
@@ -29,6 +30,9 @@ public class MultiSplit {
 	public static String currentScript;
 	public static int currentLineNum;
 	
+	public static int returnToLine = -1;
+	public static String returnToScript = "main";
+	
 	public MultiSplit() {
 		try {
 			loadScriptFileToString("main.ms");
@@ -38,12 +42,17 @@ public class MultiSplit {
 		ArrayList<ArrayList<String>> temp = MSLexer.interpret(scripts.get("main"));
 		// createNewInterprateThread(temp);
 		MSLexer lex = new MSLexer("main");
+		regScript(lex);
 		lex.handleTokens(temp);
 	}
 	
 	private static int scriptNum = -1;
 	
 	public static boolean pauseScript = false;
+	
+	public static void regScript(MSLexer lex) {
+		lexers.put(lex.scriptName, lex);
+	}
 	
 	@Deprecated
 	public static synchronized void createNewInterprateThread(final ArrayList<ArrayList<String>> script) {

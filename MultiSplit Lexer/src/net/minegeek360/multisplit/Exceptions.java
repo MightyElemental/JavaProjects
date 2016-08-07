@@ -27,7 +27,8 @@ public class Exceptions {
 	 * Make sure you have spelt the script correctly and WITHOUT '.ms' at the end. */
 	public static void scriptDoesNotExist() {
 		exception("ScriptDoesNotExist", "Make sure you have spelt the script correctly and WITHOUT '.ms' at the end."
-			+ "\n\tAlso make sure that you have the file in the correct location", true);
+			+ "\n\tMake sure that you have the file in the correct location."
+			+ "\n\tAlso make sure that you have loaded the script into MultiSplit.", true);
 	}
 	
 	public static void varDoesNotExist() {
@@ -72,6 +73,14 @@ public class Exceptions {
 		exception("GUIHasNotBeenInitialized", "Make sure you have initialized the GUI!", true);
 	}
 	
+	public static void deprecated(String string) {
+		exception("RunningDeprecatedFuntion", string, false);
+	}
+	
+	public static void stackOverflow() {
+		exception("StackOverflow", "StackOverflow!", true);
+	}
+	
 	private static void exception(String type, String message, boolean stop) {
 		try {
 			System.err.println(" " + type + "Exception in script '" + MultiSplit.currentScript + "' on line "
@@ -82,10 +91,6 @@ public class Exceptions {
 		if (stop) {
 			System.exit(0);
 		}
-	}
-	
-	public static void deprecated(String string) {
-		exception("RunningDeprecatedFuntion", string, false);
 	}
 	
 }

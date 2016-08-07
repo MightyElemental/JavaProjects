@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.script.ScriptException;
 import javax.swing.JFrame;
@@ -35,6 +36,9 @@ public class Commands {
 	 * setGUIMode() - setGUIMode() [guiMode] - includes game/default<br>
 	 * drawRect() - drawRect() [x] [y] [width] [height];<br>
 	 * addScript() - addScript() [scriptName];<br>
+	 * getString() - getString();<br>
+	 * halt() - halt();<br>
+	 * break() - break();<br>
 	 * <\COM> - Comment (Without the backslash)<br>
 	*/
 	private Commands() {
@@ -58,16 +62,20 @@ public class Commands {
 		MSLexer.string = sb.toString();
 	}
 	
+	public static void clearString() {
+		MSLexer.string = "";
+	}
+	
+	public static String getString() {
+		return MSLexer.string;
+	}
+	
 	public static void print(boolean newLine) {
 		if (newLine) {
 			System.out.println(MSLexer.string);
 		} else {
 			System.out.print(MSLexer.string);
 		}
-	}
-	
-	public static void clearString() {
-		MSLexer.string = "";
 	}
 	
 	private static String getConsoleInput() {
@@ -104,6 +112,7 @@ public class Commands {
 	 * string<br>
 	*/
 	public static void setVar(ArrayList<String> arr, MSLexer lex) {
+		System.out.println(arr);
 		if (arr.size() < 4) {
 			Exceptions.wrongArgs("There are too few arguments!\n\tUsage: setVar() @[varName] [type] [value];");
 		}
@@ -146,7 +155,7 @@ public class Commands {
 		
 	}
 	
-	private static boolean varExists(String var) {
+	public static boolean varExists(String var) {
 		return MultiSplit.vars.get(var) != null;
 	}
 	
@@ -164,6 +173,9 @@ public class Commands {
 			case "getVar()":
 				word = getVarValue(arr.get(i + 1)) + "";
 				i++;
+				break;
+			case "getString()":
+				word = getString();
 				break;
 		}
 		return new Object[] { word, i };
@@ -191,10 +203,11 @@ public class Commands {
 		setVar(var, lex);
 	}
 	
-	private static Object defineFunction(ArrayList<String> args, MSLexer lex) {
-		int[] startEnd = new int[2];
+	private static List<Object> defineFunction(ArrayList<String> args, MSLexer lex) { // NEED TO ADD ABILITY TO GO TO
+																						// DIFFERENT SCRIPTS
+		List<Object> info = new ArrayList<Object>();
 		
-		startEnd[0] = lex.currentLine + 2;
+		info.add(lex.currentLine + 2);
 		
 		for (int i = lex.currentLine + 1; i < lex.scriptLines.size(); i++) {
 			if (lex.scriptLines.get(i).get(0).startsWith("}")) {
@@ -202,37 +215,57 @@ public class Commands {
 			}
 			lex.currentLine++;
 		}
-		startEnd[1] = lex.currentLine - 1;
+		info.add(lex.currentLine - 1);
+		info.add(lex.scriptName);
 		
-		return startEnd;
+		return info;
 	}
 	
-	/** goto() - goto() [integer number]; */
+	/** goto() - goto() [integer]:[scriptName]; */
 	public static void gotoLine(ArrayList<String> args, MSLexer lex) {
 		if (args.size() < 2) {
-			Exceptions.wrongArgs("There are too few arguments!\n\tUsage: goto() [integer];");
+			Exceptions.wrongArgs("There are too few arguments!\n\tUsage: goto() [integer]:[scriptName];");
 		}
 		int tempNum = 0;
+		Object[] numScript = new Object[2];
 		try {
-			tempNum = Integer.parseInt(args.get(1));
+			numScript = args.get(1).split(":");
+			tempNum = Integer.parseInt(numScript[0] + "");
 		} catch (Exception e) {
-			Exceptions.wrongArgs("Can only accept an integer.\n\tUsage: goto() [integer];");
+			Exceptions.wrongArgs("Can only accept an integer.\n\tUsage: goto() [integer]:[scriptName];");
+		}
+		if (numScript.length > 1) {
+			try {
+				lex = MultiSplit.lexers.get(numScript[1] + "");
+				if (lex == null) { throw new Exception(); }
+				tempNum++;
+			} catch (Exception e) {
+				Exceptions.scriptDoesNotExist();
+			}
 		}
 		if (tempNum > lex.scriptLines.size()) {
 			Exceptions.intOutOfBounds("Cannot go to a line that does not exist!");
 		}
 		lex.currentLine = tempNum - 2;
+		try {
+			if (numScript.length > 1) {
+				lex.handleTokens(lex.scriptLines);
+			}
+		} catch (StackOverflowError e) {
+			Exceptions.stackOverflow();
+		}
 	}
 	
+	/** sleep() - sleep() [integer] */
 	public static void sleep(ArrayList<String> args) {
 		if (args.size() < 2) {
-			Exceptions.wrongArgs("There are too few arguments!\n\tUsage: gotoLine() [integer];");
+			Exceptions.wrongArgs("There are too few arguments!\n\tUsage: sleep() [integer];");
 		}
 		int tempNum = 0;
 		try {
 			tempNum = Integer.parseInt(args.get(1));
 		} catch (Exception e) {
-			Exceptions.wrongArgs("Can only accept an integer.\n\tUsage: gotoLine() [integer];");
+			Exceptions.wrongArgs("Can only accept an integer.\n\tUsage: sleep() [integer];");
 		}
 		try {
 			Thread.sleep(tempNum);
@@ -280,7 +313,7 @@ public class Commands {
 		MultiSplit.vars.put(args.get(1), value);
 	}
 	
-	public static void exit() {
+	public static void halt() {
 		System.exit(0);
 	}
 	
@@ -375,14 +408,17 @@ public class Commands {
 			Exceptions.wrongArgs("There are too few arguments!\n\tUsage: exec() @[funcName];");
 		}
 		if (!getVarType(args.get(1)).equals("function")) {
-			Exceptions.varWrongType("Expected 'function' variable, got " + getVarType(args.get(1)) + "!");
+			Exceptions.varWrongType("Expected 'function' variable, got " + getVarType(args.get(1)) + " variable!");
 		}
 		try {
-			int[] startEnd = (int[]) getVarValue(args.get(1));
-			lex.returnToLine = lex.currentLine;
+			@SuppressWarnings( "unchecked" )
+			List<Object> info = (List<Object>) getVarValue(args.get(1));
+			MultiSplit.returnToLine = lex.currentLine;
+			MultiSplit.returnToScript = lex.scriptName;
 			ArrayList<String> gotoCom = new ArrayList<String>();
 			gotoCom.add("goto()");
-			gotoCom.add(startEnd[0] + "");
+			gotoCom.add(info.get(0) + ":" + info.get(2));
+			// System.out.println(gotoCom);
 			gotoLine(gotoCom, lex);
 		} catch (Exception e) {
 			Exceptions.varDoesNotExist();
@@ -425,6 +461,7 @@ public class Commands {
 		}
 		ArrayList<ArrayList<String>> script = MSLexer.interpret(MultiSplit.scripts.get(args.get(1)));
 		MSLexer lex = new MSLexer(args.get(1));
+		MultiSplit.regScript(lex);
 		lex.handleTokens(script);
 	}
 	
