@@ -1,26 +1,17 @@
-setVar() @r random 1 100;
-setVar() @a number 0;
-addString() Guess a number between 1 and 100!;
-println();
-clearString();
-setVar() @e function {
-  clearString();
-  addString() You guessed in @a attempt(s)!;
+setVar() @time1 number getTime();
+setVar() @h number 0;
+setVar() @question function {
+  setVar() @num1 random 0 9;
+  setVar() @num2 random 1 9;
+  setVar() @a array @h @num1 + @num2;
+  <COM>TOO LITTERAL E.G. 5+4=54
+  setVar() @number number @a[@h];
+  addString() @a[@h] = @number;
   println();
-  halt();
+  clearString();
+  setVar() @h number @h+1;
 }
-getInput() @g;
-setVar() @a number @a+1;
-setVar() @gn number @g;
-if() @gn > @r 18;
-  addString() Number too high!;
-goto() 24;
-  if() @gn < @r 21;
-    addString() Number too low!;
-  goto() 24;
-    addString() You guessed correctly! The number was @r;
-    println();
-  exec() @e;
-println();
-clearString();
-goto() 12;
+exec() @question;
+exec() @question;
+exec() @question;
+exec() @question;

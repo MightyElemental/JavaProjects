@@ -111,6 +111,7 @@ public class Commands {
 	 * number<br>
 	 * string<br>
 	*/
+	@SuppressWarnings( "unchecked" )
 	public static void setVar(ArrayList<String> arr, MSLexer lex) {
 		if (arr.size() < 4) {
 			Exceptions.wrongArgs("There are too few arguments!\n\tUsage: setVar() @[varName] [type] [value];");
@@ -122,17 +123,10 @@ public class Commands {
 		if (arr.get(1).length() - 1 > MSLexer.VARNAME_LIMIT) {
 			Exceptions.varNameTooLong();
 		}
+		String type = arr.get(2);
 		switch (arr.get(2)) {
 			case "string":
-				StringBuilder sb = new StringBuilder();
-				for (int i = 3; i < arr.size(); i++) {
-					Object[] temp = wordCases(arr, i, false);
-					String word = temp[0].toString();
-					i = Integer.parseInt(temp[1] + "");
-					sb.append(word + " ");
-				}
-				sb.deleteCharAt(sb.length() - 1);
-				value = sb.toString();
+				value = getString(arr, 3);
 				break;
 			case "number":
 				value = wordCases(arr, 3, true)[0].toString().replaceAll("[^0-9.-]", "");
@@ -148,6 +142,19 @@ public class Commands {
 					Exceptions.wrongArgs("There are too few arguments!\n\tUsage: setVar() @[varName] random [min] [max];");
 				}
 				value = getRandom(arr, lex);
+				type = "number";
+				break;
+			case "array":
+				if (arr.size() < 5) {
+					Exceptions.wrongArgs("There are too few arguments!\n\tUsage: setVar() @[varName] array [index] [value];");
+				}
+				if (!varExists(arr.get(1))) {
+					value = new HashMap<Integer, Object>();
+				} else {
+					value = getVarValue(arr.get(1));
+				}
+				// System.err.println(value);
+				((HashMap<Integer, Object>) value).put((int) Float.parseFloat(wordCases(arr, 3, true)[0] + ""), getString(arr, 4));
 				break;
 			default:
 				Exceptions.unknownVarType(arr.get(2));
@@ -155,7 +162,7 @@ public class Commands {
 				break;
 		}
 		
-		Object[] args = new Object[] { arr.get(2), value };
+		Object[] args = new Object[] { type, value };
 		
 		MultiSplit.vars.put(arr.get(1), args);
 		
@@ -165,19 +172,54 @@ public class Commands {
 		return MultiSplit.vars.get(var) != null;
 	}
 	
+	public static String getString(ArrayList<String> arr, int start) {
+		StringBuilder sb = new StringBuilder();
+		for (int i = start; i < arr.size(); i++) {
+			Object[] temp = wordCases(arr, i, false);
+			String word = temp[0].toString();
+			i = Integer.parseInt(temp[1] + "");
+			sb.append(word + " ");
+		}
+		sb.deleteCharAt(sb.length() - 1);
+		return sb.toString();
+	}
+	
 	private static float getRandom(ArrayList<String> arr, MSLexer lex) {
-		int min = (int) Float.parseFloat(wordCases(arr, 3, true)[0] + "");
-		int max = (int) Float.parseFloat(wordCases(arr, 4, true)[0] + "");
-		float r = MultiSplit.rand.nextInt(max - min) + min;
+		float r = 0;
+		try {
+			int min = (int) Float.parseFloat(wordCases(arr, 3, true)[0] + "");
+			int max = (int) Float.parseFloat(wordCases(arr, 4, true)[0] + "");
+			r = MultiSplit.rand.nextInt(max - min) + min;
+		} catch (Exception e) {
+			Exceptions.invalidNumber("Only numbers can be used!");
+		}
 		return r;
 	}
 	
+	private static long getTime() {
+		return System.currentTimeMillis();
+	}
+	
+	@SuppressWarnings( "unchecked" )
 	private static Object[] wordCases(ArrayList<String> arr, int i, boolean useMaths) {
 		String word = arr.get(i);
 		if (useMaths && (word.contains("+") || word.contains("-") || word.contains("/") || word.contains("*"))) {
 			word = evalMaths(word) + "";
 		} else if (word.startsWith("@")) {
-			word = getVarValue(word) + "";
+			if (word.contains("[") && word.contains("]")) {
+				if (varExists(word)) {
+					if (!getVarType(word).equals("array")) {
+						Exceptions.varWrongType("only arrays can contain square brackets!");
+					}
+				}
+				String[] split = word.split("\\[");
+				split[1] = split[1].replace("[", "").replace("]", "");
+				ArrayList<String> a = new ArrayList<String>();
+				a.add(split[1]);
+				word = "" + ((HashMap<Integer, Object>) getVarValue(split[0])).get((int) Float.parseFloat(wordCases(a, 0, true)[0] + ""));
+			} else {
+				word = getVarValue(word) + "";
+			}
 		}
 		switch (word) {
 			case "<read>":
@@ -190,6 +232,14 @@ public class Commands {
 			case "getString()":
 				word = getString();
 				break;
+			case "getTime()":
+				word = getTime() + "";
+				break;
+		}
+		try {
+			int val = (int) Float.parseFloat(word);
+			word = val + "";
+		} catch (Exception e) {
 		}
 		return new Object[] { word, i };
 	}
@@ -364,8 +414,7 @@ public class Commands {
 				}
 				break;
 			case ">":
-				if ((getVarType(args.get(1)).equals("number") || getVarType(args.get(1)).equals("random"))
-					&& (getVarType(args.get(3)).equals("number") || getVarType(args.get(3)).equals("random"))) {
+				if (getVarType(args.get(1)).equals("number") && getVarType(args.get(3)).equals("number")) {
 					try {
 						double temp1 = Double.parseDouble(var1);
 						double temp2 = Double.parseDouble(var2);
@@ -381,8 +430,7 @@ public class Commands {
 				}
 				break;
 			case "<":
-				if ((getVarType(args.get(1)).equals("number") || getVarType(args.get(1)).equals("random"))
-					&& (getVarType(args.get(3)).equals("number") || getVarType(args.get(3)).equals("random"))) {
+				if (getVarType(args.get(1)).equals("number") && getVarType(args.get(3)).equals("number")) {
 					try {
 						double temp1 = Double.parseDouble(var1);
 						double temp2 = Double.parseDouble(var2);
@@ -445,7 +493,8 @@ public class Commands {
 			// System.out.println(gotoCom);
 			gotoLine(gotoCom, lex);
 		} catch (Exception e) {
-			Exceptions.varDoesNotExist(args.get(1));
+			e.printStackTrace();
+			// Exceptions.varDoesNotExist(args.get(1));
 		}
 	}
 	
@@ -461,7 +510,9 @@ public class Commands {
 			}
 		}
 		String old = string;
-		string = string.replaceAll("[^0-9./*+-]", "");
+		// System.err.println("\t\t" + string);
+		string = string.replaceAll("[^0-9.-/*+]", "");
+		// System.err.println("\t\t" + string);
 		if (!old.equals(string)) {
 			Exceptions.expectedSymbol("Only numbers and math functions can be used!");
 		}
