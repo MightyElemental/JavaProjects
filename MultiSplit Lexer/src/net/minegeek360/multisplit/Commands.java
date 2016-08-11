@@ -53,7 +53,7 @@ public class Commands {
 		}
 		StringBuilder sb = new StringBuilder(MSLexer.string);
 		for (int i = 1; i < arr.size(); i++) {
-			Object[] temp = wordCases(arr, i);
+			Object[] temp = wordCases(arr, i, true);
 			String word = temp[0].toString();
 			i = Integer.parseInt(temp[1] + "");
 			sb.append(word + " ");
@@ -126,7 +126,7 @@ public class Commands {
 			case "string":
 				StringBuilder sb = new StringBuilder();
 				for (int i = 3; i < arr.size(); i++) {
-					Object[] temp = wordCases(arr, i);
+					Object[] temp = wordCases(arr, i, false);
 					String word = temp[0].toString();
 					i = Integer.parseInt(temp[1] + "");
 					sb.append(word + " ");
@@ -135,7 +135,7 @@ public class Commands {
 				value = sb.toString();
 				break;
 			case "number":
-				value = wordCases(arr, 3)[0].toString().replaceAll("[^0-9.-]", "");
+				value = wordCases(arr, 3, true)[0].toString().replaceAll("[^0-9.-]", "");
 				break;
 			case "function":
 				if (!arr.get(3).equals("{")) {
@@ -144,7 +144,8 @@ public class Commands {
 				value = defineFunction(arr, lex);
 				break;
 			default:
-				value = arr.get(3);
+				Exceptions.unknownVarType(arr.get(2));
+				// value = arr.get(3);
 				break;
 		}
 		
@@ -158,9 +159,9 @@ public class Commands {
 		return MultiSplit.vars.get(var) != null;
 	}
 	
-	private static Object[] wordCases(ArrayList<String> arr, int i) {
+	private static Object[] wordCases(ArrayList<String> arr, int i, boolean useMaths) {
 		String word = arr.get(i);
-		if (word.contains("+") || word.contains("-") || word.contains("/") || word.contains("*")) {
+		if (useMaths && (word.contains("+") || word.contains("-") || word.contains("/") || word.contains("*"))) {
 			word = evalMaths(word) + "";
 		} else if (word.startsWith("@")) {
 			word = getVarValue(word) + "";
@@ -188,7 +189,7 @@ public class Commands {
 		String message = "";
 		StringBuilder sb = new StringBuilder(message);
 		for (int i = 2; i < args.size(); i++) {
-			sb.append(wordCases(args, i)[0] + " ");
+			sb.append(wordCases(args, i, false)[0] + " ");
 		}
 		sb.deleteCharAt(sb.length() - 1);
 		sb.append("> ");
@@ -296,7 +297,7 @@ public class Commands {
 		}
 		StringBuilder sb = new StringBuilder();
 		for (int i = 4; i < args.size(); i++) {
-			Object[] temp = wordCases(args, i);
+			Object[] temp = wordCases(args, i, false);
 			String word = temp[0].toString();
 			i = Integer.parseInt(temp[1] + "");
 			sb.append(word + " ");
@@ -385,7 +386,7 @@ public class Commands {
 		}
 		StringBuilder message = new StringBuilder();
 		for (int i = 2; i < args.size(); i++) {
-			message.append(wordCases(args, i)[0] + " ");
+			message.append(wordCases(args, i, false)[0] + " ");
 		}
 		message.deleteCharAt(message.length() - 1);
 		switch (args.get(1)) {
@@ -449,7 +450,7 @@ public class Commands {
 	}
 	
 	/** addScript() [scriptName]; */
-	public static void addScript(ArrayList<String> args) {
+	public static void addScript(ArrayList<String> args, MSLexer lex) {
 		if (args.size() < 2) {
 			Exceptions.wrongArgs("There are too few arguments!\n\tUsage: addScript() [scriptName];");
 		}
@@ -458,10 +459,12 @@ public class Commands {
 		} catch (IOException e) {
 			Exceptions.scriptDoesNotExist();
 		}
+		MultiSplit.returnToScript = args.get(1);
 		ArrayList<ArrayList<String>> script = MSLexer.interpret(MultiSplit.scripts.get(args.get(1)));
-		MSLexer lex = new MSLexer(args.get(1));
-		MultiSplit.regScript(lex);
-		lex.handleTokens(script);
+		MSLexer lexNew = new MSLexer(args.get(1));
+		MultiSplit.regScript(lexNew);
+		lexNew.handleTokens(script);
+		MultiSplit.returnToScript = lex.scriptName;
 	}
 	
 	/* GUI */
@@ -484,7 +487,7 @@ public class Commands {
 		}
 		StringBuilder sb = new StringBuilder();
 		for (int i = 3; i < args.size(); i++) {
-			Object[] temp = wordCases(args, i);
+			Object[] temp = wordCases(args, i, false);
 			String word = temp[0].toString();
 			i = Integer.parseInt(temp[1] + "");
 			sb.append(word + " ");
@@ -546,8 +549,8 @@ public class Commands {
 		int width = 0;
 		int height = 0;
 		try {
-			x = Float.parseFloat(wordCases(args, 1)[0] + "");
-			y = Float.parseFloat(wordCases(args, 2)[0] + "");
+			x = Float.parseFloat(wordCases(args, 1, true)[0] + "");
+			y = Float.parseFloat(wordCases(args, 2, true)[0] + "");
 			width = Integer.parseInt(args.get(3));
 			height = Integer.parseInt(args.get(4));
 		} catch (Exception e) {

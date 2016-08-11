@@ -26,9 +26,11 @@ public class Exceptions {
 	/** Says:<br>
 	 * Make sure you have spelt the script correctly and WITHOUT '.ms' at the end. */
 	public static void scriptDoesNotExist() {
-		exception("ScriptDoesNotExist", "Make sure you have spelt the script correctly and WITHOUT '.ms' at the end."
-			+ "\n\tMake sure that you have the file in the correct location."
-			+ "\n\tAlso make sure that you have loaded the script into MultiSplit.", true);
+		exception("ScriptDoesNotExist",
+			"Make sure you have spelt the script correctly and WITHOUT '.ms' at the end."
+				+ "\n\tMake sure that you have the file in the correct location."
+				+ "\n\tAlso make sure that you have loaded the script into MultiSplit.",
+			true);
 	}
 	
 	public static void varDoesNotExist() {
@@ -79,6 +81,10 @@ public class Exceptions {
 	
 	public static void stackOverflow() {
 		exception("StackOverflow", "StackOverflow!", true);
+	}
+	
+	public static void unknownVarType(String type) {
+		exception("UnknownVarTypeException", "'" + type + "' has not been recognised as a variable type!", false);
 	}
 	
 	private static void exception(String type, String message, boolean stop) {

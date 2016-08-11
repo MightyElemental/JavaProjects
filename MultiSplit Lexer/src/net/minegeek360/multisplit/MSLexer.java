@@ -110,6 +110,7 @@ public class MSLexer {
 			if (!arr.get(0).endsWith("()") && !arr.get(0).endsWith("}") && !arr.get(0).isEmpty()) {
 				Exceptions.expectedSymbol("Brackets expected at end of function.");
 			}
+			//System.err.println(arr);
 			switch (arr.get(0)) {
 				case "addString()":
 					Commands.addString(arr);
@@ -184,7 +185,7 @@ public class MSLexer {
 					Commands.drawRect(arr);
 					break;
 				case "addScript()":
-					Commands.addScript(arr);
+					Commands.addScript(arr, this);
 					break;
 				default:
 					Exceptions.functionNotRecognised();
