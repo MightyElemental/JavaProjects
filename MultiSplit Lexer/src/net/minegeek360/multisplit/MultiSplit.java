@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -25,6 +26,8 @@ public class MultiSplit {
 	public static JFrame frame;
 	public static JPanel defaultPanel = new JPanel();
 	public static GamePanel gamePanel = new GamePanel();
+	
+	public static Random rand = new Random(System.nanoTime());
 	
 	public static String currentLine;
 	public static String currentScript;

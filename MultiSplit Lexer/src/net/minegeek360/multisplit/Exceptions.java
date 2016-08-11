@@ -33,9 +33,11 @@ public class Exceptions {
 			true);
 	}
 	
-	public static void varDoesNotExist() {
-		exception("VarDoesNotExist", "Make sure you have spelt the variable correctly with the correct case and with a '@' at the start."
-			+ "\n\tAlso make sure that you have defined the variable before calling it.", true);
+	public static void varDoesNotExist(String var) {
+		exception("VarDoesNotExist",
+			"Make sure you have spelt the variable correctly with the correct case and with a '@' at the start."
+				+ "\n\tAlso make sure that you have defined the variable before calling it." 
+				+ "\n\t'" + var + "' is not a variable!", true);
 	}
 	
 	public static void multiCommandLine() {

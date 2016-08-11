@@ -89,7 +89,7 @@ public class Commands {
 	
 	public static Object getVarValue(String var) {
 		if (MultiSplit.vars.get(var) == null) {
-			Exceptions.varDoesNotExist();
+			Exceptions.varDoesNotExist(var);
 		}
 		return MultiSplit.vars.get(var)[1];
 	}
@@ -100,7 +100,7 @@ public class Commands {
 	
 	public static String getVarType(String var) {
 		if (MultiSplit.vars.get(var) == null) {
-			Exceptions.varDoesNotExist();
+			Exceptions.varDoesNotExist(var);
 		}
 		return MultiSplit.vars.get(var)[0].toString();
 	}
@@ -143,6 +143,12 @@ public class Commands {
 				}
 				value = defineFunction(arr, lex);
 				break;
+			case "random":
+				if (arr.size() < 5) {
+					Exceptions.wrongArgs("There are too few arguments!\n\tUsage: setVar() @[varName] random [min] [max];");
+				}
+				value = getRandom(arr, lex);
+				break;
 			default:
 				Exceptions.unknownVarType(arr.get(2));
 				// value = arr.get(3);
@@ -157,6 +163,13 @@ public class Commands {
 	
 	public static boolean varExists(String var) {
 		return MultiSplit.vars.get(var) != null;
+	}
+	
+	private static float getRandom(ArrayList<String> arr, MSLexer lex) {
+		int min = (int) Float.parseFloat(wordCases(arr, 3, true)[0] + "");
+		int max = (int) Float.parseFloat(wordCases(arr, 4, true)[0] + "");
+		float r = MultiSplit.rand.nextInt(max - min) + min;
+		return r;
 	}
 	
 	private static Object[] wordCases(ArrayList<String> arr, int i, boolean useMaths) {
@@ -183,15 +196,17 @@ public class Commands {
 	
 	/** getInput() - getInput() @[varName] [message text]; */
 	public static void getInput(ArrayList<String> args, MSLexer lex) {
-		if (args.size() < 3) {
+		if (args.size() < 2) {
 			Exceptions.wrongArgs("There are too few arguments!\n\tUsage: getInput() @[varName] [message text];");
 		}
 		String message = "";
 		StringBuilder sb = new StringBuilder(message);
-		for (int i = 2; i < args.size(); i++) {
-			sb.append(wordCases(args, i, false)[0] + " ");
+		if (args.size() > 2) {
+			for (int i = 2; i < args.size(); i++) {
+				sb.append(wordCases(args, i, false)[0] + " ");
+			}
+			sb.deleteCharAt(sb.length() - 1);
 		}
-		sb.deleteCharAt(sb.length() - 1);
 		sb.append("> ");
 		message = sb.toString();
 		System.out.print(message);
@@ -201,6 +216,13 @@ public class Commands {
 		var.add("string");
 		var.add("<read>");
 		setVar(var, lex);
+	}
+	
+	/** split() - split() [varToSaveTo] [stringVar] [regex] */
+	public static void split(ArrayList<String> args, MSLexer lex) {
+		if (args.size() < 3) {
+			Exceptions.wrongArgs("There are too few arguments!\n\tUsage: getInput() @[varName] [message text];");
+		}
 	}
 	
 	private static List<Object> defineFunction(ArrayList<String> args, MSLexer lex) { // NEED TO ADD ABILITY TO GO TO
@@ -342,7 +364,8 @@ public class Commands {
 				}
 				break;
 			case ">":
-				if (getVarType(args.get(1)).equals("number") && getVarType(args.get(3)).equals("number")) {
+				if ((getVarType(args.get(1)).equals("number") || getVarType(args.get(1)).equals("random"))
+					&& (getVarType(args.get(3)).equals("number") || getVarType(args.get(3)).equals("random"))) {
 					try {
 						double temp1 = Double.parseDouble(var1);
 						double temp2 = Double.parseDouble(var2);
@@ -358,7 +381,8 @@ public class Commands {
 				}
 				break;
 			case "<":
-				if (getVarType(args.get(1)).equals("number") && getVarType(args.get(3)).equals("number")) {
+				if ((getVarType(args.get(1)).equals("number") || getVarType(args.get(1)).equals("random"))
+					&& (getVarType(args.get(3)).equals("number") || getVarType(args.get(3)).equals("random"))) {
 					try {
 						double temp1 = Double.parseDouble(var1);
 						double temp2 = Double.parseDouble(var2);
@@ -421,7 +445,7 @@ public class Commands {
 			// System.out.println(gotoCom);
 			gotoLine(gotoCom, lex);
 		} catch (Exception e) {
-			Exceptions.varDoesNotExist();
+			Exceptions.varDoesNotExist(args.get(1));
 		}
 	}
 	
@@ -437,7 +461,7 @@ public class Commands {
 			}
 		}
 		String old = string;
-		string = string.replaceAll("[^0-9.-/*+]", "");
+		string = string.replaceAll("[^0-9./*+-]", "");
 		if (!old.equals(string)) {
 			Exceptions.expectedSymbol("Only numbers and math functions can be used!");
 		}
