@@ -36,12 +36,13 @@ public class MSLexer {
 		int currL = 0;
 		
 		for (String line : script) {
-			if (line.length() < 1) {
-				line = "<COM>";
-			}
 			StringBuilder sb = new StringBuilder(line);
 			while (sb.toString().startsWith(" ")) {
 				sb.deleteCharAt(0);
+			}
+			if (sb.length() < 1) {
+				line = "<COM>";
+				sb = new StringBuilder(line);
 			}
 			while (sb.toString().endsWith(" ")) {
 				sb.deleteCharAt(sb.length() - 1);

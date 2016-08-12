@@ -129,7 +129,12 @@ public class Commands {
 				value = getString(arr, 3);
 				break;
 			case "number":
-				value = wordCases(arr, 3, true)[0].toString().replaceAll("[^0-9.-]", "");
+				ArrayList<String> a = new ArrayList<String>();
+				// System.err.println(arr.get(3));
+				a.add(wordCases(arr, 3, true)[0].toString().replaceAll(" ", ""));
+				// System.err.println(a);
+				value = wordCases(a, 0, true)[0].toString().replaceAll("[^0-9.-]", "");
+				// System.err.println(value);
 				break;
 			case "function":
 				if (!arr.get(3).equals("{")) {
@@ -217,6 +222,9 @@ public class Commands {
 				ArrayList<String> a = new ArrayList<String>();
 				a.add(split[1]);
 				word = "" + ((HashMap<Integer, Object>) getVarValue(split[0])).get((int) Float.parseFloat(wordCases(a, 0, true)[0] + ""));
+			} else if (word.contains("~")) {
+				word = word.replace("~", "");
+				word = ((HashMap<Integer, Object>) getVarValue(word)).size() + "";
 			} else {
 				word = getVarValue(word) + "";
 			}
@@ -236,12 +244,45 @@ public class Commands {
 				word = getTime() + "";
 				break;
 		}
-		try {
-			int val = (int) Float.parseFloat(word);
-			word = val + "";
-		} catch (Exception e) {
+		if (!useMaths) {
+			try {
+				int val = (int) Float.parseFloat(word);
+				word = val + "";
+			} catch (Exception e) {
+			}
 		}
 		return new Object[] { word, i };
+	}
+	
+	@SuppressWarnings( "unchecked" )
+	private static float evalMaths(String string) {
+		float temp = 0f;
+		Object[] keys = getAllVars().keySet().toArray();
+		for (int i = 0; i < getAllVars().size(); i++) {
+			if (string.contains(keys[i] + "")) {
+				if (!getVarType(keys[i] + "").equals("number") && !getVarType(keys[i] + "").equals("array")) {
+					Exceptions.varWrongType("A number needs to be used to perform maths!");
+				}
+				if (getVarType(keys[i] + "").equals("array")) {
+					string = string.replace(keys[i] + "", ((HashMap<Integer, Object>) getVarValue(keys[i] + "")).size() + "");
+				} else {
+					string = string.replace(keys[i] + "", getAllVars().get(keys[i])[1] + "");
+				}
+				//System.err.println(string);
+			}
+		}
+		String old = string;
+		//System.err.println("\t\t" + string);
+		string = string.replaceAll("[^0-9|.|/|*|+|-]", "");
+		// System.err.println("\t\t" + string);
+		if (!old.equals(string)) {
+			Exceptions.expectedSymbol("Only numbers and math functions can be used!");
+		}
+		try {
+			temp = Float.parseFloat(MSLexer.engine.eval(string) + "");
+		} catch (ScriptException e) {
+		}
+		return temp;
 	}
 	
 	/** getInput() - getInput() @[varName] [message text]; */
@@ -402,6 +443,18 @@ public class Commands {
 		gotoArgs.add(args.get(4));
 		String var1 = getVarValue(args.get(1) + "") + "";
 		String var2 = getVarValue(args.get(3) + "") + "";
+		if (getVarType(args.get(1)).equals("number")) {
+			try {
+				var1 = Float.parseFloat(var1) + "";
+			} catch (Exception e) {
+			}
+		}
+		if (getVarType(args.get(3)).equals("number")) {
+			try {
+				var2 = Float.parseFloat(var2) + "";
+			} catch (Exception e) {
+			}
+		}
 		switch (args.get(2)) {
 			case "==":
 				if (!var1.equals(var2)) {
@@ -416,8 +469,8 @@ public class Commands {
 			case ">":
 				if (getVarType(args.get(1)).equals("number") && getVarType(args.get(3)).equals("number")) {
 					try {
-						double temp1 = Double.parseDouble(var1);
-						double temp2 = Double.parseDouble(var2);
+						float temp1 = Float.parseFloat(var1);
+						float temp2 = Float.parseFloat(var2);
 						if (!(temp1 > temp2)) {
 							gotoLine(gotoArgs, lex);
 						}
@@ -432,8 +485,8 @@ public class Commands {
 			case "<":
 				if (getVarType(args.get(1)).equals("number") && getVarType(args.get(3)).equals("number")) {
 					try {
-						double temp1 = Double.parseDouble(var1);
-						double temp2 = Double.parseDouble(var2);
+						float temp1 = Float.parseFloat(var1);
+						float temp2 = Float.parseFloat(var2);
 						if (!(temp1 < temp2)) {
 							gotoLine(gotoArgs, lex);
 						}
@@ -496,32 +549,6 @@ public class Commands {
 			e.printStackTrace();
 			// Exceptions.varDoesNotExist(args.get(1));
 		}
-	}
-	
-	private static float evalMaths(String string) {
-		float temp = 0f;
-		Object[] keys = getAllVars().keySet().toArray();
-		for (int i = 0; i < getAllVars().size(); i++) {
-			if (string.contains(keys[i] + "")) {
-				if (!getVarType(keys[i] + "").equals("number")) {
-					Exceptions.varWrongType("A number needs to be used to perform maths!");
-				}
-				string = string.replace(keys[i] + "", getAllVars().get(keys[i])[1] + "");
-			}
-		}
-		String old = string;
-		// System.err.println("\t\t" + string);
-		string = string.replaceAll("[^0-9.-/*+]", "");
-		// System.err.println("\t\t" + string);
-		if (!old.equals(string)) {
-			Exceptions.expectedSymbol("Only numbers and math functions can be used!");
-		}
-		try {
-			temp = Float.parseFloat(MSLexer.engine.eval(string) + "");
-		} catch (ScriptException e) {
-			e.printStackTrace();
-		}
-		return temp;
 	}
 	
 	/** addScript() [scriptName]; */
