@@ -1,6 +1,7 @@
 package net.mightyelemental.network.listener;
 
 import java.net.InetAddress;
+import java.util.Map;
 
 public interface MessageListenerServer {
 	
@@ -22,7 +23,7 @@ public interface MessageListenerServer {
 	
 	/** @param obj
 	 *            the object the client received from the server */
-	public void onObjectRecievedFromClient(InetAddress ip, int port, Object obj);
+	public void onObjectRecievedFromClient(InetAddress ip, int port, Map<String, Object> obj);
 	
 	/** @param ip
 	 *            the client's IP address

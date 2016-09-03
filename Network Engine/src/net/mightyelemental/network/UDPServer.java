@@ -21,8 +21,17 @@ import net.mightyelemental.network.gui.ServerGUI;
 public class UDPServer extends Server {
 	
 	
-	private int port;
-	private boolean running;
+	/** @param port
+	 *            - the port of which the server should run
+	 * @param maxBytes
+	 *            - the maximum amount of bytes the server should be able to send
+	 * @param usesEncryption
+	 *            - whether or not the server should use encryption
+	 * @param verifyCode
+	 *            - used to ensure that connecting clients are from the correct game */
+	public UDPServer( int port, boolean usesEncryption, int maxBytes, String verifyCode ) {
+		super(port, usesEncryption, maxBytes, verifyCode);
+	}
 	
 	private boolean stopServer;
 	
@@ -101,18 +110,6 @@ public class UDPServer extends Server {
 		}
 		
 	};
-	
-	/** UDP Server
-	 * 
-	 * @param port
-	 *            - the port of which the server should run
-	 * @param maxBytes
-	 *            - the maximum amount of bytes the server should be able to send */
-	public UDPServer( int port, int maxBytes, boolean usesEncryption ) {
-		this.port = port;
-		this.maxBytes = maxBytes;
-		this.usesEncryption = usesEncryption;
-	}
 	
 	/** Adds a message to the server GUI */
 	public void addMessageToConsole(String message) {

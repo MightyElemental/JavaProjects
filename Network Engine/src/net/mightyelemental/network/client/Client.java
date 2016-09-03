@@ -20,6 +20,10 @@ public abstract class Client {
 	protected boolean debugMode = false;
 	protected boolean hasBeenSetup = false;
 	
+	private boolean usesEncryption = false;
+	
+	protected String verifyCode = "NONE";
+	
 	public Map<String, Object> objectToSend = new HashMap<String, Object>();
 	
 	protected String clientUID = "UNASIGNED";
@@ -34,8 +38,31 @@ public abstract class Client {
 	protected Object lastObject = "";
 	protected ArrayList<String> recievedMessages = new ArrayList<String>();
 	
+	/** @param address
+	 *            the IP address
+	 * @param port
+	 *            the port for the client to send messages through
+	 * @param maxBytes
+	 *            the maximum amount of bytes the client should handle
+	 * @param usesEncryption
+	 *            whether or not the client should use encryption
+	 * @param veryifyCode
+	 *            the code used to verify the client game */
+	public Client( String address, int port, boolean usesEncryption, int maxBytes, String verifyCode ) {
+		this.address = address;
+		this.port = port;
+		this.usesEncryption = usesEncryption;
+		this.maxBytes = maxBytes;
+		this.verifyCode = verifyCode;
+	}
+	
 	public void setDebugMode(boolean state) {
 		this.debugMode = state;
+	}
+	
+	/** @return the usesEncryption */
+	public boolean doesUseEncryption() {
+		return usesEncryption;
 	}
 	
 	public boolean getDebugMode() {
@@ -97,6 +124,11 @@ public abstract class Client {
 	/** @return the recievedMessages */
 	public ArrayList<String> getRecievedMessages() {
 		return recievedMessages;
+	}
+	
+	/** @return the verification code that the client is using */
+	public String getVerifyCode() {
+		return verifyCode;
 	}
 	
 	public abstract void setup() throws IOException;

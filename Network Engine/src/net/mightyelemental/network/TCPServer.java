@@ -16,10 +16,6 @@ public class TCPServer extends Server {
 	
 	private ServerSocket serverSocket;
 	
-	private boolean usesEncryption = false;
-	
-	private int maxBytes = 2 ^ 10;
-	
 	private Thread serverTick = new Thread("ServerThread") {
 		
 		
@@ -30,12 +26,14 @@ public class TCPServer extends Server {
 						continue;
 					}
 					Socket newClientSocket = serverSocket.accept();
-					TCPConnection newTcpClient = new TCPConnection(newClientSocket, initiater, serverGUI, usesEncryption, maxBytes);
+					TCPConnection newTcpClient = new TCPConnection(newClientSocket, initiater, serverGUI, usesEncryption, maxBytes,
+						verifyCode);
 					String UID = generateClientInfo(newTcpClient, random);
 					newTcpClient.setUID(UID);
 					newTcpClient.startThread();
 					tcpConnections.put(UID, newTcpClient);
 					initiater.onNewClientAdded(newClientSocket.getInetAddress(), newClientSocket.getPort(), UID);
+					newTcpClient.sendObject("VerifyCodeRequest", "Please Send Verify Code");
 					
 					if (hasGUI) {
 						if (serverGUI != null) {
@@ -59,11 +57,16 @@ public class TCPServer extends Server {
 		}
 	};
 	
-	/** TCP Server */
-	public TCPServer( int port, boolean usesEncryption, int maxBytes ) {
-		this.port = port;
-		this.usesEncryption = usesEncryption;
-		this.maxBytes = maxBytes;
+	/** @param port
+	 *            - the port of which the server should run
+	 * @param maxBytes
+	 *            - the maximum amount of bytes the server should be able to send
+	 * @param usesEncryption
+	 *            - whether or not the server should use encryption
+	 * @param verifyCode
+	 *            - used to ensure that connecting clients are from the correct game */
+	public TCPServer( int port, boolean usesEncryption, int maxBytes, String verifyCode ) {
+		super(port, usesEncryption, maxBytes, verifyCode);
 	}
 	
 	public synchronized void setupServer() throws BindException, IOException {

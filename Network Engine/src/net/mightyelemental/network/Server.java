@@ -21,6 +21,11 @@ public abstract class Server {
 	protected boolean hasGUI;
 	protected boolean hasBeenSetup = false;
 	
+	protected boolean usesEncryption = false;
+	protected int maxBytes = 2 ^ 10;
+	
+	protected String verifyCode = "NONE";
+	
 	protected ServerGUI serverGUI;
 	
 	protected static Random random = new Random();
@@ -28,6 +33,21 @@ public abstract class Server {
 	public Map<String, Object> objectToSend = new HashMap<String, Object>();
 	
 	protected ServerInitiater initiater = new ServerInitiater();
+	
+	/** @param port
+	 *            - the port of which the server should run
+	 * @param maxBytes
+	 *            - the maximum amount of bytes the server should be able to send
+	 * @param usesEncryption
+	 *            - whether or not the server should use encryption
+	 * @param verifyCode
+	 *            - used to ensure that connecting clients are from the correct game */
+	public Server( int port, boolean usesEncryption, int maxBytes, String verifyCode ) {
+		this.port = port;
+		this.usesEncryption = usesEncryption;
+		this.maxBytes = maxBytes;
+		this.verifyCode = verifyCode;
+	}
 	
 	/** Adds listener to initiater
 	 * 
@@ -47,9 +67,20 @@ public abstract class Server {
 		this.hasGUI = true;
 	}
 	
+	/** Setup the built in GUI */
+	public void initGUI(ServerGUI frame) {
+		serverGUI = frame;
+		this.hasGUI = true;
+	}
+	
 	/** @return the port the server is running on */
 	public int getPort() {
 		return this.port;
+	}
+	
+	/** @return the verification code that the server is using */
+	public String getVerifyCode() {
+		return verifyCode;
 	}
 	
 	public abstract void setupServer() throws BindException, IOException, SocketException;

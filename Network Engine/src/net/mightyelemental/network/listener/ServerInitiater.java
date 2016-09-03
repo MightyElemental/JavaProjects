@@ -3,6 +3,7 @@ package net.mightyelemental.network.listener;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class ServerInitiater {
 	
@@ -31,10 +32,11 @@ public class ServerInitiater {
 			mls.onNewClientAdded(ip, port, uid);
 	}
 	
+	@SuppressWarnings( "unchecked" )
 	public void onObjectRecieved(InetAddress ip, int port, Object obj) {
 		// Notify everybody that may be interested.
 		for (MessageListenerServer mls : listeners) {
-			mls.onObjectRecievedFromClient(ip, port, obj);
+			mls.onObjectRecievedFromClient(ip, port, (Map<String, Object>) obj);
 		}
 	}
 	

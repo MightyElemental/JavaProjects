@@ -23,8 +23,12 @@ public class TCPConnection {
 	public ObjectOutputStream objectOut;
 	public ObjectInputStream objectIn;
 	
+	private boolean verified;
+	
 	@SuppressWarnings( "unused" )
 	private ServerGUI serverGUI;
+	
+	private String verifyCode = "NONE";
 	
 	private ServerInitiater SI;
 	
@@ -34,13 +38,25 @@ public class TCPConnection {
 	private Thread run = new Thread("TCPConnection_Undef") {
 		
 		
+		@SuppressWarnings( "unchecked" )
 		public void run() {
 			try {
 				while (running) {
 					// is.readFully(recievedBytes);
 					try {
 						Object obj = objectIn.readObject();
-						SI.onObjectRecieved(ip, port, obj);
+						if (((Map<String, Object>) obj).containsKey("VerifyCode")) {
+							String s = (String) ((Map<String, Object>) obj).get("VerifyCode");
+							if (s.equals(verifyCode)) {
+								verified = true;
+								sendObject("ServerMessage", "Your Client Has Been Verified");
+							} else {
+								sendObject("ServerMessage", "Your Client Verification Code Does Not Match The Server Code!");
+								stopThread();
+							}
+						} else {
+							SI.onObjectRecieved(ip, port, obj);
+						}
 					} catch (ClassNotFoundException | SocketException e) {
 						SI.onClientDisconnect(ip, port, getUID());
 						stopThread();
@@ -72,13 +88,15 @@ public class TCPConnection {
 		}
 	};
 	
-	public TCPConnection( Socket client, ServerInitiater initiater, ServerGUI serverGUI, boolean usesEncryption, int maxBytes ) {
+	public TCPConnection( Socket client, ServerInitiater initiater, ServerGUI serverGUI, boolean usesEncryption, int maxBytes,
+			String verifyCode ) {
 		this.client = client;
 		this.ip = client.getInetAddress();
 		this.port = client.getPort();
 		this.SI = initiater;
 		this.serverGUI = serverGUI;
 		this.maxBytes = maxBytes;
+		this.verifyCode = verifyCode;
 		try {
 			objectOut = new ObjectOutputStream(client.getOutputStream());
 			objectIn = new ObjectInputStream(client.getInputStream());
@@ -159,6 +177,10 @@ public class TCPConnection {
 	 * @throws IOException */
 	public void sendMap(Map<String, Object> objects) throws IOException {
 		objectOut.writeObject(objects);
+	}
+	
+	public boolean isVerified() {
+		return verified;
 	}
 	
 }

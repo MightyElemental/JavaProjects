@@ -16,6 +16,10 @@ import java.util.Map;
 public class UDPClient extends Client {
 	
 	
+	public UDPClient( String address, int port, boolean usesEncryption, int maxBytes, String verifyCode ) {
+		super(address, port, usesEncryption, maxBytes, verifyCode);
+	}
+	
 	public long timeStarted = System.currentTimeMillis();
 	public long timeRunning = 0l;
 	
@@ -89,18 +93,6 @@ public class UDPClient extends Client {
 			}
 		}
 	};
-	
-	/** @param address
-	 *            the IP address in String form
-	 * @param port
-	 *            the port for the client to send messages through
-	 * @param maxBytes
-	 *            the maximum amount of bytes the client should handle */
-	public UDPClient( String address, int port, int maxBytes ) {
-		this.address = address;
-		this.port = port;
-		this.maxBytes = maxBytes;
-	}
 	
 	/** Used to connect the client to server as well as setting up the data pipes. */
 	public synchronized void setup() throws SocketException, UnknownHostException {

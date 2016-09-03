@@ -11,11 +11,11 @@ import java.util.Map;
 public class TCPClient extends Client {
 	
 	
+	public TCPClient( String address, int port, boolean usesEncryption, int maxBytes, String verifyCode ) {
+		super(address, port, usesEncryption, maxBytes, verifyCode);
+	}
+	
 	private Socket clientSocket;
-	
-	private boolean usesEncryption = false;
-	
-	private int maxBytes;
 	
 	private Thread clientTick = new Thread("ClientReceiveThread") {
 		
@@ -26,9 +26,16 @@ public class TCPClient extends Client {
 			while (running) {
 				
 				try {
+					if (ois == null) {
+						continue;
+					}
 					Object obj = ois.readObject();
 					lastObject = obj;
-					initiater.onObjectRecieved(obj);
+					if (((Map<String, Object>) obj).containsKey("VerifyCodeRequest")) {
+						sendObject("VerifyCode", getVerifyCode());
+					} else {
+						initiater.onObjectRecieved(obj);
+					}
 					
 					if (((Map<String, Object>) obj).containsKey("UID")) { // Sets
 																			// client
@@ -70,28 +77,21 @@ public class TCPClient extends Client {
 		}
 	};
 	
-	public TCPClient( String address, int port, boolean usesEncryption, int maxBytes ) {
-		this.address = address;
-		this.port = port;
-		this.usesEncryption = usesEncryption;
-		this.maxBytes = maxBytes;
-	}
-	
 	public synchronized void setup() throws IOException {
+		boolean flag = false;
 		try {
 			clientSocket = new Socket(address, port);
 		} catch (ConnectException e) {
 			this.initiater.onConnectionRefused();
+			flag = true;
 		}
-		
-		clientSocket.setReceiveBufferSize(maxBytes);
-		clientSocket.setSendBufferSize(maxBytes);
-		clientSocket.setKeepAlive(true);
-		// in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-		// out = new PrintStream(clientSocket.getOutputStream());
-		// byteOut = new DataOutputStream(clientSocket.getOutputStream());
-		ois = new ObjectInputStream(clientSocket.getInputStream());
-		ous = new ObjectOutputStream(clientSocket.getOutputStream());
+		if (!flag) {
+			clientSocket.setReceiveBufferSize(maxBytes);
+			clientSocket.setSendBufferSize(maxBytes);
+			clientSocket.setKeepAlive(true);
+			ois = new ObjectInputStream(clientSocket.getInputStream());
+			ous = new ObjectOutputStream(clientSocket.getOutputStream());
+		}
 		
 		clientTick.start();
 		hasBeenSetup = true;
@@ -106,17 +106,6 @@ public class TCPClient extends Client {
 		}
 		running = false;
 		clientTick.join(2000);
-	}
-	
-	/** @return the usesEncryption */
-	public boolean doesUseEncryption() {
-		return usesEncryption;
-	}
-	
-	/** @param usesEncryption
-	 *            the usesEncryption to set */
-	public void setUseEncryption(boolean usesEncryption) {
-		this.usesEncryption = usesEncryption;
 	}
 	
 	@Override
