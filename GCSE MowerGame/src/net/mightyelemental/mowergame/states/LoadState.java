@@ -40,7 +40,6 @@ public class LoadState extends BasicGameState {
 	@Override
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
 		Image temp = companyLogo.getScaledCopy(gc.getWidth() / 1280f);
-		System.out.println("render");
 		float width = temp.getWidth();
 		float height = temp.getHeight();
 		if (alpha < 1f) {
@@ -69,7 +68,6 @@ public class LoadState extends BasicGameState {
 	public void update(GameContainer gc, StateBasedGame sbg, int delta) throws SlickException {
 		
 		if (gc.getInput().isKeyDown(Input.KEY_SPACE) && ticks > 680) {
-			System.out.println("SDFGHJKLKHGFDSDFGHJKLKJHGFDSDFGHJKL");
 			ticks += 3000;
 			alphaSpeedMultiplier = 1.3f;
 		}
