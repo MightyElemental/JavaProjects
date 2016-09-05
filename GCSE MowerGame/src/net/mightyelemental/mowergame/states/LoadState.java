@@ -40,6 +40,7 @@ public class LoadState extends BasicGameState {
 	@Override
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
 		Image temp = companyLogo.getScaledCopy(gc.getWidth() / 1280f);
+		System.out.println("render");
 		float width = temp.getWidth();
 		float height = temp.getHeight();
 		if (alpha < 1f) {
@@ -54,7 +55,7 @@ public class LoadState extends BasicGameState {
 	public void renderImageWithGlitches(GameContainer gc, StateBasedGame sbg, Graphics g, Image temp, float width, float height) {
 		float x = (gc.getWidth() / 2) - (width / 2);
 		float y = (gc.getHeight() / 2) - (height / 2);
-		if (ticks > 120 && ticks < 130) {
+		if (ticks > 2040 && ticks < 2210) {
 			g.drawImage(temp, x - xShift - (rand.nextInt(2) - 1), y - yShift - (rand.nextInt(2) - 1),
 				new Color(255, 255, 255, alphaShift - (rand.nextInt(3) / 10f)));
 		} else {
@@ -67,13 +68,14 @@ public class LoadState extends BasicGameState {
 	@Override
 	public void update(GameContainer gc, StateBasedGame sbg, int delta) throws SlickException {
 		
-		if (gc.getInput().isKeyDown(Input.KEY_SPACE) && ticks > 40) {
-			ticks += 500;
+		if (gc.getInput().isKeyDown(Input.KEY_SPACE) && ticks > 680) {
+			System.out.println("SDFGHJKLKHGFDSDFGHJKLKJHGFDSDFGHJKL");
+			ticks += 3000;
 			alphaSpeedMultiplier = 1.3f;
 		}
 		
-		ticks += delta / 17f;
-		if (ticks > 150 && MowerGame.fullLoaded) {
+		ticks += delta;
+		if (ticks > 2550 && MowerGame.fullLoaded) {
 			alpha -= 0.01f * alphaSpeedMultiplier;
 			if (alpha < -0.2f) {
 				sbg.enterState(MowerGame.STATE_MENU);

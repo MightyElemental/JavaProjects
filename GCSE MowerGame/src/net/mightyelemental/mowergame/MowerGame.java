@@ -60,7 +60,7 @@ public class MowerGame extends StateBasedGame {
 		try {
 			appGc = new AppGameContainer(this);
 			appGc.setDisplayMode(WIDTH, (int) (WIDTH / 16.0 * 9.0), false);
-			appGc.setTargetFrameRate(60);
+			appGc.setTargetFrameRate(120);
 			appGc.setShowFPS(false);
 			appGc.setAlwaysRender(true);
 			appGc.setFullscreen(false);

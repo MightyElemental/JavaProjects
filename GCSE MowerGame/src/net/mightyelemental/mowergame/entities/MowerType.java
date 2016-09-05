@@ -30,7 +30,7 @@ public class MowerType {
 		this.imgPath = imgPath;
 	}
 	
-	public static MowerType MowveMonster = new MowerType("Mowve Monster", 150, 100, 5f, 0.2f, "entities.mowers.mowveMonster")
+	public static MowerType MowveMonster = new MowerType("Mowve Monster", 140, 100, 5f, 0.2f, "entities.mowers.mowveMonster")
 		.setDescription("The most expensive mower but the most powerful. This mower is for the professionals.").setPrice(10000);
 	public static MowerType Hacker = new MowerType("Hack", 120, 500, 9f, 1f, "entities.trump2")
 		.setDescription("Don't you dare try and cheat your way through the game ;)").setPrice(1000000000).setHidden(true).setTurnAngle(5);
