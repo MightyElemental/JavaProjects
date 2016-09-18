@@ -1,5 +1,6 @@
 package net.mightyelemental.tree;
 
+import java.io.File;
 import java.util.Random;
 
 import org.newdawn.slick.AppGameContainer;
@@ -21,6 +22,19 @@ public class TreeGen extends StateBasedGame {
 	
 	// agrs = # branches | # iterations | # branches per iteration
 	public static void main(String[] args) {
+		
+		System.setProperty("java.library.path", "lib");
+		String os = System.getProperty("os.name").toLowerCase();
+		String path = "windows";
+		if (os.contains("mac")) {
+			path = "macosx";
+		} else if (os.contains("nix") || os.contains("nux") || os.contains("aix")) {
+			path = "linux";
+		} else if (os.contains("sunos")) {
+			path = "solaris";
+		}
+		System.setProperty("org.lwjgl.librarypath", new File("lib/natives/" + path).getAbsolutePath());
+		
 		try {
 			if (args[0].equals("rand")) {
 				updateRandom();
