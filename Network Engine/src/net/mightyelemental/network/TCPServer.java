@@ -9,53 +9,51 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
-public class TCPServer extends Server {
+public class TCPServer extends Server implements Runnable {
 	
 	
 	private Map<String, TCPConnection> tcpConnections = new HashMap<String, TCPConnection>();
 	
 	private ServerSocket serverSocket;
 	
-	private Thread serverTick = new Thread("ServerThread") {
-		
-		
-		public void run() {
-			while (running) {
-				try {
-					if (serverSocket == null) {
-						continue;
-					}
-					Socket newClientSocket = serverSocket.accept();
-					TCPConnection newTcpClient = new TCPConnection(newClientSocket, initiater, serverGUI, usesEncryption, maxBytes,
-						verifyCode);
-					String UID = generateClientInfo(newTcpClient, random);
-					newTcpClient.setUID(UID);
-					newTcpClient.startThread();
-					tcpConnections.put(UID, newTcpClient);
-					initiater.onNewClientAdded(newClientSocket.getInetAddress(), newClientSocket.getPort(), UID);
-					newTcpClient.sendObject("VerifyCodeRequest", "Please Send Verify Code");
-					
-					if (hasGUI) {
-						if (serverGUI != null) {
-							serverGUI.updateClients();
-						}
-					}
-					
-					// lastMessage = inFromClient.readLine();
-					// lastMessage =
-					// BasicCommands.decryptMessageBase64(lastMessage);
-					
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
+	private Thread serverTick = new Thread(this);
+	
+	public void run() {
+		while (running) {
 			try {
-				join();
-			} catch (InterruptedException e) {
+				if (serverSocket == null) {
+					continue;
+				}
+				Socket newClientSocket = serverSocket.accept();
+				TCPConnection newTcpClient = new TCPConnection(newClientSocket, this);
+				String UID = generateClientInfo(newTcpClient, random);
+				newTcpClient.setUID(UID);
+				newTcpClient.timeOfVerifyRequest = System.currentTimeMillis();
+				newTcpClient.startThread();
+				tcpConnections.put(UID, newTcpClient);
+				initiater.onNewClientAdded(newClientSocket.getInetAddress(), newClientSocket.getPort(), UID);
+				newTcpClient.sendObject("VerifyCodeRequest", "Please Send Verify Code");
+				
+				if (hasGUI) {
+					if (serverGUI != null) {
+						serverGUI.updateClients();
+					}
+				}
+				
+				// lastMessage = inFromClient.readLine();
+				// lastMessage =
+				// BasicCommands.decryptMessageBase64(lastMessage);
+				
+			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
-	};
+		try {
+			serverTick.join();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
 	
 	/** @param port
 	 *            - the port of which the server should run

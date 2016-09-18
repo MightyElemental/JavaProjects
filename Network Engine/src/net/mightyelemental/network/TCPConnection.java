@@ -20,6 +20,8 @@ public class TCPConnection {
 	private int port;
 	private String UID;
 	
+	public long timeOfVerifyRequest;
+	
 	public ObjectOutputStream objectOut;
 	public ObjectInputStream objectIn;
 	
@@ -31,6 +33,8 @@ public class TCPConnection {
 	private String verifyCode = "NONE";
 	
 	private ServerInitiater SI;
+	
+	private TCPServer server;
 	
 	private boolean running = false;
 	public int maxBytes = 2 ^ 10;
@@ -44,6 +48,10 @@ public class TCPConnection {
 				while (running) {
 					// is.readFully(recievedBytes);
 					try {
+						if (!verified && timeOfVerifyRequest + 10000 < System.currentTimeMillis()) {
+							sendObject("ServerMessage", "Your Client Did Not Verify In Time!");
+							stopThread();
+						}
 						Object obj = objectIn.readObject();
 						if (((Map<String, Object>) obj).containsKey("VerifyCode")) {
 							String s = (String) ((Map<String, Object>) obj).get("VerifyCode");
@@ -88,15 +96,15 @@ public class TCPConnection {
 		}
 	};
 	
-	public TCPConnection( Socket client, ServerInitiater initiater, ServerGUI serverGUI, boolean usesEncryption, int maxBytes,
-			String verifyCode ) {
+	public TCPConnection( Socket client, TCPServer server ) {
 		this.client = client;
 		this.ip = client.getInetAddress();
 		this.port = client.getPort();
-		this.SI = initiater;
-		this.serverGUI = serverGUI;
-		this.maxBytes = maxBytes;
-		this.verifyCode = verifyCode;
+		this.SI = server.initiater;
+		this.serverGUI = server.serverGUI;
+		this.maxBytes = server.maxBytes;
+		this.verifyCode = server.verifyCode;
+		this.server = server;
 		try {
 			objectOut = new ObjectOutputStream(client.getOutputStream());
 			objectIn = new ObjectInputStream(client.getInputStream());
@@ -125,6 +133,7 @@ public class TCPConnection {
 		}
 		running = false;
 		run.join();
+		server.getTcpConnections().remove(UID);
 	}
 	
 	/** @return the client */
