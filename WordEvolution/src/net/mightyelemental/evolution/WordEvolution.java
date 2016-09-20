@@ -9,9 +9,10 @@ import java.util.Set;
 public class WordEvolution {
 	
 	
-	public String baseString = "This is my base!";
+	public String baseString = "Good starting point";
 	
 	public WordEvolution() {
+		long time1 = System.currentTimeMillis();
 		String s = "";
 		for (char c : targetChar) {
 			s += c;
@@ -24,10 +25,15 @@ public class WordEvolution {
 		int i = 0;
 		for (i = 0; !g.word.equals(target); i++) {
 			if (i % 10 == 0) {
-				System.out.println("Best Generation\t| " + g.word);
+				System.err.println("Best Generation\t| " + g.word);
 				System.out.println("Fitness\t\t| " + g.fitness + "(" + round((((double) g.fitness / (double) maxFitness) * 100), 2) + "%)");
-				System.err.println("Worst\t\t| " + worst);
+				// System.err.println("Worst\t\t| " + worst);
 			}
+			// try {
+			// Thread.sleep(1);
+			// } catch (InterruptedException e) {
+			// e.printStackTrace();
+			// }
 			g = createNewGeneration(g);
 		}
 		System.out.println("Target\t\t| " + target);
@@ -35,11 +41,12 @@ public class WordEvolution {
 		System.out.println("End Generation\t| " + g.word);
 		System.out.println("Fitness\t\t| " + g.fitness + "(" + round((((double) g.fitness / (double) maxFitness) * 100), 2) + "%)");
 		System.out.println("Generations\t| " + (i + 1));
+		System.err.println("Time Taken\t| " + (System.currentTimeMillis() - time1) + "ms");
 	}
 	
 	public static Random rand = new Random(System.nanoTime());
 	// only use a-z, A-Z, space, !?.,
-	public static final String target = "This is a great test for this program, do you agree? Because I do not agree with you!";
+	public static final String target = "Could you please guess my sentence? That would be very helpful to me. So thanks again for guessing correctly.";
 	public static final String[] targetWords = target.split(" ");
 	public static final char[] targetChar = getLettersUsed(target);
 	public static final char[] Randomletters = "qwertyuiopasdfghjklzxcvbnm QWERTYUIOPASDFGHJKLZXCVBNM!?.,".toCharArray();
@@ -56,27 +63,27 @@ public class WordEvolution {
 		int l = Math.abs(target.length() - word.length());// length
 		fitness -= l;
 		
-		l = Math.abs(numOfWords - word.split(" ").length);// number of words
-		fitness -= l;
-		
-		for (int i = 0; i < targetChar.length; i++) {// contains correct chars
-			if (word.contains(targetChar[i] + "")) {
-				fitness += 1;
-				if (targetChar[i] == ' ') {// contains correct spaces
-					fitness += 1;
-				}
-			}
-		}
-		String[] words = word.split(" ");
-		int wordCombo = 0;
-		for (int i = 0; i < words.length && i < targetWords.length; i++) {// correct word placement
-			if (words[i].equals(targetWords[i])) {
-				wordCombo++;
-				fitness += 2 + wordCombo;
-			} else {
-				wordCombo = 0;
-			}
-		}
+//		l = Math.abs(numOfWords - word.split(" ").length);// number of words
+//		fitness -= l;
+//		
+//		for (int i = 0; i < targetChar.length; i++) {// contains correct chars
+//			if (word.contains(targetChar[i] + "")) {
+//				fitness += 1;
+//				if (targetChar[i] == ' ') {// contains correct spaces
+//					fitness += 1;
+//				}
+//			}
+//		}
+//		String[] words = word.split(" ");
+//		int wordCombo = 0;
+//		for (int i = 0; i < words.length && i < targetWords.length; i++) {// correct word placement
+//			if (words[i].equals(targetWords[i])) {
+//				wordCombo++;
+//				fitness += 2 + wordCombo;
+//			} else {
+//				wordCombo = 0;
+//			}
+//		}
 		int charCombo = 0;
 		for (int i = 0; i < word.length() && i < target.length(); i++) {// correct char placement and combo
 			if (word.charAt(i) == target.charAt(i)) {
