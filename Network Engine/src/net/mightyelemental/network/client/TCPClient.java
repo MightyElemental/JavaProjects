@@ -82,7 +82,6 @@ public class TCPClient extends Client {
 		try {
 			clientSocket = new Socket(address, port);
 		} catch (ConnectException e) {
-			this.initiater.onConnectionRefused();
 			flag = true;
 		}
 		if (!flag) {
@@ -91,10 +90,11 @@ public class TCPClient extends Client {
 			clientSocket.setKeepAlive(true);
 			ois = new ObjectInputStream(clientSocket.getInputStream());
 			ous = new ObjectOutputStream(clientSocket.getOutputStream());
+			clientTick.start();
+			hasBeenSetup = true;
+		} else {
+			this.initiater.onConnectionRefused();
 		}
-		
-		clientTick.start();
-		hasBeenSetup = true;
 	}
 	
 	/** Used to stop the client thread

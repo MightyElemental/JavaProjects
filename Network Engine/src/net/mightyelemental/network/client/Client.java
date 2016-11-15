@@ -141,4 +141,9 @@ public abstract class Client {
 	 *            the object map to send @throws IOException */
 	public abstract void sendObjectMap(Map<String, Object> objects) throws IOException;
 	
+	/** Used to get the initiater */
+	public ClientInitiater getInitiater() {
+		return initiater;
+	}
+	
 }
