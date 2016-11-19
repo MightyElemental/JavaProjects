@@ -33,10 +33,10 @@ public class ClientInitiater {
 		}
 	}
 	
-	public void onServerClosed() {
+	public void onClientDropped(String reason) {
 		// Notify everybody that may be interested.
 		for (MessageListenerClient mlc : listeners) {
-			mlc.onServerClosed();
+			mlc.onClientDropped(reason);
 		}
 	}
 	

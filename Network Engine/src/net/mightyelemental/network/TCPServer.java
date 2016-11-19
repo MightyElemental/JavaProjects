@@ -163,4 +163,12 @@ public class TCPServer extends Server implements Runnable {
 		getTCPConnectionFromIP(ip, port).sendMap(objects);
 	}
 	
+	public void onVerifyDenied(String uid) throws IOException {
+		getTCPConnectionFromUID(uid).sendObject("ServerMessage", "Your Client Verification Code Does Not Match The Server Code!");
+	}
+	
+	public void onVerified(String uid) throws IOException {
+		getTCPConnectionFromUID(uid).sendObject("ServerMessage", "Your Client Has Been Verified");
+	}
+	
 }

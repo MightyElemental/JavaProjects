@@ -5,6 +5,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ConnectException;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,8 +43,15 @@ public class TCPClient extends Client {
 																			// uid
 						clientUID = (String) ((Map<String, Object>) obj).get("UID");
 					}
-				} catch (ClassNotFoundException | IOException e) {
-					initiater.onServerClosed();
+				} catch (ClassNotFoundException e) {
+					e.printStackTrace();
+					break;
+				} catch (SocketException e) {
+					initiater.onClientDropped("default");
+					break;
+				} catch (IOException e) {
+					initiater.onClientDropped("default");
+					e.printStackTrace();
 					break;
 				}
 				
@@ -101,11 +109,12 @@ public class TCPClient extends Client {
 	 * 
 	 * @throws IOException */
 	public synchronized void stopClient() throws InterruptedException, IOException {
+		running = false;
+		clientTick.interrupt();
 		if (clientSocket != null) {
 			clientSocket.close();
 		}
-		running = false;
-		clientTick.join(2000);
+		// clientTick.join(2000);
 	}
 	
 	@Override

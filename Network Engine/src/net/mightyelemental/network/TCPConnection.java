@@ -1,5 +1,6 @@
 package net.mightyelemental.network;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -48,7 +49,7 @@ public class TCPConnection {
 				while (running) {
 					// is.readFully(recievedBytes);
 					try {
-						if (!verified && timeOfVerifyRequest + 10000 < System.currentTimeMillis()) {
+						if (!verified && timeOfVerifyRequest + 5000 < System.currentTimeMillis()) {
 							sendObject("ServerMessage", "Your Client Did Not Verify In Time!");
 							stopThread();
 						}
@@ -57,15 +58,20 @@ public class TCPConnection {
 							String s = (String) ((Map<String, Object>) obj).get("VerifyCode");
 							if (s.equals(verifyCode)) {
 								verified = true;
-								sendObject("ServerMessage", "Your Client Has Been Verified");
+								server.onVerified(UID);
+								
 							} else {
-								sendObject("ServerMessage", "Your Client Verification Code Does Not Match The Server Code!");
+								server.onVerifyDenied(UID);
 								stopThread();
 							}
 						} else {
 							SI.onObjectRecieved(ip, port, obj);
 						}
 					} catch (ClassNotFoundException | SocketException e) {
+						SI.onClientDisconnect(ip, port, getUID());
+						stopThread();
+						break;
+					} catch (EOFException e) {
 						SI.onClientDisconnect(ip, port, getUID());
 						stopThread();
 						break;
@@ -94,6 +100,7 @@ public class TCPConnection {
 				e.printStackTrace();
 			}
 		}
+		
 	};
 	
 	public TCPConnection( Socket client, TCPServer server ) {
@@ -128,12 +135,15 @@ public class TCPConnection {
 	}
 	
 	public synchronized void stopThread() throws IOException, InterruptedException {
+		running = false;
+		run.interrupt();
+		server.getTcpConnections().remove(UID);
 		if (client != null) {
 			client.close();
 		}
-		running = false;
-		run.join();
-		server.getTcpConnections().remove(UID);
+		if (server.hasGUI) {
+			server.serverGUI.updateClients();
+		}
 	}
 	
 	/** @return the client */

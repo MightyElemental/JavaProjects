@@ -14,7 +14,7 @@ public interface MessageListenerClient {
 	 *            the object the client received from the server */
 	public void onObjectRecievedFromServer(Object obj);
 	
-	public void onServerClosed();
+	public void onClientDropped(String reason);
 	
 	public void onConnectionRefused();
 	
