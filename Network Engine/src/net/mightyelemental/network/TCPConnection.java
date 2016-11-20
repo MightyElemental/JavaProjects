@@ -4,6 +4,7 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.StreamCorruptedException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketException;
@@ -52,6 +53,10 @@ public class TCPConnection {
 						if (!verified && timeOfVerifyRequest + 5000 < System.currentTimeMillis()) {
 							sendObject("ServerMessage", "Your Client Did Not Verify In Time!");
 							stopThread();
+						}
+						if (objectIn == null) {
+							running = false;
+							break;
 						}
 						Object obj = objectIn.readObject();
 						if (((Map<String, Object>) obj).containsKey("VerifyCode")) {
@@ -115,16 +120,24 @@ public class TCPConnection {
 		try {
 			objectOut = new ObjectOutputStream(client.getOutputStream());
 			objectIn = new ObjectInputStream(client.getInputStream());
+		} catch (StreamCorruptedException sce) {
+			try {
+				stopThread();
+			} catch (IOException | InterruptedException e) {
+				e.printStackTrace();
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		try {
-			this.client.setSoTimeout(0);
-			this.client.setKeepAlive(true);
-			this.client.setReceiveBufferSize(maxBytes);
-			this.client.setSendBufferSize(maxBytes);
-		} catch (IOException e) {
-			e.printStackTrace();
+		if (!client.isClosed()) {
+			try {
+				this.client.setSoTimeout(0);
+				this.client.setKeepAlive(true);
+				this.client.setReceiveBufferSize(maxBytes);
+				this.client.setSendBufferSize(maxBytes);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	
@@ -186,7 +199,12 @@ public class TCPConnection {
 		objectToSend = null;
 		objectToSend = new HashMap<String, Object>();
 		objectToSend.put(varName, obj);
-		objectOut.writeObject(objectToSend);
+		System.out.println(objectToSend);
+		if (objectOut != null && !client.isClosed()) {
+			objectOut.writeObject(objectToSend);
+		} else {
+			System.err.println("Socket " + client.getRemoteSocketAddress() + " has been closed");
+		}
 	}
 	
 	/** Send a map of objects to server
@@ -195,7 +213,12 @@ public class TCPConnection {
 	 *            the object map to send
 	 * @throws IOException */
 	public void sendMap(Map<String, Object> objects) throws IOException {
-		objectOut.writeObject(objects);
+		System.out.println(objects);
+		if (objectOut != null && !client.isClosed()) {
+			objectOut.writeObject(objects);
+		} else {
+			System.err.println("Socket " + client.getRemoteSocketAddress() + " has been closed");
+		}
 	}
 	
 	public boolean isVerified() {

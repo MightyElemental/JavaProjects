@@ -31,8 +31,8 @@ public class TCPServer extends Server implements Runnable {
 				newTcpClient.timeOfVerifyRequest = System.currentTimeMillis();
 				newTcpClient.startThread();
 				tcpConnections.put(UID, newTcpClient);
-				initiater.onNewClientAdded(newClientSocket.getInetAddress(), newClientSocket.getPort(), UID);
 				newTcpClient.sendObject("VerifyCodeRequest", "Please Send Verify Code");
+				initiater.onNewClientAdded(newClientSocket.getInetAddress(), newClientSocket.getPort(), UID);
 				
 				if (hasGUI) {
 					if (serverGUI != null) {
@@ -90,7 +90,8 @@ public class TCPServer extends Server implements Runnable {
 	
 	/** Get the TCP Connection for the specified IP */
 	public TCPConnection getTCPConnectionFromIP(InetAddress ip, int port) {
-		for (TCPConnection tcp : tcpConnections.values()) {
+		Map<String, TCPConnection> tcpConTemp = tcpConnections;
+		for (TCPConnection tcp : tcpConTemp.values()) {
 			if (ip.equals(tcp.getIp()) && port == tcp.getPort()) { return tcp; }
 		}
 		return null;
@@ -112,6 +113,18 @@ public class TCPServer extends Server implements Runnable {
 	/** @return the tcpConnections */
 	public Map<String, TCPConnection> getTcpConnections() {
 		return tcpConnections;
+	}
+	
+	/** Used to stop a connection with the client.
+	 * 
+	 * @param UID
+	 *            the uid of the client connection
+	 * @throws InterruptedException
+	 * @throws IOException */
+	public void killConnection(String UID) throws IOException, InterruptedException {
+		if (tcpConnections.get(UID) != null) {
+			tcpConnections.get(UID).stopThread();
+		}
 	}
 	
 	@Override
@@ -151,7 +164,11 @@ public class TCPServer extends Server implements Runnable {
 			System.err.println("FATAL ERROR: Server has not been setup yet!");
 			return;
 		}
-		getTCPConnectionFromIP(ip, port).sendObject(varName, obj);
+		if (getTCPConnectionFromIP(ip, port) != null) {
+			getTCPConnectionFromIP(ip, port).sendObject(varName, obj);
+		} else {
+			System.err.println("FATAL ERROR: Connection is a null value");
+		}
 	}
 	
 	@Override
@@ -160,7 +177,11 @@ public class TCPServer extends Server implements Runnable {
 			System.err.println("FATAL ERROR: Server has not been setup yet!");
 			return;
 		}
-		getTCPConnectionFromIP(ip, port).sendMap(objects);
+		if (getTCPConnectionFromIP(ip, port) != null) {
+			getTCPConnectionFromIP(ip, port).sendMap(objects);
+		} else {
+			System.err.println("FATAL ERROR: Connection is a null value");
+		}
 	}
 	
 	public void onVerifyDenied(String uid) throws IOException {
