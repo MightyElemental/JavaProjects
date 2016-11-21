@@ -46,7 +46,7 @@ public abstract class Client {
 	 *            the maximum amount of bytes the client should handle
 	 * @param usesEncryption
 	 *            whether or not the client should use encryption
-	 * @param veryifyCode
+	 * @param verifyCode
 	 *            the code used to verify the client game */
 	public Client( String address, int port, boolean usesEncryption, int maxBytes, String verifyCode ) {
 		this.address = address;
