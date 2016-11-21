@@ -2,6 +2,7 @@ package net.mightyelemental.network;
 
 import java.io.EOFException;
 import java.io.IOException;
+import java.io.NotActiveException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.StreamCorruptedException;
@@ -59,6 +60,15 @@ public class TCPConnection {
 							break;
 						}
 						Object obj = objectIn.readObject();
+						System.out.println("message = " + obj);
+						if (!(obj instanceof Map)) {
+							stopThread();
+							break;
+						}
+						if (((Map<String, Object>) obj).values().size() < 1) {
+							stopThread();
+							break;
+						}
 						if (((Map<String, Object>) obj).containsKey("VerifyCode")) {
 							String s = (String) ((Map<String, Object>) obj).get("VerifyCode");
 							if (s.equals(verifyCode)) {
@@ -80,6 +90,10 @@ public class TCPConnection {
 						SI.onClientDisconnect(ip, port, getUID());
 						stopThread();
 						break;
+					} catch (StreamCorruptedException e) {
+						SI.onClientDisconnect(ip, port, getUID());
+						stopThread();
+						System.err.println("Wolfgang's fault (StreamCorruptedException)");
 					}
 					// if (usesEncryption) {
 					// System.out.println("Before decryp: " + message);// SENDS BYTE ARRAYS! DO NOT DECRYPT THEM!
@@ -126,6 +140,9 @@ public class TCPConnection {
 			} catch (IOException | InterruptedException e) {
 				e.printStackTrace();
 			}
+			System.out.println(sce.getMessage());
+		} catch (SocketException e) {
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -151,6 +168,7 @@ public class TCPConnection {
 		running = false;
 		run.interrupt();
 		server.getTcpConnections().remove(UID);
+		System.err.println(UID + " has been kicked");
 		if (client != null) {
 			client.close();
 		}
@@ -201,7 +219,15 @@ public class TCPConnection {
 		objectToSend.put(varName, obj);
 		System.out.println(objectToSend);
 		if (objectOut != null && !client.isClosed()) {
-			objectOut.writeObject(objectToSend);
+			try {
+				objectOut.writeObject(objectToSend);
+			} catch (NotActiveException | NullPointerException | SocketException e) {
+				try {
+					stopThread();
+				} catch (InterruptedException e1) {
+					e1.printStackTrace();
+				}
+			}
 		} else {
 			System.err.println("Socket " + client.getRemoteSocketAddress() + " has been closed");
 		}
@@ -215,7 +241,16 @@ public class TCPConnection {
 	public void sendMap(Map<String, Object> objects) throws IOException {
 		System.out.println(objects);
 		if (objectOut != null && !client.isClosed()) {
-			objectOut.writeObject(objects);
+			try {
+				objectOut.writeObject(objects);
+			} catch (NotActiveException | NullPointerException | SocketException e) {
+				try {
+					stopThread();
+				} catch (InterruptedException e1) {
+					e1.printStackTrace();
+				}
+				e.printStackTrace();
+			}
 		} else {
 			System.err.println("Socket " + client.getRemoteSocketAddress() + " has been closed");
 		}

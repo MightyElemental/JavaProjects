@@ -24,6 +24,7 @@ public class TCPServer extends Server implements Runnable {
 				if (serverSocket == null) {
 					continue;
 				}
+				
 				Socket newClientSocket = serverSocket.accept();
 				TCPConnection newTcpClient = new TCPConnection(newClientSocket, this);
 				String UID = generateClientInfo(newTcpClient, random);
@@ -90,7 +91,8 @@ public class TCPServer extends Server implements Runnable {
 	
 	/** Get the TCP Connection for the specified IP */
 	public TCPConnection getTCPConnectionFromIP(InetAddress ip, int port) {
-		Map<String, TCPConnection> tcpConTemp = tcpConnections;
+		Map<String, TCPConnection> tcpConTemp = new HashMap<String, TCPConnection>();
+		tcpConTemp.putAll(tcpConnections);
 		for (TCPConnection tcp : tcpConTemp.values()) {
 			if (ip.equals(tcp.getIp()) && port == tcp.getPort()) { return tcp; }
 		}
@@ -164,9 +166,9 @@ public class TCPServer extends Server implements Runnable {
 			System.err.println("FATAL ERROR: Server has not been setup yet!");
 			return;
 		}
-		if (getTCPConnectionFromIP(ip, port) != null) {
+		try {
 			getTCPConnectionFromIP(ip, port).sendObject(varName, obj);
-		} else {
+		} catch (Exception e) {
 			System.err.println("FATAL ERROR: Connection is a null value");
 		}
 	}
