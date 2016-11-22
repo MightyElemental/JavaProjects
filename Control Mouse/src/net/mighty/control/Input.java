@@ -82,7 +82,7 @@ public class Input implements MessageListenerServer, MessageListenerClient {
 					int h = (int) (height * Control.frame.slider.getValue() * 0.01);
 					clientScreenRect.setBounds(x1 - (w / 2), y1 - (h / 2), w, h);
 
-					sleep(100);
+					sleep(50);
 
 					Control.capture = robot.createScreenCapture(clientScreenRect);
 					Control.capture = Control.resize(Control.capture, (int) (Control.capture.getWidth() * 0.9),

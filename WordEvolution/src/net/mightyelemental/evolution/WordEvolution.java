@@ -9,7 +9,7 @@ import java.util.Set;
 public class WordEvolution {
 	
 	
-	public String baseString = "Good starting point";
+	public String baseString = "ra";
 	
 	public WordEvolution() {
 		long time1 = System.currentTimeMillis();
@@ -46,7 +46,7 @@ public class WordEvolution {
 	
 	public static Random rand = new Random(System.nanoTime());
 	// only use a-z, A-Z, space, !?.,
-	public static final String target = "Could you please guess my sentence? That would be very helpful to me. So thanks again for guessing correctly.";
+	public static final String target = "Could you please guess my sentence? That would be very helpful to me. So thanks again for guessing correctly. Hmmmmm..... Yes. Much so.";
 	public static final String[] targetWords = target.split(" ");
 	public static final char[] targetChar = getLettersUsed(target);
 	public static final char[] Randomletters = "qwertyuiopasdfghjklzxcvbnm QWERTYUIOPASDFGHJKLZXCVBNM!?.,".toCharArray();

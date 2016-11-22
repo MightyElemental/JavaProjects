@@ -58,7 +58,7 @@ public class Commands {
 		cm.getSender().chat().send(spam);
 	}
 
-	private static void send(String mess, ChatMessage cm) throws SkypeException {
+	public static void send(String mess, ChatMessage cm) throws SkypeException {
 		cm.getChat().send(mess);
 	}
 

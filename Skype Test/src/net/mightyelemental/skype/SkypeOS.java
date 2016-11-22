@@ -42,7 +42,7 @@ public class SkypeOS implements ChatMessageListener, ChatMessageEditListener {
 		return temp;
 	}
 	
-	public String[] members = { "alymly", "xpogxsoundzz", "bryce_bent", "jzouellette", "gillkeean", "wolfgangts", "evan.healey" };
+	public String[] members = { "alymly", "xpogxsoundzz", "bryce_bent", "jzouellette", "wolfgangts", "evan.healey" };// "gillkeean",
 	
 	public void reAddMembers(ChatMessage cm) throws SkypeException {
 		if (cm.getChat().getAllMembers().length < 4) { return; }
