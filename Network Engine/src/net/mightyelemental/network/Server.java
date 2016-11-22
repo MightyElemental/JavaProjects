@@ -43,9 +43,17 @@ public abstract class Server {
 	 * @param verifyCode
 	 *            - used to ensure that connecting clients are from the correct game */
 	public Server( int port, boolean usesEncryption, int maxBytes, String verifyCode ) {
-		this.port = port;
+		this(port, verifyCode);
 		this.usesEncryption = usesEncryption;
 		this.maxBytes = maxBytes;
+	}
+	
+	/** @param port
+	 *            - the port of which the server should run
+	 * @param verifyCode
+	 *            - used to ensure that connecting clients are from the correct game */
+	public Server( int port, String verifyCode ) {
+		this.port = port;
 		this.verifyCode = verifyCode;
 	}
 	

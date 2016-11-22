@@ -18,6 +18,7 @@ import java.util.Random;
 
 import net.mightyelemental.network.gui.ServerGUI;
 
+@Deprecated
 public class UDPServer extends Server {
 	
 	

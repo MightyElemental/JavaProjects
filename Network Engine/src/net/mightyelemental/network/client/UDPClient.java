@@ -13,6 +13,7 @@ import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 
+@Deprecated
 public class UDPClient extends Client {
 	
 	

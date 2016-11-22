@@ -58,16 +58,18 @@ public class TCPServer extends Server implements Runnable {
 	
 	/** @param port
 	 *            - the port of which the server should run
-	 * @param maxBytes
-	 *            - the maximum amount of bytes the server should be able to send
-	 * @param usesEncryption
-	 *            - whether or not the server should use encryption
 	 * @param verifyCode
 	 *            - used to ensure that connecting clients are from the correct game */
-	public TCPServer( int port, boolean usesEncryption, int maxBytes, String verifyCode ) {
-		super(port, usesEncryption, maxBytes, verifyCode);
+	public TCPServer( int port, String verifyCode ) {
+		super(port, verifyCode);
 	}
 	
+	/** Used to initialise the server - this is essential for the server to run properly
+	 * 
+	 * @throws BindException
+	 *             when the server fails to bind with the specified port
+	 * @throws IOException
+	 *             when the server fails to load correctly */
 	public synchronized void setupServer() throws BindException, IOException {
 		
 		// try {
@@ -84,12 +86,20 @@ public class TCPServer extends Server implements Runnable {
 		hasBeenSetup = true;
 	}
 	
-	/** Get the TCP Connection for the specified UID */
+	/** Get the TCP Connection for the specified UID
+	 * 
+	 * @param UID
+	 *            the client UID */
 	public TCPConnection getTCPConnectionFromUID(String UID) {
 		return tcpConnections.get(UID);
 	}
 	
-	/** Get the TCP Connection for the specified IP */
+	/** Get the TCP Connection for the specified IP
+	 * 
+	 * @param ip
+	 *            the client's IP address
+	 * @param port
+	 *            the client's port that they are using to connect */
 	public TCPConnection getTCPConnectionFromIP(InetAddress ip, int port) {
 		Map<String, TCPConnection> tcpConTemp = new HashMap<String, TCPConnection>();
 		tcpConTemp.putAll(tcpConnections);
@@ -99,8 +109,12 @@ public class TCPServer extends Server implements Runnable {
 		return null;
 	}
 	
-	/** Adds client UID to array and makes sure its unique
+	/** Ensures a unique UID for every client and adds the UID and the TCPConnection to the map
 	 * 
+	 * @param tcpCon
+	 *            the TCPConnection that you are adding to the map
+	 * @param rand
+	 *            a Random instance
 	 * @return uid the client's UID */
 	public String generateClientInfo(TCPConnection tcpCon, Random rand) {
 		String chars = BasicCommands.generateClientUID(rand);
@@ -112,7 +126,9 @@ public class TCPServer extends Server implements Runnable {
 		return chars;
 	}
 	
-	/** @return the tcpConnections */
+	/** Used to get all connections
+	 * 
+	 * @return the tcpConnections */
 	public Map<String, TCPConnection> getTcpConnections() {
 		return tcpConnections;
 	}
@@ -129,19 +145,25 @@ public class TCPServer extends Server implements Runnable {
 		}
 	}
 	
+	/** Used to stop the server */
 	@Override
 	public void stopServer() throws InterruptedException, IOException {
+		this.serverTick.interrupt();
 		this.serverTick.join(1000);
 		serverSocket.close();
 	}
 	
-	/** @return the usesEncryption */
+	/** Does the server use encryption?
+	 * 
+	 * @return usesEncryption */
+	@Deprecated
 	public boolean doesUseEncryption() {
 		return usesEncryption;
 	}
 	
 	/** @param usesEncryption
 	 *            the usesEncryption to set */
+	@Deprecated
 	public void setUseEncryption(boolean usesEncryption) {
 		this.usesEncryption = usesEncryption;
 	}
@@ -160,6 +182,16 @@ public class TCPServer extends Server implements Runnable {
 		}
 	}
 	
+	/** Used to send an object to a client
+	 * 
+	 * @param varName
+	 *            the key for the message. E.G. 'ServerMessage'
+	 * @param obj
+	 *            the Object you are sending
+	 * @param ip
+	 *            the IP address of the client
+	 * @param port
+	 *            the port of the client */
 	@Override
 	public void sendObject(String varName, Object obj, InetAddress ip, int port) throws IOException {
 		if (!hasBeenSetup) {
@@ -173,6 +205,14 @@ public class TCPServer extends Server implements Runnable {
 		}
 	}
 	
+	/** Used to send multiple objects with potentially different keys at once
+	 * 
+	 * @param objects
+	 *            the Map of Objects you are sending
+	 * @param ip
+	 *            the IP address of the client
+	 * @param port
+	 *            the port of the client */
 	@Override
 	public void sendObjectMap(Map<String, Object> objects, InetAddress ip, int port) throws IOException {
 		if (!hasBeenSetup) {
@@ -186,10 +226,22 @@ public class TCPServer extends Server implements Runnable {
 		}
 	}
 	
+	/** This method will be initiated when the client fails to verify their code
+	 * 
+	 * @param uid
+	 *            the UID of the client who failed to verify their code
+	 * @throws IOException
+	 *             when there is an issue with the connection */
 	public void onVerifyDenied(String uid) throws IOException {
 		getTCPConnectionFromUID(uid).sendObject("ServerMessage", "Your Client Verification Code Does Not Match The Server Code!");
 	}
 	
+	/** This method will be initiated when the client verifies their code
+	 * 
+	 * @param uid
+	 *            the UID of the client who verified their code
+	 * @throws IOException
+	 *             when there is an issue with the connection */
 	public void onVerified(String uid) throws IOException {
 		getTCPConnectionFromUID(uid).sendObject("ServerMessage", "Your Client Has Been Verified");
 	}
