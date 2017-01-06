@@ -19,24 +19,34 @@ public class StateLoading extends BasicGameState {
 		this.ID = ID;
 	}
 	
-	private Image loadingScreen;
+	private Image loadingScreen, biosScreen, loadingBar;
+	
+	private float biosTime = 300f;
 	
 	private float xPos, counts;
 	
 	@Override
 	public void init(GameContainer arg0, StateBasedGame arg1) throws SlickException {
 		loadingScreen = WindowsMain.resLoader.loadImage("loading.loadScreen");
+		loadingBar = WindowsMain.resLoader.loadImage("loading.loadingBar");
+		biosScreen = WindowsMain.resLoader.loadImage("loading.loadBios");
 		float scale = (WindowsMain.WIDTH / 16.0f * 9.0f) / loadingScreen.getHeight();
 		loadingScreen = loadingScreen.getScaledCopy(scale);
+		loadingBar = loadingBar.getScaledCopy(scale);
 	}
 	
 	@Override
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
 		loadingScreen.draw(gc.getWidth() / 2 - loadingScreen.getWidth() / 2, 0);
 		renderLoadingBar(gc, sbg, g);
-		g.setColor(Color.black);
-		g.fillRect(731, 528, 40, 20);
-		g.fillRect(463, 528, 80, 20);
+		if (biosTime > 0) {
+			biosScreen.draw(gc.getWidth() / 2 - biosScreen.getWidth() / 2, 0);
+			if (biosTime < 80) {
+				g.setColor(Color.black);
+				g.fillRect(0, 0, gc.getWidth(), gc.getHeight());
+			}
+		}
+		
 	}
 	
 	public void renderLoadingBar(GameContainer gc, StateBasedGame sbg, Graphics g) {
@@ -45,15 +55,22 @@ public class StateLoading extends BasicGameState {
 		g.fillRoundRect(startX + xPos, 530, 10, 15, 2);
 		g.fillRoundRect(startX - 14 + xPos, 530, 10, 15, 2);
 		g.fillRoundRect(startX - 28 + xPos, 530, 10, 15, 2);
+		loadingBar.draw(392, 527);
+		
 	}
 	
 	@Override
 	public void update(GameContainer gc, StateBasedGame sbg, int delta) throws SlickException {
-		xPos += 1 * delta / 8f;
-		xPos = xPos > 260 ? 0 : xPos;
-		counts = xPos == 0 ? counts + 1 : counts;
+		if (biosTime > 0) {
+			biosTime -= delta / 8f;
+		} else {
+			xPos += 1 * delta / 8f;
+			xPos = xPos > 260 ? 0 : xPos;
+			counts = xPos == 0 ? counts + 1 : counts;
+		}
+		
 		if (counts >= 3) {
-			sbg.enterState(WindowsMain.STATE_LOGIN);
+			// sbg.enterState(WindowsMain.STATE_LOGIN);
 		}
 	}
 	
