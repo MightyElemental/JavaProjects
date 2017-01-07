@@ -70,7 +70,7 @@ public class StateLoading extends BasicGameState {
 		}
 		
 		if (counts >= 3) {
-			// sbg.enterState(WindowsMain.STATE_LOGIN);
+			sbg.enterState(WindowsMain.STATE_LOGIN);
 		}
 	}
 	

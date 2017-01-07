@@ -1,5 +1,8 @@
 package net.mightyelemental.winGame.states;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
@@ -8,12 +11,19 @@ import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 
+import net.mightyelemental.guiComponents.GUIButton;
+import net.mightyelemental.guiComponents.GUIComponent;
+import net.mightyelemental.guiComponents.GUITextBox;
 import net.mightyelemental.winGame.WindowsMain;
 
 public class StateLogin extends BasicGameState {
 	
 	
+	private List<GUIComponent> guiComponents = new ArrayList<GUIComponent>();
+	
 	private Image loginScreen, startingScreen, blankScreen;
+	
+	private String selectedUID = "";
 	
 	private float pauseTime = 200f, startTime = 420f;
 	
@@ -22,6 +32,8 @@ public class StateLogin extends BasicGameState {
 		loginScreen = WindowsMain.resLoader.loadImage("login.loginScreen");
 		startingScreen = WindowsMain.resLoader.loadImage("login.startingScreen");
 		blankScreen = WindowsMain.resLoader.loadImage("login.blankScreen");
+		guiComponents.add(new GUIButton(832, 496, 44, 44, "go").setTransparent(true));
+		guiComponents.add(new GUITextBox(505, 495, 294, 45, "password").setTransparent(true));
 	}
 	
 	@Override
@@ -35,6 +47,9 @@ public class StateLogin extends BasicGameState {
 		}
 		if (startTime < 120 && startTime > 0) {
 			blankScreen.draw();
+		}
+		if (startTime < 0) for (GUIComponent c : guiComponents) {
+			c.draw(gc, sbg, g);
 		}
 	}
 	
@@ -50,6 +65,47 @@ public class StateLogin extends BasicGameState {
 	@Override
 	public int getID() {
 		return WindowsMain.STATE_LOGIN;
+	}
+	
+	public void onComponentPressed(int button, GUIComponent c) {
+		if (c.getUID().equals("go") && button == 0) {
+			if (((GUITextBox) guiComponents.get(1)).getText().equals("password")) {
+				System.out.println("GO!");
+				((GUITextBox) guiComponents.get(1)).setText("Correct!");
+			} else {
+				System.out.println("NO!");
+				((GUITextBox) guiComponents.get(1)).setText("Wrong Password!");
+			}
+		}
+	}
+	
+	@Override
+	public void mousePressed(int button, int x, int y) {
+		
+		if (startTime < 0) for (GUIComponent c : guiComponents) {
+			if (c.contains(x, y)) {
+				c.onMousePressed(button, x, y);
+				onComponentPressed(button, c);
+				selectedUID = c.getUID();
+				System.out.println(selectedUID);
+			}
+		}
+	}
+	
+	@Override
+	public void mouseReleased(int button, int x, int y) {
+		if (startTime < 0) for (GUIComponent c : guiComponents) {
+			if (c.contains(x, y)) c.onMouseReleased(button, x, y);
+		}
+	}
+	
+	@Override
+	public void keyPressed(int key, char c) {
+		for (GUIComponent g : guiComponents) {
+			if (g.getUID().equals(selectedUID)) {
+				g.onKeyPressed(key, c);
+			}
+		}
 	}
 	
 }
