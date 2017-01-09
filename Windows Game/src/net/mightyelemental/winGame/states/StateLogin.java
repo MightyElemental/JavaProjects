@@ -8,6 +8,7 @@ import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
+import org.newdawn.slick.geom.RoundedRectangle;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 
@@ -33,7 +34,7 @@ public class StateLogin extends BasicGameState {
 		startingScreen = WindowsMain.resLoader.loadImage("login.startingScreen");
 		blankScreen = WindowsMain.resLoader.loadImage("login.blankScreen");
 		guiComponents.add(new GUIButton(832, 496, 44, 44, "go").setTransparent(true));
-		guiComponents.add(new GUITextBox(505, 495, 294, 45, "password").setTransparent(true));
+		guiComponents.add(new GUITextBox(505, 495, 294, 45, "password").setSelectedShape(new RoundedRectangle(503, 492, 298, 51, 10)));
 	}
 	
 	@Override
@@ -81,13 +82,14 @@ public class StateLogin extends BasicGameState {
 	
 	@Override
 	public void mousePressed(int button, int x, int y) {
-		
 		if (startTime < 0) for (GUIComponent c : guiComponents) {
+			c.setSelected(false);
 			if (c.contains(x, y)) {
 				c.onMousePressed(button, x, y);
 				onComponentPressed(button, c);
 				selectedUID = c.getUID();
-				System.out.println(selectedUID);
+				c.setSelected(true);
+				//System.out.println(selectedUID);
 			}
 		}
 	}
