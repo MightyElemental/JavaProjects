@@ -18,6 +18,7 @@ public class WindowsMain extends StateBasedGame {
 		super("WinGameXP");
 		this.addState(loadState);
 		this.addState(loginState);
+		this.addState(desktopState);
 		
 		AppGameContainer appGc;
 		try {

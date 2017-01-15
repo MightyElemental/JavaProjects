@@ -73,7 +73,7 @@ public class StateLogin extends BasicGameState {
 			startTime -= delta / 8f;
 		}
 		if (showWelcome) {
-			if (!startup.playing() && welcomeTime < 620 && welcomeTime > 0) startup.play();
+			if (!startup.playing() && welcomeTime < 620 && welcomeTime > 200) startup.play();
 			welcomeTime -= delta / 8f;
 		}
 		if(welcomeTime < 0){
