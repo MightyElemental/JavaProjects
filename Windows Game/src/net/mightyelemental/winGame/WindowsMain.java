@@ -43,9 +43,11 @@ public class WindowsMain extends StateBasedGame {
 	
 	public static final int STATE_LOADING = 0;
 	public static final int STATE_LOGIN = 1;
+	public static final int STATE_DESKTOP = 2;
 	
 	public StateLoading loadState = new StateLoading(STATE_LOADING);
 	public StateLogin loginState = new StateLogin();
+	public StateDesktop desktopState = new StateDesktop();
 	
 	private static void resetLib() {
 		System.setProperty("java.library.path", "lib");

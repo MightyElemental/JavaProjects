@@ -27,7 +27,7 @@ public class ResourceLoader {
 	 *            the path to the image beginning with 'assets/textures'. Remember that you can replace slashes '/' with
 	 *            dots '.'
 	 * @return Image the newly loaded image */
-	public Image loadImage(String imagePath) {
+	public static Image loadImage(String imagePath) {
 		
 		if (!imageLoads.containsKey("null")) {
 			loadNullImage();
@@ -61,7 +61,7 @@ public class ResourceLoader {
 		return loadedImage;
 	}
 	
-	public void loadNullImage() {
+	public static void loadNullImage() {
 		try {
 			imageLoads.put("null", ResourceLoader.getNullImage());
 		} catch (SlickException e) {
@@ -88,6 +88,7 @@ public class ResourceLoader {
 	 *            the path to the sound file beginning with 'assets/sounds/music'. Remember that you can replace slashes
 	 *            '/' with dots '.'
 	 * @return Music the newly loaded music file */
+	@Deprecated
 	public Music loadMusic(String musicPath) {
 		
 		Music loadedMusic = null;

@@ -38,7 +38,7 @@ public class GUITextBox extends GUIComponent {
 		if (f == null) f = g.getFont();
 		
 		g.setColor(Color.black);
-		g.drawString(text.toString(), x + (width / 2) - g.getFont().getWidth(text.toString()) / 2,
+		g.drawString(text.toString() + (isSelected() ? "|" : ""), x + (width / 2) - g.getFont().getWidth(text.toString()) / 2,
 			y + (height / 2) - (g.getFont().getLineHeight() / 2));
 	}
 	

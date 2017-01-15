@@ -8,6 +8,7 @@ import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
+import org.newdawn.slick.Sound;
 import org.newdawn.slick.geom.RoundedRectangle;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
@@ -15,6 +16,7 @@ import org.newdawn.slick.state.StateBasedGame;
 import net.mightyelemental.guiComponents.GUIButton;
 import net.mightyelemental.guiComponents.GUIComponent;
 import net.mightyelemental.guiComponents.GUITextBox;
+import net.mightyelemental.winGame.ResourceLoader;
 import net.mightyelemental.winGame.WindowsMain;
 
 public class StateLogin extends BasicGameState {
@@ -22,17 +24,23 @@ public class StateLogin extends BasicGameState {
 	
 	private List<GUIComponent> guiComponents = new ArrayList<GUIComponent>();
 	
-	private Image loginScreen, startingScreen, blankScreen;
+	private Image loginScreen, startingScreen, blankScreen, welcomeScreen;
+	
+	private Sound startup;
 	
 	private String selectedUID = "";
 	
-	private float pauseTime = 200f, startTime = 420f;
+	private float pauseTime = 200f, startTime = 420f, welcomeTime = 700f;
+	
+	boolean showWelcome;
 	
 	@Override
 	public void init(GameContainer gc, StateBasedGame sbg) throws SlickException {
-		loginScreen = WindowsMain.resLoader.loadImage("login.loginScreen");
-		startingScreen = WindowsMain.resLoader.loadImage("login.startingScreen");
-		blankScreen = WindowsMain.resLoader.loadImage("login.blankScreen");
+		loginScreen = ResourceLoader.loadImage("login.loginScreen");
+		startingScreen = ResourceLoader.loadImage("login.startingScreen");
+		blankScreen = ResourceLoader.loadImage("login.blankScreen");
+		welcomeScreen = ResourceLoader.loadImage("login.welcomeScreen");
+		startup = ResourceLoader.loadSound("startup");
 		guiComponents.add(new GUIButton(832, 496, 44, 44, "go").setTransparent(true));
 		guiComponents.add(new GUITextBox(505, 495, 294, 45, "password").setSelectedShape(new RoundedRectangle(503, 492, 298, 51, 10)));
 	}
@@ -52,6 +60,9 @@ public class StateLogin extends BasicGameState {
 		if (startTime < 0) for (GUIComponent c : guiComponents) {
 			c.draw(gc, sbg, g);
 		}
+		if (showWelcome) {
+			welcomeScreen.draw();
+		}
 	}
 	
 	@Override
@@ -61,6 +72,13 @@ public class StateLogin extends BasicGameState {
 		} else if (startTime > 0) {
 			startTime -= delta / 8f;
 		}
+		if (showWelcome) {
+			if (!startup.playing() && welcomeTime < 620 && welcomeTime > 0) startup.play();
+			welcomeTime -= delta / 8f;
+		}
+		if(welcomeTime < 0){
+			sbg.enterState(WindowsMain.STATE_DESKTOP);
+		}
 	}
 	
 	@Override
@@ -69,10 +87,12 @@ public class StateLogin extends BasicGameState {
 	}
 	
 	public void onComponentPressed(int button, GUIComponent c) {
+		if (showWelcome) return;
 		if (c.getUID().equals("go") && button == 0) {
 			if (((GUITextBox) guiComponents.get(1)).getText().equals("password")) {
 				System.out.println("GO!");
 				((GUITextBox) guiComponents.get(1)).setText("Correct!");
+				showWelcome = true;
 			} else {
 				System.out.println("NO!");
 				((GUITextBox) guiComponents.get(1)).setText("Wrong Password!");
@@ -89,7 +109,7 @@ public class StateLogin extends BasicGameState {
 				onComponentPressed(button, c);
 				selectedUID = c.getUID();
 				c.setSelected(true);
-				//System.out.println(selectedUID);
+				// System.out.println(selectedUID);
 			}
 		}
 	}
