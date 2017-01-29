@@ -1,4 +1,4 @@
-package net.mightyelemental.guiComponents;
+package net.mightyelemental.winGame.guiComponents;
 
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Font;

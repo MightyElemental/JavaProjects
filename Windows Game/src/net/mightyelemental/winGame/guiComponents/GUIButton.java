@@ -1,4 +1,4 @@
-package net.mightyelemental.guiComponents;
+package net.mightyelemental.winGame.guiComponents;
 
 public class GUIButton extends GUIComponent {
 	

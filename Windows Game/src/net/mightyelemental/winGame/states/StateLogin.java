@@ -13,11 +13,11 @@ import org.newdawn.slick.geom.RoundedRectangle;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 
-import net.mightyelemental.guiComponents.GUIButton;
-import net.mightyelemental.guiComponents.GUIComponent;
-import net.mightyelemental.guiComponents.GUITextBox;
 import net.mightyelemental.winGame.ResourceLoader;
 import net.mightyelemental.winGame.WindowsMain;
+import net.mightyelemental.winGame.guiComponents.GUIButton;
+import net.mightyelemental.winGame.guiComponents.GUIComponent;
+import net.mightyelemental.winGame.guiComponents.GUITextBox;
 
 public class StateLogin extends BasicGameState {
 	
