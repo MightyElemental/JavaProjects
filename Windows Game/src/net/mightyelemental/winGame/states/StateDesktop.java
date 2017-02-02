@@ -7,6 +7,7 @@ import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
+import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.state.BasicGameState;
@@ -14,7 +15,9 @@ import org.newdawn.slick.state.StateBasedGame;
 
 import net.mightyelemental.winGame.ResourceLoader;
 import net.mightyelemental.winGame.WindowsMain;
+import net.mightyelemental.winGame.guiComponents.GUIButton;
 import net.mightyelemental.winGame.guiComponents.GUIComponent;
+import net.mightyelemental.winGame.guiComponents.dekstopObjects.AppWindow;
 import net.mightyelemental.winGame.guiComponents.dekstopObjects.StartWindow;
 
 public class StateDesktop extends BasicGameState {
@@ -24,23 +27,29 @@ public class StateDesktop extends BasicGameState {
 	}
 	
 	private List<GUIComponent> guiComponents = new ArrayList<GUIComponent>();
+	private List<AppWindow> windowList = new ArrayList<AppWindow>();
 	
 	private Image background, taskbar;
 	private Rectangle selection;
 	private StartWindow startWin;
 	
+	private String selectedUID = "";
+	
 	@Override
-	public void init(GameContainer arg0, StateBasedGame arg1) throws SlickException {
+	public void init(GameContainer gc, StateBasedGame delta) throws SlickException {
 		background = ResourceLoader.loadImage("desktop.background-bliss");
 		taskbar = ResourceLoader.loadImage("desktop.taskbar");
 		startWin = new StartWindow();
+		guiComponents.add(new GUIButton(0, gc.getHeight() - 43, 105, 43, "START"));
+		startWin.init(gc, delta);
 	}
 	
 	@Override
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
 		background.draw();
 		g.setColor(Color.white);
-		g.drawString("<Some GUI goes here>", gc.getWidth() / 2 - (g.getFont().getWidth("<Some GUI goes here>") / 2), gc.getHeight() / 2);
+		// g.drawString("<Some GUI goes here>", gc.getWidth() / 2 - (g.getFont().getWidth("<Some GUI goes here>") / 2),
+		// gc.getHeight() / 2);
 		taskbar.draw(0, gc.getHeight() - taskbar.getHeight());
 		if (selection != null) {
 			g.setColor(new Color(0f, 0f, 0.5f, 0.3f));
@@ -48,8 +57,26 @@ public class StateDesktop extends BasicGameState {
 			g.setColor(new Color(0f, 0f, 0.7f, 1f));
 			g.draw(selection);
 		}
-		g.setColor(new Color(30, 79, 178));
-		//g.fill(startWin);
+		for (GUIComponent c : guiComponents) {
+			c.draw(gc, sbg, g);
+		}
+		drawWindows(gc, sbg, g);
+	}
+	
+	public void drawWindows(GameContainer gc, StateBasedGame sbg, Graphics g) {
+		for (int i = 0; i < windowList.size(); i++) {
+			windowList.get(i).draw(gc, sbg, g);
+		}
+		if (getComponent("START") != null && getComponent("START").isSelected()) {
+			startWin.draw(gc, sbg, g);
+		}
+	}
+	
+	public GUIComponent getComponent(String uid) {
+		for (int i = 0; i < guiComponents.size(); i++) {
+			if (guiComponents.get(i).getUID().equals(uid)) return guiComponents.get(i);
+		}
+		return null;
 	}
 	
 	@Override
@@ -78,6 +105,42 @@ public class StateDesktop extends BasicGameState {
 	public void mousePressed(int button, int x, int y) {
 		oldx = x;
 		oldy = y;
+		for (GUIComponent c : guiComponents) {
+			if (!c.getUID().equals("START")) {
+				c.setSelected(false);
+			}
+			if (c.contains(x, y)) {
+				c.onMousePressed(button, x, y);
+				onComponentPressed(button, c);
+				selectedUID = c.getUID();
+				if (c.getUID().equals("START")) {
+					boolean sel = c.isSelected();
+					c.setSelected(!sel);
+				} else {
+					c.setSelected(true);
+				}
+			}
+		}
+	}
+	
+	public void onComponentPressed(int button, GUIComponent c) {
+		
+	}
+	
+	@Override
+	public void keyPressed(int key, char c) {
+		for (GUIComponent g : guiComponents) {
+			if (g.getUID().equals(selectedUID)) {
+				g.onKeyPressed(key, c);
+			}
+			if (g.getUID().equals("START")) {
+				if (key == Input.KEY_I) {
+					int x = 1280 / 2 - 800 / 2;
+					int y = 720 / 2 - 600 / 2;
+					windowList.add(new AppWindow(x, y, 800, 600));
+				}
+			}
+		}
 	}
 	
 }
