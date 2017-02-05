@@ -4,6 +4,7 @@ import org.newdawn.slick.Color;
 import org.newdawn.slick.Font;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
+import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.StateBasedGame;
 
 public class GUITextBox extends GUIComponent {
@@ -33,7 +34,7 @@ public class GUITextBox extends GUIComponent {
 	}
 	
 	@Override
-	public void draw(GameContainer gc, StateBasedGame sbg, Graphics g) {
+	public void draw(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
 		super.draw(gc, sbg, g);
 		if (f == null) f = g.getFont();
 		

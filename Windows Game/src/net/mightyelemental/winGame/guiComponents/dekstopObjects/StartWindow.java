@@ -14,7 +14,7 @@ public class StartWindow extends AppWindow {
 	private static final long serialVersionUID = 6373909456505514103L;
 	
 	public StartWindow() {
-		super(0, 220, 430, 458);
+		super(0, 220, 430, 458, "Start");
 	}
 	
 	private Image menu;

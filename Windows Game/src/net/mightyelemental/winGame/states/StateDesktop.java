@@ -19,6 +19,7 @@ import net.mightyelemental.winGame.guiComponents.GUIButton;
 import net.mightyelemental.winGame.guiComponents.GUIComponent;
 import net.mightyelemental.winGame.guiComponents.dekstopObjects.AppWindow;
 import net.mightyelemental.winGame.guiComponents.dekstopObjects.StartWindow;
+import net.mightyelemental.winGame.guiComponents.dekstopObjects.TaskbarApp;
 
 public class StateDesktop extends BasicGameState {
 	
@@ -39,6 +40,7 @@ public class StateDesktop extends BasicGameState {
 	public void init(GameContainer gc, StateBasedGame delta) throws SlickException {
 		background = ResourceLoader.loadImage("desktop.background-bliss");
 		taskbar = ResourceLoader.loadImage("desktop.taskbar");
+		
 		startWin = new StartWindow();
 		guiComponents.add(new GUIButton(0, gc.getHeight() - 43, 105, 43, "START"));
 		startWin.init(gc, delta);
@@ -74,7 +76,7 @@ public class StateDesktop extends BasicGameState {
 	
 	public GUIComponent getComponent(String uid) {
 		for (int i = 0; i < guiComponents.size(); i++) {
-			if (guiComponents.get(i).getUID().equals(uid)) return guiComponents.get(i);
+			if (guiComponents.get(i).getUID().equals(uid.toUpperCase())) return guiComponents.get(i);
 		}
 		return null;
 	}
@@ -82,6 +84,23 @@ public class StateDesktop extends BasicGameState {
 	@Override
 	public void update(GameContainer gc, StateBasedGame sbg, int delta) throws SlickException {
 		startWin.update(gc, sbg, delta);
+		updateWindows(gc, sbg, delta);
+	}
+	
+	public void updateWindows(GameContainer gc, StateBasedGame sbg, int delta) {
+		for (int i = 0; i < windowList.size(); i++) {
+			windowList.get(i).update(gc, sbg, delta);
+			if (windowList.get(i).toClose) {
+				windowList.remove(i);
+			}
+		}
+		for (int i = 0; i < guiComponents.size(); i++) {
+			if (guiComponents.get(i) instanceof TaskbarApp) {
+				if (((TaskbarApp) guiComponents.get(i)).linkedWindow == null || ((TaskbarApp) guiComponents.get(i)).linkedWindow.toClose) {
+					guiComponents.remove(i);
+				}
+			}
+		}
 	}
 	
 	@Override
@@ -91,7 +110,9 @@ public class StateDesktop extends BasicGameState {
 	
 	@Override
 	public void mouseDragged(int oldx, int oldy, int newx, int newy) {
-		selection = new Rectangle(this.oldx, this.oldy, newx - this.oldx, newy - this.oldy);
+		if (selectedUID.equals("")) {
+			selection = new Rectangle(this.oldx, this.oldy, newx - this.oldx, newy - this.oldy);
+		}
 	}
 	
 	@Override
@@ -105,6 +126,7 @@ public class StateDesktop extends BasicGameState {
 	public void mousePressed(int button, int x, int y) {
 		oldx = x;
 		oldy = y;
+		selectedUID = "";
 		for (GUIComponent c : guiComponents) {
 			if (!c.getUID().equals("START")) {
 				c.setSelected(false);
@@ -121,6 +143,11 @@ public class StateDesktop extends BasicGameState {
 				}
 			}
 		}
+		for (int i = 0; i < windowList.size(); i++) {
+			if (windowList.get(i).contains(x, y)) {
+				windowList.get(i).onMousePressed(button, x, y);
+			}
+		}
 	}
 	
 	public void onComponentPressed(int button, GUIComponent c) {
@@ -133,13 +160,13 @@ public class StateDesktop extends BasicGameState {
 			if (g.getUID().equals(selectedUID)) {
 				g.onKeyPressed(key, c);
 			}
-			if (g.getUID().equals("START")) {
-				if (key == Input.KEY_I) {
-					int x = 1280 / 2 - 800 / 2;
-					int y = 720 / 2 - 600 / 2;
-					windowList.add(new AppWindow(x, y, 800, 600));
-				}
-			}
+		}
+		if (key == Input.KEY_I) {
+			int x = 1280 / 2 - 800 / 2;
+			int y = 720 / 2 - 600 / 2;
+			AppWindow wa = new AppWindow(x, y, 800, 600, "Test");
+			windowList.add(wa);
+			guiComponents.add(new TaskbarApp(110, "test", wa));
 		}
 	}
 	

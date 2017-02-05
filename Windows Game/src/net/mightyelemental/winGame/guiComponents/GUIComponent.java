@@ -3,6 +3,7 @@ package net.mightyelemental.winGame.guiComponents;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
+import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.geom.Shape;
 import org.newdawn.slick.state.StateBasedGame;
@@ -32,10 +33,10 @@ public abstract class GUIComponent extends Rectangle {
 	
 	public GUIComponent( float x, float y, float width, float height, String uid ) {
 		super(x, y, width, height);
-		UID = uid;
+		UID = uid.toUpperCase();
 	}
 	
-	public void draw(GameContainer gc, StateBasedGame sbg, Graphics g) {
+	public void draw(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
 		if (!transparent) {
 			g.setColor(color);
 			g.fillRect(x, y, width, height);
