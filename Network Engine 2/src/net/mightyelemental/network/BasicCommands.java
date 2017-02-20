@@ -49,10 +49,12 @@ public class BasicCommands {
 	}
 	
 	/** Creates a UID for a new IP/Port */
-	public static String generateClientUID(Random rand) {
+	public static String generateClientUID(Random rand, int length) {
 		String chars = "";
-		
-		for (int i = 0; i < 4; i++) {
+		if (length < 1) {
+			length = Math.abs(length) + 1;
+		}
+		for (int i = 0; i < length; i++) {
 			chars += (char) (rand.nextInt(26) + 'a');
 		}
 		return chars;

@@ -155,28 +155,6 @@ public class TCPClient {
 					e.printStackTrace();
 					break;
 				}
-				
-				// String tempMessage = null;
-				// try {
-				// tempMessage = in.readLine();
-				// } catch (IOException e) {
-				// System.err.println("Server has been closed");
-				// stopClient();
-				// }
-				// System.out.println("[TCPClient] message: " + tempMessage);
-				// if (usesEncryption) {
-				// tempMessage = BasicCommands.decryptMessageBase64(tempMessage);
-				// }
-				//
-				// if (tempMessage.contains("JLB1F0_CLIENT_UID")) {
-				// clientUID = tempMessage.replace("JLB1F0_CLIENT_UID ", "");
-				// } else if (tempMessage.contains("JLB1F0_RETURN_PING")) {
-				// timeOfPingResponse = System.currentTimeMillis();
-				// pingTime = timeOfPingResponse - timeOfPingRequest;
-				// } else {
-				// lastMessage = tempMessage;
-				// recievedMessages.add(lastMessage);
-				// }
 			}
 			try {
 				stopClient();

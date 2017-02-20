@@ -37,14 +37,16 @@ public class ServerGUI extends JFrame {
 		
 		Object[] keys = server.getTcpConnections().keySet().toArray();
 		for (Object key : keys) {
-			InetAddress ip = server.getTcpConnections().get(key).getIp();
-			int port = server.getTcpConnections().get(key).getPort();
-			String verified = "";
-			if (server.getTcpConnections().get(key).isVerified()) {
-				verified = " \u2713";
+			if (server.getTcpConnections().get(key) != null) {
+				InetAddress ip = server.getTcpConnections().get(key).getIp();
+				int port = server.getTcpConnections().get(key).getPort();
+				String verified = "";
+				if (server.getTcpConnections().get(key).isVerified()) {
+					verified = " \u2713";
+				}
+				String temp = "IP:" + ip.toString().replace('/', '\0') + ":" + port + " (" + key.toString() + ")" + verified;
+				clientList.add(temp);
 			}
-			String temp = "IP:" + ip.toString().replace('/', '\0') + ":" + port + " (" + key.toString() + ")" + verified;
-			clientList.add(temp);
 		}
 		lblClients.setText("Clients (" + server.getTcpConnections().size() + ")");
 		

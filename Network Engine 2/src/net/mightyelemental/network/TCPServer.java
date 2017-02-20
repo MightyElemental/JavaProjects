@@ -78,13 +78,16 @@ public class TCPServer implements Runnable {
 		}
 	}
 	
+	public int uidLength = 4;
+	
 	/** @param port
 	 *            - the port of which the server should run
 	 * @param verifyCode
 	 *            - used to ensure that connecting clients are from the correct game */
-	public TCPServer( int port, String verifyCode ) {
+	public TCPServer( int port, String verifyCode, int uidLength ) {
 		this.port = port;
 		this.verifyCode = verifyCode;
+		this.uidLength = uidLength;
 	}
 	
 	/** Used to initialise the server - this is essential for the server to run properly
@@ -140,9 +143,9 @@ public class TCPServer implements Runnable {
 	 *            a Random instance
 	 * @return uid the client's UID */
 	public String generateClientInfo(TCPConnection tcpCon, Random rand) {
-		String chars = BasicCommands.generateClientUID(rand);
+		String chars = BasicCommands.generateClientUID(rand, uidLength);
 		while (tcpConnections.containsKey(chars)) {
-			chars = BasicCommands.generateClientUID(rand);
+			chars = BasicCommands.generateClientUID(rand, uidLength);
 		}
 		// System.out.println("New client! " + chars + " | IP: " + ip.getHostAddress() + ":" + port);
 		tcpConnections.put(chars, tcpCon);
@@ -164,7 +167,7 @@ public class TCPServer implements Runnable {
 	 * @throws IOException */
 	public void killConnection(String UID) throws IOException, InterruptedException {
 		if (tcpConnections.get(UID) != null) {
-			tcpConnections.get(UID).stopThread();
+			tcpConnections.get(UID).stopThread("has been kicked");
 		}
 	}
 	

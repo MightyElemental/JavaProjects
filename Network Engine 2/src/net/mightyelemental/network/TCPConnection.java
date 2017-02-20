@@ -54,18 +54,18 @@ public class TCPConnection {
 					try {
 						if (!verified && timeOfVerifyRequest + 5000 < System.currentTimeMillis()) {
 							sendObject("ServerMessage", "Your Client Did Not Verify In Time!");
-							stopThread();
+							stopThread("has been kicked (did not verify)");
 						}
 						if (objectIn == null) {
 							running = false;
 							break;
 						}
 						String obj = objectIn.readUTF();
-						System.out.println("message = " + obj);
+						System.out.println("message=" + obj.trim());
 						JSONObject j = (JSONObject) JSONValue.parse(obj);
 						
 						if (j.size() < 1) {
-							stopThread();
+							stopThread("has been kicked (map is negative!)");
 							break;
 						}
 						if (j.containsKey("VerifyCode")) {
@@ -76,44 +76,30 @@ public class TCPConnection {
 								
 							} else {
 								server.onVerifyDenied(UID);
-								stopThread();
+								stopThread("has been kicked (wrong verify)");
 							}
 						} else {
 							SI.onObjectRecieved(ip, port, j);
 						}
 					} catch (SocketException e) {
 						SI.onClientDisconnect(ip, port, getUID());
-						stopThread();
+						stopThread("has been kicked (socket error)");
 						break;
 					} catch (EOFException e) {
 						SI.onClientDisconnect(ip, port, getUID());
-						stopThread();
+						stopThread("has been kicked (eof)");
 						break;
 					} catch (StreamCorruptedException e) {
 						SI.onClientDisconnect(ip, port, getUID());
-						stopThread();
+						stopThread("has been kicked (stream corrupt)");
 						System.err.println("Wolfgang's fault (StreamCorruptedException)");
 					}
-					// if (usesEncryption) {
-					// System.out.println("Before decryp: " + message);// SENDS BYTE ARRAYS! DO NOT DECRYPT THEM!
-					// message = BasicCommands.decryptMessageBase64(message);
-					// System.out.println("After decryp: " + message);
-					// } else {
-					// System.out.println("Message: " + message);
-					// }
-					// if (message.contains("JLB1F0_TEST_CONNECTION RETURN_UID")) {
-					// sendMessage("JLB1F0_CLIENT_UID " + UID);
-					// } else if (message.contains("JLB1F0_PING_SERVER")) {
-					// returnPingRequest();
-					// } else if (serverGUI != null) {
-					// serverGUI.addCommand(UID + " : " + message);
-					// }
 				}
 			} catch (IOException | InterruptedException e) {
 				e.printStackTrace();
 			}
 			try {
-				stopThread();
+				stopThread("has been kicked (thread stopped)");
 			} catch (IOException | InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -135,7 +121,7 @@ public class TCPConnection {
 			objectIn = new DataInputStream(client.getInputStream());
 		} catch (StreamCorruptedException sce) {
 			try {
-				stopThread();
+				stopThread("has been kicked due to error");
 			} catch (IOException | InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -163,11 +149,12 @@ public class TCPConnection {
 		run.start();
 	}
 	
-	public synchronized void stopThread() throws IOException, InterruptedException {
+	public synchronized void stopThread(String reason) throws IOException, InterruptedException {
+		if (running == false) return;
 		running = false;
 		run.interrupt();
 		server.getTcpConnections().remove(UID);
-		System.err.println(UID + " has been kicked");
+		System.err.println(UID + " " + reason);
 		if (client != null) {
 			client.close();
 		}
@@ -211,17 +198,19 @@ public class TCPConnection {
 	 *            the object to send
 	 * @throws IOException */
 	@SuppressWarnings( "unchecked" )
-	public void sendObject(String varName, Object obj) throws IOException {
+	public void sendObject(String varName, Object obj) {
+		if (verifyKick()) return;
 		JSONObject j = new JSONObject();
 		j.put(varName, obj);
-		System.out.println(j);
+		System.out.println("send=" + j);
 		if (objectOut != null && !client.isClosed()) {
 			try {
 				objectOut.writeUTF(j.toString());
-			} catch (NullPointerException e) {
+			} catch (NullPointerException | IOException e) {
+				e.printStackTrace();
 				try {
-					stopThread();
-				} catch (InterruptedException e1) {
+					stopThread("has been kicked (send error)");
+				} catch (InterruptedException | IOException e1) {
 					e1.printStackTrace();
 				}
 			}
@@ -230,26 +219,45 @@ public class TCPConnection {
 		}
 	}
 	
+	private boolean checkedVerify;
+	
+	public boolean verifyKick() {
+		boolean flag = false;
+		if (checkedVerify) return false;
+		if (!verified && timeOfVerifyRequest + 5000 < System.currentTimeMillis()) {
+			checkedVerify = true;
+			sendObject("ServerMessage", "Your Client Did Not Verify In Time!");
+			flag = true;
+			try {
+				stopThread("has been kicked (did not verify)");
+			} catch (IOException | InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+		return flag;
+	}
+	
 	/** Send a map of objects to server
 	 * 
 	 * @param objects
 	 *            the object map to send
 	 * @throws IOException */
 	@SuppressWarnings( "unchecked" )
-	public void sendMap(Map<String, Object> objects) throws IOException {
+	public void sendMap(Map<String, Object> objects) {
+		if (verifyKick()) return;
 		JSONObject j = new JSONObject();
 		j.putAll(objects);
-		System.out.println(j);
+		System.out.println("send=" + j);
 		if (objectOut != null && !client.isClosed()) {
 			try {
 				objectOut.writeUTF(j.toString());
-			} catch (NullPointerException e) {
+			} catch (NullPointerException | IOException e) {
+				e.printStackTrace();
 				try {
-					stopThread();
-				} catch (InterruptedException e1) {
+					stopThread("has been kicked (send error)");
+				} catch (InterruptedException | IOException e1) {
 					e1.printStackTrace();
 				}
-				e.printStackTrace();
 			}
 		} else {
 			System.err.println("Socket " + client.getRemoteSocketAddress() + " has been closed");
