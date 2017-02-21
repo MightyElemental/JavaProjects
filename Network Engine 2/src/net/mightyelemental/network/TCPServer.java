@@ -5,7 +5,9 @@ import java.net.BindException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
@@ -34,6 +36,7 @@ public class TCPServer implements Runnable {
 	
 	protected ServerInitiater initiater = new ServerInitiater();
 	
+	// uid, connection
 	private Map<String, TCPConnection> tcpConnections = new HashMap<String, TCPConnection>();
 	
 	private ServerSocket serverSocket;
@@ -157,6 +160,11 @@ public class TCPServer implements Runnable {
 	 * @return the tcpConnections */
 	public Map<String, TCPConnection> getTcpConnections() {
 		return tcpConnections;
+	}
+	
+	// Returns a list of UIDs on the server
+	public List<String> getConnectedUIDs() {
+		return new ArrayList<String>(tcpConnections.keySet());
 	}
 	
 	/** Used to stop a connection with the client.

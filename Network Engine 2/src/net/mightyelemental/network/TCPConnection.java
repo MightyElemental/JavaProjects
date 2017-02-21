@@ -207,7 +207,6 @@ public class TCPConnection {
 			try {
 				objectOut.writeUTF(j.toString());
 			} catch (NullPointerException | IOException e) {
-				e.printStackTrace();
 				try {
 					stopThread("has been kicked (send error)");
 				} catch (InterruptedException | IOException e1) {
