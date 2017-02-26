@@ -1,5 +1,7 @@
 package net.mightyelemental.network.listener;
 
+import java.util.Map;
+
 public interface MessageListenerClient {
 	
 	// /** @param message
@@ -12,7 +14,7 @@ public interface MessageListenerClient {
 	
 	/** @param obj
 	 *            the object the client received from the server */
-	public void onObjectRecievedFromServer(Object obj);
+	public void onObjectRecievedFromServer(Map<String, Object> obj);
 	
 	public void onClientDropped(String reason);
 	
