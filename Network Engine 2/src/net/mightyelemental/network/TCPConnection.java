@@ -61,7 +61,7 @@ public class TCPConnection {
 							break;
 						}
 						String obj = objectIn.readUTF();
-						System.out.println("message=" + obj.trim());
+						if (server.debug) System.out.println("message=" + obj.trim());
 						JSONObject j = (JSONObject) JSONValue.parse(obj);
 						
 						if (j.size() < 1) {
@@ -83,7 +83,6 @@ public class TCPConnection {
 						}
 					} catch (SocketException e) {
 						SI.onClientDisconnect(ip, port, getUID());
-						stopThread("has been kicked (socket error)");
 						break;
 					} catch (EOFException e) {
 						SI.onClientDisconnect(ip, port, getUID());
@@ -92,7 +91,7 @@ public class TCPConnection {
 					} catch (StreamCorruptedException e) {
 						SI.onClientDisconnect(ip, port, getUID());
 						stopThread("has been kicked (stream corrupt)");
-						System.err.println("Wolfgang's fault (StreamCorruptedException)");
+						if (server.debug) System.err.println("Wolfgang's fault (StreamCorruptedException)");
 					}
 				}
 			} catch (IOException | InterruptedException e) {
@@ -125,7 +124,7 @@ public class TCPConnection {
 			} catch (IOException | InterruptedException e) {
 				e.printStackTrace();
 			}
-			System.out.println(sce.getMessage());
+			if (server.debug) System.out.println(sce.getMessage());
 		} catch (SocketException e) {
 			
 		} catch (IOException e) {
@@ -154,7 +153,7 @@ public class TCPConnection {
 		running = false;
 		run.interrupt();
 		server.getTcpConnections().remove(UID);
-		System.err.println(UID + " " + reason);
+		if (server.debug) System.err.println(UID + " " + reason);
 		if (client != null) {
 			client.close();
 		}
@@ -202,7 +201,7 @@ public class TCPConnection {
 		if (verifyKick()) return;
 		JSONObject j = new JSONObject();
 		j.put(varName, obj);
-		System.out.println("send=" + j);
+		if (server.debug) System.out.println("send=" + j);
 		if (objectOut != null && !client.isClosed()) {
 			try {
 				objectOut.writeUTF(j.toString());
@@ -214,7 +213,7 @@ public class TCPConnection {
 				}
 			}
 		} else {
-			System.err.println("Socket " + client.getRemoteSocketAddress() + " has been closed");
+			if (server.debug) System.err.println("Socket " + client.getRemoteSocketAddress() + " has been closed");
 		}
 	}
 	
@@ -246,7 +245,7 @@ public class TCPConnection {
 		if (verifyKick()) return;
 		JSONObject j = new JSONObject();
 		j.putAll(objects);
-		System.out.println("send=" + j);
+		if (server.debug) System.out.println("send=" + j);
 		if (objectOut != null && !client.isClosed()) {
 			try {
 				objectOut.writeUTF(j.toString());
@@ -259,7 +258,7 @@ public class TCPConnection {
 				}
 			}
 		} else {
-			System.err.println("Socket " + client.getRemoteSocketAddress() + " has been closed");
+			if (server.debug) System.err.println("Socket " + client.getRemoteSocketAddress() + " has been closed");
 		}
 	}
 	

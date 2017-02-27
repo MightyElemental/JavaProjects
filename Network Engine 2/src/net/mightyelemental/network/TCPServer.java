@@ -93,6 +93,12 @@ public class TCPServer implements Runnable {
 		this.uidLength = uidLength;
 	}
 	
+	public boolean debug = false;
+	
+	public void setDebugMode(boolean debug) {
+		this.debug = debug;
+	}
+	
 	/** Used to initialise the server - this is essential for the server to run properly
 	 * 
 	 * @throws BindException
@@ -104,8 +110,9 @@ public class TCPServer implements Runnable {
 		// try {
 		serverSocket = new ServerSocket(port);
 		// } catch (BindException e) {
-		// System.err.println("There is already a server running on that port!");
-		// System.err.println("Make sure you are not using the same port as any other server on your network.");
+		// if(debug) System.err.println("There is already a server running on that port!");
+		// if(debug) System.err.println("Make sure you are not using the same port as any other server on your
+		// network.");
 		// } catch (IOException e1) {
 		// e1.printStackTrace();
 		// }
@@ -150,7 +157,7 @@ public class TCPServer implements Runnable {
 		while (tcpConnections.containsKey(chars)) {
 			chars = BasicCommands.generateClientUID(rand, uidLength);
 		}
-		// System.out.println("New client! " + chars + " | IP: " + ip.getHostAddress() + ":" + port);
+		// if(debug) System.out.println("New client! " + chars + " | IP: " + ip.getHostAddress() + ":" + port);
 		tcpConnections.put(chars, tcpCon);
 		return chars;
 	}
@@ -198,25 +205,25 @@ public class TCPServer implements Runnable {
 	 *            the port of the client */
 	public void sendObject(String varName, Object obj, InetAddress ip, int port) throws IOException {
 		if (!hasBeenSetup) {
-			System.err.println("FATAL ERROR: Server has not been setup yet!");
+			if (debug) System.err.println("FATAL ERROR: Server has not been setup yet!");
 			return;
 		}
 		try {
 			getTCPConnectionFromIP(ip, port).sendObject(varName, obj);
 		} catch (Exception e) {
-			System.err.println("FATAL ERROR: Connection is a null value");
+			if (debug) System.err.println("FATAL ERROR: Connection is a null value");
 		}
 	}
 	
 	public void sendObjectMap(Map<String, Object> map, InetAddress ip, int port) {
 		if (!hasBeenSetup) {
-			System.err.println("FATAL ERROR: Server has not been setup yet!");
+			if (debug) System.err.println("FATAL ERROR: Server has not been setup yet!");
 			return;
 		}
 		try {
 			getTCPConnectionFromIP(ip, port).sendMap(map);
 		} catch (Exception e) {
-			System.err.println("FATAL ERROR: Connection is a null value");
+			if (debug) System.err.println("FATAL ERROR: Connection is a null value");
 		}
 	}
 	
