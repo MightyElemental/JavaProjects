@@ -1,6 +1,7 @@
 package net.iridgames.towerdefense;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
@@ -110,9 +111,16 @@ public class StateGame extends BasicGameState {
 		g.setColor(Color.red.darker());
 		for (int i = 0; i < worldObj.monsterList.size(); i++) {
 			Monster m = worldObj.monsterList.get(i);
-			Point n = m.getClosestPath();
+			List<Point> n = m.route;
 			g.fillRect(startingPointX + m.getX(), startingPointY + m.getY(), 36, 42);
-			g.fillOval(startingPointX + n.getX()-5, startingPointY + n.getY()-5, 10, 10);
+			for (int j = 0; j < n.size(); j++) {
+				if (n.get(j) != null) g.fillOval(startingPointX + n.get(j).getX() - 5, startingPointY + n.get(j).getY() - 5, 10, 10);
+			}
+			for (int x = 0; x < m.mark.length; x++) {
+				for (int y = 0; y < m.mark[x].length; y++) {
+					g.drawString(m.mark[x][y] + "", startingPointX + x * tileSize, startingPointY + y * tileSize);
+				}
+			}
 		}
 	}
 	

@@ -12,6 +12,8 @@ import java.util.List;
 
 import org.newdawn.slick.geom.Point;
 
+import net.iridgames.towerdefense.StateGame;
+
 public class Level {
 	
 	
@@ -26,7 +28,7 @@ public class Level {
 	public Level( String level, int num ) {
 		levelFile = level;
 		levelNum = num;
-		// generateBlankLevel(36, 20);
+		// generateBlankLevel(35, 19);
 		try {
 			loadLevelFromFile();
 		} catch (IOException | URISyntaxException e) {
@@ -55,6 +57,19 @@ public class Level {
 				setTile(x, y, 'x');
 			}
 		}
+	}
+	
+	/** Returns a list of all path tiles in the map */
+	public List<Point> getPathTiles() {
+		List<Point> lp = new ArrayList<Point>();
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x++) {
+				if (getTile(x, y) == '-') {
+					lp.add(new Point(x, y));
+				}
+			}
+		}
+		return lp;
 	}
 	
 	private int findNextAvaliabeMapNumber(String suffix) {
@@ -108,6 +123,15 @@ public class Level {
 		if (y > levelLayout.size()) return '-';
 		if (x > levelLayout.get(y).size()) return '-';
 		return levelLayout.get(y).get(x);
+	}
+	
+	public Point getGoal() {
+		for (int y = 0; y < levelLayout.size(); y++) {
+			for (int x = 0; x < levelLayout.get(y).size(); x++) {
+				if (getTile(x, y) == 'g') { return new Point(x, y); }
+			}
+		}
+		return null;
 	}
 	
 	public void setTile(int x, int y, char c) {

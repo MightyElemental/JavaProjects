@@ -2,6 +2,7 @@ package net.iridgames.towerdefense.world;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.state.StateBasedGame;
@@ -23,7 +24,7 @@ public class World {
 	}
 	
 	public void loadLevels() {
-		for (int i = 2; i <= 5; i++) {
+		for (int i = 0; i <= 5; i++) {
 			levelList.add(new Level("level", i));
 		}
 	}
@@ -31,15 +32,22 @@ public class World {
 	public void update(GameContainer gc, StateBasedGame sbg, int delta) {
 		for (int i = 0; i < monsterList.size(); i++) {
 			monsterList.get(i).update(gc, sbg, delta);
+			if (monsterList.get(i).dead) {
+				monsterList.remove(i);
+				break;
+			}
 		}
 	}
 	
+	Random rand = new Random(System.nanoTime());
+	
 	public void spawn() {
-		for (int i = 0; i < loadedLevel.spawningPoints.size(); i++) {
-			float x = loadedLevel.spawningPoints.get(i).getCenterX() * StateGame.tileSize;
-			float y = loadedLevel.spawningPoints.get(i).getCenterY() * StateGame.tileSize;
-			monsterList.add(new Monster(this, x, y));
-		}
+		int r = rand.nextInt(loadedLevel.spawningPoints.size());
+		// for (int i = 0; i < loadedLevel.spawningPoints.size(); i++) {
+		float x = loadedLevel.spawningPoints.get(r).getCenterX() * StateGame.tileSize;
+		float y = loadedLevel.spawningPoints.get(r).getCenterY() * StateGame.tileSize;
+		monsterList.add(new Monster(this, x, y));
+		// }
 		
 	}
 	
