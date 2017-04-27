@@ -24,7 +24,7 @@ public class TowerCannon extends Tower {
 		float angle = MathHelper.getAngle(new Point(this.getCenterX(), this.getCenterY()),
 			new Point(target.getCenterX(), target.getCenterY())) - 180;
 		if (!monsters.isEmpty()) {
-			worldObj.projectileList.add(new Projectile((x + 0.5f) * i, (y + 0.5f) * i, angle, 3, 25, monsters.get(0)));
+			worldObj.projectileList.add(new Projectile(worldObj, (x + 0.5f) * i, (y + 0.5f) * i, angle, 5, 25));
 			// monsters.get(0).dead = true;
 		}
 	}

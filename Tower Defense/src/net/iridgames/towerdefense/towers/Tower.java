@@ -92,8 +92,8 @@ public abstract class Tower extends Rectangle {
 	public void draw(GameContainer gc, StateBasedGame sbg, Graphics g, int startingPointX, int startingPointY) {
 		// g.setColor(Color.cyan);
 		// g.fillRect(startingPointX + x * i, startingPointY + y * i, width, height);
-		g.setColor(new Color(0f, 0f, 0f, 0.2f));
-		g.fillOval(area.getX() + startingPointX, area.getY() + startingPointY, 2 * area.radius, 2 * area.radius);
+		g.setColor(new Color(0f, 0f, 0f, 0.3f));
+		g.drawOval(area.getX() + startingPointX, area.getY() + startingPointY, 2 * area.radius, 2 * area.radius);
 		g.setColor(Color.cyan.darker());
 		float temp = (height / time * activeTime);
 		g.fillRect(startingPointX + x * i, startingPointY + y * i, 4, temp > height ? height : temp);

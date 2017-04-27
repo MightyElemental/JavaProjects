@@ -1,18 +1,15 @@
 package net.iridgames.towerdefense;
 
 import java.io.IOException;
-import java.util.List;
 
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
-import org.newdawn.slick.geom.Point;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 
-import net.iridgames.towerdefense.monsters.Monster;
 import net.iridgames.towerdefense.towers.TowerCannon;
 import net.iridgames.towerdefense.world.World;
 
@@ -123,19 +120,21 @@ public class StateGame extends BasicGameState {
 	}
 	
 	public void renderMonsters(GameContainer gc, StateBasedGame sbg, Graphics g) {
-		g.setColor(Color.red.darker());
+		// g.setColor(Color.red.darker());
 		for (int i = 0; i < worldObj.monsterList.size(); i++) {
-			Monster m = worldObj.monsterList.get(i);
-			List<Point> n = m.route;
-			g.fillRect(startingPointX + m.getX(), startingPointY + m.getY(), 36, 42);
-			for (int j = 0; j < n.size(); j++) {
-				if (n.get(j) != null) g.fillOval(startingPointX + n.get(j).getX() - 5, startingPointY + n.get(j).getY() - 5, 10, 10);
-			}
+			// Monster m = worldObj.monsterList.get(i);
+			// List<Point> n = m.route;
+			// g.fillRect(startingPointX + m.getX(), startingPointY + m.getY(), 36, 42);
+			// for (int j = 0; j < n.size(); j++) {
+			// if (n.get(j) != null) g.fillOval(startingPointX + n.get(j).getX() - 5, startingPointY + n.get(j).getY() -
+			// 5, 10, 10);
+			// }
 			// for (int x = 0; x < m.mark.length; x++) {
 			// for (int y = 0; y < m.mark[x].length; y++) {
 			// g.drawString(m.mark[x][y] + "", startingPointX + x * tileSize, startingPointY + y * tileSize);
 			// }
 			// }
+			worldObj.monsterList.get(i).draw(gc, sbg, g, startingPointX, startingPointY);
 		}
 	}
 	

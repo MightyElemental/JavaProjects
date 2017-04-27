@@ -3,7 +3,9 @@ package net.iridgames.towerdefense.monsters;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
+import org.newdawn.slick.Graphics;
 import org.newdawn.slick.geom.Point;
 import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.state.StateBasedGame;
@@ -207,6 +209,17 @@ public class Monster extends Rectangle {
 		
 		x += Math.cos(Math.toRadians(angle));
 		y += Math.sin(Math.toRadians(angle));
+	}
+	
+	public void draw(GameContainer gc, StateBasedGame sbg, Graphics g, int startingPointX, int startingPointY) {
+		g.setColor(Color.red.darker());
+		g.fillRect(startingPointX + getX(), startingPointY + getY(), width, height);
+//		for (int j = 0; j < route.size(); j++) {
+//			if (route.get(j) != null) {
+//				g.fillOval(startingPointX + route.get(j).getX() - 5, startingPointY + route.get(j).getY() - 5, 10, 10);
+//			}
+//		}
+		
 	}
 	
 	@Override
