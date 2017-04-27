@@ -12,8 +12,6 @@ import java.util.List;
 
 import org.newdawn.slick.geom.Point;
 
-import net.iridgames.towerdefense.StateGame;
-
 public class Level {
 	
 	

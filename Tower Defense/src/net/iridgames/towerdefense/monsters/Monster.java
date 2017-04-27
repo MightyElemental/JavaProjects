@@ -1,13 +1,8 @@
 package net.iridgames.towerdefense.monsters;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import javax.swing.plaf.synth.SynthSeparatorUI;
-
-import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.geom.Point;
 import org.newdawn.slick.geom.Rectangle;
@@ -20,7 +15,11 @@ import net.iridgames.towerdefense.world.World;
 public class Monster extends Rectangle {
 	
 	
+	private static final long serialVersionUID = 5852336672518609530L;
+	
 	public float angle;
+	
+	public float health = 50;
 	
 	public Monster( World worldObj, float x, float y ) {
 		super(x, y, 36, 42);
@@ -97,13 +96,13 @@ public class Monster extends Rectangle {
 		
 		// fill pixel with target color and mark it as visited
 		// img.set(col, row, tgtColor);
-		//if (worldObj.loadedLevel.getTile(x, y) == '-') {
-			// worldObj.loadedLevel.setTile(x, y, (char) currentNum);
-			mark[x][y] = currentNum;
-			currentNum++;
-//		} else {
-//			mark[x][y] = Integer.MAX_VALUE;
-//		}
+		// if (worldObj.loadedLevel.getTile(x, y) == '-') {
+		// worldObj.loadedLevel.setTile(x, y, (char) currentNum);
+		mark[x][y] = currentNum;
+		currentNum++;
+		// } else {
+		// mark[x][y] = Integer.MAX_VALUE;
+		// }
 		// recursively fill surrounding pixels
 		// (this is equivelant to depth-first search)
 		
@@ -152,6 +151,7 @@ public class Monster extends Rectangle {
 		return lp;
 	}
 	
+	@Deprecated
 	public Point getClosestPath() {
 		List<Point> pathLocations = new ArrayList<Point>();
 		float pathDistance = Integer.MAX_VALUE;
@@ -200,7 +200,9 @@ public class Monster extends Rectangle {
 		if (worldObj.loadedLevel.getGoal().getX() == getCurrentTile().getX()
 			&& worldObj.loadedLevel.getGoal().getY() == getCurrentTile().getY()) {
 			this.dead = true;
-			System.out.println("dead");
+		}
+		if (health <= 0) {
+			this.dead = true;
 		}
 		
 		x += Math.cos(Math.toRadians(angle));

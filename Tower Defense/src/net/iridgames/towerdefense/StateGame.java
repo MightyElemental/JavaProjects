@@ -13,6 +13,7 @@ import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 
 import net.iridgames.towerdefense.monsters.Monster;
+import net.iridgames.towerdefense.towers.TowerCannon;
 import net.iridgames.towerdefense.world.World;
 
 public class StateGame extends BasicGameState {
@@ -40,6 +41,20 @@ public class StateGame extends BasicGameState {
 		g.setColor(Color.black);
 		g.drawString("" + charList[selectedChar], gc.getWidth() - 45, 105);
 		renderMonsters(gc, sbg, g);
+		renderTowers(gc, sbg, g);
+		renderProjectiles(gc, sbg, g);
+	}
+	
+	private void renderTowers(GameContainer gc, StateBasedGame sbg, Graphics g) {
+		for (int i = 0; i < worldObj.towerList.size(); i++) {
+			worldObj.towerList.get(i).draw(gc, sbg, g, startingPointX, startingPointY);
+		}
+	}
+	
+	private void renderProjectiles(GameContainer gc, StateBasedGame sbg, Graphics g) {
+		for (int i = 0; i < worldObj.projectileList.size(); i++) {
+			worldObj.projectileList.get(i).draw(gc, sbg, g, startingPointX, startingPointY);
+		}
 	}
 	
 	public static final int tileSize = 48;
@@ -116,11 +131,11 @@ public class StateGame extends BasicGameState {
 			for (int j = 0; j < n.size(); j++) {
 				if (n.get(j) != null) g.fillOval(startingPointX + n.get(j).getX() - 5, startingPointY + n.get(j).getY() - 5, 10, 10);
 			}
-			for (int x = 0; x < m.mark.length; x++) {
-				for (int y = 0; y < m.mark[x].length; y++) {
-					g.drawString(m.mark[x][y] + "", startingPointX + x * tileSize, startingPointY + y * tileSize);
-				}
-			}
+			// for (int x = 0; x < m.mark.length; x++) {
+			// for (int y = 0; y < m.mark[x].length; y++) {
+			// g.drawString(m.mark[x][y] + "", startingPointX + x * tileSize, startingPointY + y * tileSize);
+			// }
+			// }
 		}
 	}
 	
@@ -145,13 +160,15 @@ public class StateGame extends BasicGameState {
 	
 	@Override
 	public void mouseDragged(int oldx, int oldy, int x, int y) {
-		worldObj.loadedLevel.setTile((x - startingPointX) / tileSize, (y - startingPointY) / tileSize, charList[selectedChar]);
+		// worldObj.loadedLevel.setTile((x - startingPointX) / tileSize, (y - startingPointY) / tileSize,
+		// charList[selectedChar]);
 	}
 	
 	@Override
 	public void mousePressed(int button, int x, int y) {
-		worldObj.loadedLevel.setTile((x - startingPointX) / tileSize, (y - startingPointY) / tileSize, charList[selectedChar]);
-		super.mousePressed(button, x, y);
+		// worldObj.loadedLevel.setTile((x - startingPointX) / tileSize, (y - startingPointY) / tileSize,
+		// charList[selectedChar]);
+		worldObj.towerList.add(new TowerCannon(worldObj, (x - startingPointX) / tileSize, (y - startingPointY) / tileSize));
 	}
 	
 	@Override
