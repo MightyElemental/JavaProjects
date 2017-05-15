@@ -24,46 +24,45 @@ import net.mightyelemental.mowergame.particles.Particle;
 import net.mightyelemental.mowergame.particles.ParticleBloodSplat;
 
 public class World {
-
+	
+	
 	protected Image grassImg;
 	protected Image grassMowImg;
-
+	
 	public Random rand;
-
+	
 	public GrassController grassCon;
-
+	
 	/** Use to slow or speed up the game */
 	public float deltaDividor = 1;
-
+	
 	/** The entity that is the player */
 	public EntityMower lawnMower;
-
+	
 	public List<EntityLiving> liveEntities = new ArrayList<EntityLiving>();
 	public List<Particle> particles = new ArrayList<Particle>();
-
+	
 	protected int size = 20;
-
+	
 	public boolean mowerHasAI;
-
-	public World(Random rand, boolean mowerHasAI) {
+	
+	public World( Random rand, boolean mowerHasAI ) {
 		grassCon = new GrassController(rand);
 		this.rand = rand;
 		this.mowerHasAI = mowerHasAI;
 	}
-
+	
 	public void spawnEntity(EntityLiving e) {
 		liveEntities.add(e);
 	}
-
+	
 	public void createParticle(Particle p) {
 		particles.add(p);
 	}
-
-	/**
-	 * Used to update the world objects
+	
+	/** Used to update the world objects
 	 * 
-	 * @throws SlickException
-	 */
+	 * @throws SlickException */
 	public void update(GameContainer gc, int delta) throws SlickException {
 		if (this.mowerHasAI) {
 			delta /= deltaDividor;
@@ -78,12 +77,12 @@ public class World {
 		for (Particle p : particles) {
 			p.update(gc, delta);
 		}
-
+		
 		if (grassCon.getPercentageMowed() == 100) {
 			MowerGame.gameState.running = false;
 		}
 	}
-
+	
 	public void updateBlood(GameContainer gc, int delta) throws SlickException {
 		for (int i = 0; i < particles.size(); i++) {
 			if (particles.get(i) instanceof ParticleBloodSplat) {
@@ -101,7 +100,7 @@ public class World {
 			}
 		}
 	}
-
+	
 	public void updateEntities(GameContainer gc, int delta) throws SlickException {
 		for (int i = 0; i < liveEntities.size(); i++) {
 			if (liveEntities.get(i) != null) {
@@ -109,12 +108,14 @@ public class World {
 				if (liveEntities.get(i).dead) {
 					liveEntities.remove(i);
 					break;
-
+					
 				}
 			}
 		}
 	}
-
+	
+	Image tileImage = MowerGame.resLoader.loadImage("path").getScaledCopy(size, size);
+	
 	/** Initialise world objects */
 	public void init(GameContainer gc, StateBasedGame sbg) throws SlickException {
 		grassCon.generateGrass(gc, size);
@@ -123,8 +124,13 @@ public class World {
 		lawnMower = new EntityMower(200, 200, this, mowerHasAI);
 		generateEntities();
 	}
-
+	
 	public void draw(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
+		for (int x = 0; x < gc.getWidth(); x += size) {
+			for (int y = 0; y < gc.getHeight(); y += size) {
+				tileImage.draw(x, y);
+			}
+		}
 		for (int i = 0; i < grassCon.grassList.size(); i++) {
 			Grass grass = grassCon.grassList.get(i);
 			if (grass.isMowed()) {
@@ -146,33 +152,31 @@ public class World {
 			if (ea == null) {
 				continue;
 			}
-
+			
 			// g.fillRect(ea.getX(), ea.getY(), ea.getWidth(), ea.getHeight());
 			g.drawImage(ea.getIcon(), ea.getX(), ea.getY());
-
+			
 			// if (ea.getPath() != null) {
 			// g.setColor(Color.black);
 			// g.drawLine(ea.getPath().getX(), ea.getPath().getY(),
 			// ea.getCenterX(), ea.getCenterY());
 			// }
-
+			
 		}
 		g.drawImage(lawnMower.getIcon(), lawnMower.getX(), lawnMower.getY());
 		// g.fill(lawnMower.bladeArea);
 	}
-
+	
 	public EntityLiving getCollidingEntity(Shape ent) {
 		for (Entity ea : liveEntities) {
 			if (ent.equals(ea)) {
 				continue;
 			}
-			if (ent.intersects(ea)) {
-				return (EntityLiving) ea;
-			}
+			if (ent.intersects(ea)) { return (EntityLiving) ea; }
 		}
 		return null;
 	}
-
+	
 	public void generateEntities() {
 		int randAmount = rand.nextInt(2) + 1;
 		for (int i = 0; i < randAmount; i++) {
@@ -187,5 +191,5 @@ public class World {
 			this.spawnEntity(new EntityCat(rand.nextInt(1280) + 800, rand.nextInt(720), this));
 		}
 	}
-
+	
 }
