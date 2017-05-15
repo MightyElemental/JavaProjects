@@ -38,9 +38,10 @@ public class EntityMower extends Entity {
 	
 	public EntityMower( float x, float y, World worldObj, boolean mowerHasAI ) {
 		super(x, y, 110, 110, worldObj);
-		try{
+		try {
 			mowerType = MowerGame.shopState.purchase.boughtMowers.get(MowerGame.shopState.upgradeButtons.mowerNumber);
-		}catch(Exception e){}
+		} catch (Exception e) {
+		}
 		if (!mowerHasAI) {
 			// try {
 			// mowerType = MowerGame.shopState.purchase.boughtMowers
@@ -101,8 +102,13 @@ public class EntityMower extends Entity {
 		}
 		if (Math.abs(x - mouseX) + Math.abs(y - mouseY) > 60) {
 			angleTemp = MathHelper.getAngle(new Point(x, y), new Point(mouseX, mouseY));
+			
 			angle = angleTemp;
-			getIcon().setRotation(angle - 90);
+			if (mowerType.isFixedAngle()) {
+				getIcon().setRotation(mowerType.getAngleOffset() - 90);
+			} else {
+				getIcon().setRotation(angle - 90);
+			}
 		} else {
 			vel -= mowerType.getAcceleration() * 2.2f;
 		}
@@ -113,8 +119,13 @@ public class EntityMower extends Entity {
 		float amountToMoveX = (vel / 25f * delta * (float) Math.cos(Math.toRadians(angle)));
 		float amountToMoveY = (vel / 25f * delta * (float) Math.sin(Math.toRadians(angle)));
 		
-		this.setCenterX(this.getCenterX() - amountToMoveX);
-		this.setCenterY(this.getCenterY() - amountToMoveY);
+		if (!mowerType.isFixedToMouse()) {
+			this.setCenterX(this.getCenterX() - amountToMoveX);
+			this.setCenterY(this.getCenterY() - amountToMoveY);
+		} else {
+			this.setCenterX(mouseX);
+			this.setCenterY(mouseY);
+		}
 		
 		if (!mowerHasAI) {
 			processHealth();
@@ -123,16 +134,30 @@ public class EntityMower extends Entity {
 				worldObj.getCollidingEntity(bladeArea).setDead();
 			}
 		}
-		bladeArea.setCenterX(this.getCenterX());
-		bladeArea.setCenterY(this.getCenterY());
-		
+		if (mowerType.getCenter() == null) {
+			bladeArea.setCenterX(this.getCenterX());
+			bladeArea.setCenterY(this.getCenterY());
+		} else {
+			bladeArea.setCenterX(this.getCenterX() + mowerType.getCenter().getX());
+			bladeArea.setCenterY(this.getCenterY() + mowerType.getCenter().getY());
+		}
 		boolean mowed = worldObj.grassCon.setMowed(bladeArea);
 		
 		if (mowed) {
 			for (int i = 0; i < worldObj.rand.nextInt(5) + 3; i++) {
-				float tx = (float) Math.cos(Math.toRadians(angle)) * this.getWidth() / 2;
-				float ty = (float) Math.sin(Math.toRadians(angle)) * this.getHeight() / 2;
-				worldObj.createParticle(new ParticleGrass(getCenterX() + tx, getCenterY() + ty, worldObj));
+				float tx = 0;
+				float ty = 0;
+				if (!mowerType.isFixedAngle()) {
+					tx = (float) Math.cos(Math.toRadians(angle)) * this.getWidth() / 2;
+					ty = (float) Math.sin(Math.toRadians(angle)) * this.getHeight() / 2;
+				}
+				float tempX = getCenterX() + tx;
+				float tempY = getCenterY() + ty;
+				if (mowerType.getCenter() != null) {
+					tempX += mowerType.getCenter().getX();
+					tempY += mowerType.getCenter().getY();
+				}
+				worldObj.createParticle(new ParticleGrass(tempX, tempY, worldObj));
 			}
 		}
 	}

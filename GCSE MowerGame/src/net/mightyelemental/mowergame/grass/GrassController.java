@@ -9,24 +9,25 @@ import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Shape;
 
 public class GrassController {
-
+	
+	
 	public List<Grass> grassList = new ArrayList<Grass>();
-
+	
 	private Random rand;
-
-	public GrassController(Random rand) {
+	
+	public GrassController( Random rand ) {
 		this.rand = rand;
 	}
-
+	
 	public void generateGrass(GameContainer gc, int size) throws SlickException {
-		for (int w = 0; w < gc.getWidth(); w += size) {
-			for (int h = 0; h < gc.getHeight(); h += size) {
+		for (int w = 2 * size; w < gc.getWidth() - 4 * size; w += size) {
+			for (int h = 2 * size; h < gc.getHeight() - 4 * size; h += size) {
 				Grass g = new Grass(w, h, size, size);
 				grassList.add(g);
 			}
 		}
 	}
-
+	
 	public void setMowed(int x, int y) throws SlickException {
 		for (int i = 0; i < grassList.size(); i++) {
 			if (grassList.get(i).contains(x, y)) {
@@ -34,7 +35,7 @@ public class GrassController {
 			}
 		}
 	}
-
+	
 	public boolean setMowed(Shape rect) throws SlickException {
 		boolean flag = false;
 		for (int i = 0; i < grassList.size(); i++) {
@@ -47,7 +48,7 @@ public class GrassController {
 		}
 		return flag;
 	}
-
+	
 	public float getPercentageMowed() {
 		float total = grassList.size();
 		float mowed = 0;
@@ -58,7 +59,7 @@ public class GrassController {
 		}
 		return mowed / total * 100f;
 	}
-
+	
 	@Deprecated
 	protected int generateColor() {
 		if (rand.nextInt(10) == 0) {
@@ -67,5 +68,5 @@ public class GrassController {
 			return rand.nextInt(150) + 106;
 		}
 	}
-
+	
 }

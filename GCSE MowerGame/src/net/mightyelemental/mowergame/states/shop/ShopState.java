@@ -59,16 +59,23 @@ public class ShopState extends BasicGameState implements GUIListener {
 	@Override
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
 		g.drawImage(background, 0, 0);
-		g.drawImage(trump, 50, gc.getHeight() - trump.getHeight());
+		g.drawImage(trump, 75, gc.getHeight() - trump.getHeight());
 		g.drawImage(sign, 50, -10);
 		g.setColor(Color.white);
-		
-		if (MowerGame.money != 0) {//Trump quote
-			g.fillRoundRect(0, gc.getHeight() - trump.getHeight() / 4,
-				6 + g.getFont().getWidth("\"My father gave me a small loan of $1,000,000\"") + 5, 20, 3, 3);
-			g.setColor(Color.black);
-			g.drawString("\"My father gave me a small loan of $1,000,000\"", 6, gc.getHeight() - trump.getHeight() / 4);
+		// Trump quote
+		String text = "\"Getting rich is easy. Staying rich is harder.\"";
+		if (MowerGame.money > 20) {
+			text = "\"My father gave me a small loan of $1,000,000\"";
+		} else if (MowerGame.money < -20) {
+			text = "\"The wall just got 10ft higher\"";
+		} else {
+			text = "\"Getting rich is easy. Staying rich is harder.\"";
 		}
+		float x = 75 + trump.getWidth() / 2 - g.getFont().getWidth(text) / 2;
+		if (x < 5) x = 5;
+		g.fillRoundRect(x, gc.getHeight() - trump.getHeight() / 4, 6 + g.getFont().getWidth(text) + 5, 20, 3, 3);
+		g.setColor(Color.black);
+		g.drawString(text, 6 + x, gc.getHeight() - trump.getHeight() / 4);
 		
 		switch (menuState) {
 			case STATE_MAIN:
