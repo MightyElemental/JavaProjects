@@ -38,7 +38,7 @@ public class MowerType {
 			.setDescription("Don't you dare try and cheat your way through the game ;)").setPrice(1000000000)
 			.setHidden(true).setTurnAngle(5);
 	public static MowerType DonaldMower = new MowerType("Donald Mower", 100, 1, 6f, 1f, "entities.trump")
-			.setDescription("Use this mower at the cost of a small $1,000,000 dollars").setPrice(1000000)
+			.setDescription("Use this mower at the cost of a small $1,000,000").setPrice(1000000)
 			.setHidden(false).setTurnAngle(10);
 
 	public String getName() {

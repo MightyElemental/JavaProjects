@@ -1,6 +1,6 @@
 - README -
 __________________________________________________________________________________
-MOWVE MANIA                                                         19th July 2016
+MOWVE MANIA                       Created 19th July 2016  |  Updated 12th May 2017
 __________________________________________________________________________________
 
 Thank you for playing MOWVE MANIA !
@@ -29,7 +29,7 @@ ________________________________________________________________________________
 	> Windows XP / OSX 10.4 / 2006 Linux Distribution
 	> CPU: AMD Sempron 3000+ 2000MHz or equivalent
 	> Memory: 330 MB or higher (not including RAM needed by system)
-	> Graphics: Xpress 1150 or equivalent (Capable of 1280 x 720 in 32 bit color)
+	> Graphics: Nvidia GeForce 210 or equivalent (Capable of 1280 x 720 in 32 bit color)
 	> Input Devices: Compatible mouse and keyboard
 	> Java Version: A minimum of Java 7 is required
 	> Installation Size: Minimum install requires 16 MB of uncompressed disc space
@@ -122,7 +122,7 @@ Only instructions for windows users will be listed here.
 	3.   A new window should appear with an 'About' option
 	4.   Click 'About' and read the version which should look like
 	     'Version # Update ##' E.G. 'Version 7 Update 79'
-	5.   If your version is lower than Java 7 then you may want to consider
+	5.   If your version is lower than Java 7 then you will want to consider
 	     updating
 __________________________________________________________________________________
 3.2 [Installing Java]
