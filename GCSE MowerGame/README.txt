@@ -20,7 +20,7 @@ This readme file contains important information about the game
 3. CHECK FOR AND INSTALL JAVA
 	3.1 - Checking which version of Java is installed
 	3.2 - Installing Java
-4. CONTACT INFORMATION
+5. CONTACT INFORMATION
 __________________________________________________________________________________
 1. COMPUTER SPECIFICATIONS
 __________________________________________________________________________________
@@ -130,7 +130,16 @@ ________________________________________________________________________________
 To download the latest version of Java, go to the following site:
 https://java.com/en/download/
 __________________________________________________________________________________
-4. CONTACT INFORMATION
+4. Running the game
+
+To run the game, ensure you have Java installed by following step #3 and then
+extract the files. Make sure the jar file and the two folders remain together
+otherwise the game will not run.
+
+If you have any issues launching the game, use the contact information below to
+talk to the creator.
+__________________________________________________________________________________
+5. CONTACT INFORMATION
 __________________________________________________________________________________
 
 If you have any questions, suggestions, or issues about the game, go to the
