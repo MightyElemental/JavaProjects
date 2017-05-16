@@ -100,7 +100,11 @@ public class EntityMower extends Entity {
 		if (vel >= mowerType.getSpeed()) {
 			vel = mowerType.getSpeed(); // 5f
 		}
-		if (Math.abs(x - mouseX) + Math.abs(y - mouseY) > 60) {
+		boolean flag = true;
+		if(!mowerType.isFixedAngle()){
+			flag = Math.abs(x - mouseX) + Math.abs(y - mouseY) > 60;
+		}
+		if (flag) {
 			angleTemp = MathHelper.getAngle(new Point(x, y), new Point(mouseX, mouseY));
 			
 			angle = angleTemp;
