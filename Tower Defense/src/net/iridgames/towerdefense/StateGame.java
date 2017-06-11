@@ -10,7 +10,7 @@ import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 
-import net.iridgames.towerdefense.towers.TowerCannon;
+import net.iridgames.towerdefense.towers.TowerGatling;
 import net.iridgames.towerdefense.world.World;
 
 public class StateGame extends BasicGameState {
@@ -167,7 +167,10 @@ public class StateGame extends BasicGameState {
 	public void mousePressed(int button, int x, int y) {
 		// worldObj.loadedLevel.setTile((x - startingPointX) / tileSize, (y - startingPointY) / tileSize,
 		// charList[selectedChar]);
-		worldObj.towerList.add(new TowerCannon(worldObj, (x - startingPointX) / tileSize, (y - startingPointY) / tileSize));
+		char c = worldObj.loadedLevel.getTile((x - startingPointX) / tileSize, (y - startingPointY) / tileSize);
+		if (c == 'u') {
+			worldObj.towerList.add(new TowerGatling(worldObj, (x - startingPointX) / tileSize, (y - startingPointY) / tileSize));
+		}
 	}
 	
 	@Override

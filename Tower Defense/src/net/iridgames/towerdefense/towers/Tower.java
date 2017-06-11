@@ -115,7 +115,7 @@ public abstract class Tower extends Rectangle {
 	}
 	
 	public void setTopLayer(String location) {
-		this.topLayer = ResourceLoader.loadImage(location);
+		this.topLayer = ResourceLoader.loadImage(location).copy();
 		// if (topLayer != null) {
 		// topLayer = topLayer.getScaledCopy(48, 48);
 		// }
