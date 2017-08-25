@@ -21,13 +21,29 @@ public class ImageGen {
 		imgSize = in.getWidth();
 		pixels = new int[imgSize * imgSize];
 		this.img = in.getScaledCopy(imgSize, imgSize);
-		System.out.println(this.img.getWidth());
 		imgGraphics = this.img.getGraphics();
 		for ( int i = 0; i < pixels.length; i++ ) {
 			Color c = imgGraphics.getPixel(i % imgSize, i / imgSize);
 			int grey = (c.getBlue() + c.getGreen() + c.getRed()) / 3;
 			pixels[i] = grey;
 		}
+		imgBeenEdited = true;
+	}
+
+	public ImageGen(Image in, Image i2) throws SlickException {
+		imgSize = in.getWidth();
+		pixels = new int[imgSize * imgSize];
+		this.img = in.getScaledCopy(imgSize, imgSize);
+		imgGraphics = this.img.getGraphics();
+		Graphics g = i2.getGraphics();
+		for ( int i = 0; i < pixels.length; i++ ) {
+			Color c = imgGraphics.getPixel(i % imgSize, i / imgSize);
+			Color c2 = g.getPixel(i % imgSize, i / imgSize);
+			int grey = (c.getBlue() + c.getGreen() + c.getRed()) / 3;
+			int grey2 = (c2.getBlue() + c2.getGreen() + c2.getRed()) / 3;
+			pixels[i] = (grey + grey2) / 2;
+		}
+		g.flush();
 		imgBeenEdited = true;
 	}
 
@@ -62,6 +78,14 @@ public class ImageGen {
 		imgGraphics.setColor(new Color(grey, grey, grey));
 		imgGraphics.drawRect(x, y, 1, 1);
 		pixels[x + y * imgSize] = grey;
+		imgBeenEdited = true;
+	}
+
+	public void setPixel(int i, int grey) {
+		if ( imgGraphics == null ) return;
+		imgGraphics.setColor(new Color(grey, grey, grey));
+		imgGraphics.drawRect(i % imgSize, i / imgSize, 1, 1);
+		pixels[i] = grey;
 		imgBeenEdited = true;
 	}
 

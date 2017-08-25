@@ -8,6 +8,7 @@ import org.newdawn.slick.Game;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
+import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.openal.SoundStore;
 
@@ -68,15 +69,44 @@ public class ImageEvolution implements Game {
 			}
 			if ( f < prevFit ) break;
 			prevFit = f;
-			System.out.println(f);
 		}
 		guess.pixels[pos] = bestCol;
 		if ( pos % (guess.imgSize / 2) == 0 ) {
 			guess.imgBeenEdited = true;
 		}
 		pos++;
-		// System.out.println(pos);
 		if ( pos >= guess.pixels.length ) pos = -1;
+	}
+
+	public void newGenerationV3() throws SlickException {
+		int bestFitness = calcFitness(guess);
+		generationCount++;
+		int[] pix = new int[guess.pixels.length];
+		int x = generationCount < (pix.length / 6) ? 100 : (generationCount < 2000 ? generationCount : 2000);
+		for ( int i = 0; i < x; i++ ) {
+			ImageGen ig = new ImageGen(guess);
+			ig.setPixel(rand.nextInt(target.imgSize), rand.nextInt(target.imgSize), rand.nextInt(256));
+			if ( calcFitness(ig) > bestFitness ) {
+				pix = ig.pixels;
+				bestFitness = calcFitness(ig);
+			}
+		}
+		if ( bestFitness != calcFitness(guess) ) {
+			guess.setPixels(pix);
+		}
+	}
+
+	public void newGenerationV4() throws SlickException {
+		int bestFitness = calcFitness(guess);
+		generationCount++;
+		for ( int i = 0; i < guess.pixels.length; i++ ) {
+			guess.setPixel(i, guess.pixels[i] + 1);
+			if ( calcFitness(guess) < bestFitness ) {
+				guess.setPixel(i, guess.pixels[i] - 1);
+			} else {
+				bestFitness = calcFitness(guess);
+			}
+		}
 	}
 
 	public int calcFitness(ImageGen img) {
@@ -108,7 +138,8 @@ public class ImageEvolution implements Game {
 
 	@Override
 	public void init(GameContainer gc) throws SlickException {
-		target = new ImageGen(ResourceLoader.loadImage("img1"));
+		gc.setClearEachFrame(true);
+		target = new ImageGen(ResourceLoader.loadImage("wolf1"));
 		targetFit = calcFitness(target);
 		guess = new ImageGen(target.imgSize);
 	}
@@ -124,23 +155,34 @@ public class ImageEvolution implements Game {
 		g.drawImage(i, 260, 50);
 		g.setColor(Color.red);
 		g.drawRect(259, 49, i.getWidth() + 2, i.getHeight() + 2);
+		g.setColor(Color.black);
+		g.fillRect(200, 300, 500, 50);
 		g.setColor(Color.white);
 		g.drawString("Time " + (System.currentTimeMillis() - start) / 1000 + " seconds", 200, 300);
+		g.drawString(generationCount + " generations", 200, 330);
+
 	}
 
 	Random rand = new Random();
 
 	long start = System.currentTimeMillis();
 
+	int ticks;
+
 	@Override
 	public void update(GameContainer gc, int delta) throws SlickException {
 		// target.setPixel(rand.nextInt(target.imgSize), rand.nextInt(target.imgSize),
 		// rand.nextInt(256));
-		if ( generationCount < 2000 ) {
-			newGeneration();
-		} else {
-			newGenerationV2();
+		// ticks++;
+		if ( gc.getInput().isKeyDown(Input.KEY_SPACE) ) {
+			start = System.currentTimeMillis();
+			ticks++;
 		}
+
+		if ( ticks > 1 ) {
+			newGeneration();
+		}
+
 		if ( pos == -1 ) {
 			System.err.println("TIME = " + (System.currentTimeMillis() - start) + " ("
 					+ (System.currentTimeMillis() - start) / 1000 + ")");
