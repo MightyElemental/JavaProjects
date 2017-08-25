@@ -71,9 +71,9 @@ public class ImageEvolution implements Game {
 			prevFit = f;
 		}
 		guess.pixels[pos] = bestCol;
-		if ( pos % (guess.imgSize / 2) == 0 ) {
-			guess.imgBeenEdited = true;
-		}
+		// if ( pos % (guess.imgSize / 2) == 0 ) {
+		guess.imgBeenEdited = true;
+		// }
 		pos++;
 		if ( pos >= guess.pixels.length ) pos = -1;
 	}
@@ -82,7 +82,7 @@ public class ImageEvolution implements Game {
 		int bestFitness = calcFitness(guess);
 		generationCount++;
 		int[] pix = new int[guess.pixels.length];
-		int x = generationCount < (pix.length / 6) ? 100 : (generationCount < 2000 ? generationCount : 2000);
+		int x = generationCount < (pix.length / 6) ? 100 : (generationCount < 1000 ? generationCount : 1000);
 		for ( int i = 0; i < x; i++ ) {
 			ImageGen ig = new ImageGen(guess);
 			ig.setPixel(rand.nextInt(target.imgSize), rand.nextInt(target.imgSize), rand.nextInt(256));
@@ -139,7 +139,7 @@ public class ImageEvolution implements Game {
 	@Override
 	public void init(GameContainer gc) throws SlickException {
 		gc.setClearEachFrame(true);
-		target = new ImageGen(ResourceLoader.loadImage("wolf1"));
+		target = new ImageGen(ResourceLoader.loadImage("wolf_low1"));
 		targetFit = calcFitness(target);
 		guess = new ImageGen(target.imgSize);
 	}
@@ -180,7 +180,7 @@ public class ImageEvolution implements Game {
 		}
 
 		if ( ticks > 1 ) {
-			newGeneration();
+			newGenerationV4();
 		}
 
 		if ( pos == -1 ) {
