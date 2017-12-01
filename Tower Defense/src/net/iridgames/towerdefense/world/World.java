@@ -9,7 +9,7 @@ import org.newdawn.slick.state.StateBasedGame;
 
 import net.iridgames.towerdefense.StateGame;
 import net.iridgames.towerdefense.monsters.Monster;
-import net.iridgames.towerdefense.towers.Projectile;
+import net.iridgames.towerdefense.towers.ProjectileV2;
 import net.iridgames.towerdefense.towers.Tower;
 
 public class World {
@@ -18,7 +18,9 @@ public class World {
 	public List<Level> levelList = new ArrayList<Level>();
 	public List<Monster> monsterList = new ArrayList<Monster>();
 	public List<Tower> towerList = new ArrayList<Tower>();
-	public List<Projectile> projectileList = new ArrayList<Projectile>();
+	
+	//{posX, posY, angle, speed, damage, remove}
+	public List<Object[]> projectileList = new ArrayList<Object[]>();
 	
 	public Level loadedLevel;
 	
@@ -49,8 +51,8 @@ public class World {
 			}
 		}
 		for (int i = 0; i < projectileList.size(); i++) {
-			projectileList.get(i).update(gc, sbg, delta);
-			if (projectileList.get(i).delete) {
+			ProjectileV2.update(projectileList.get(i), this);
+			if ((boolean)projectileList.get(i)[5]) {
 				projectileList.remove(i);
 				break;
 			}
