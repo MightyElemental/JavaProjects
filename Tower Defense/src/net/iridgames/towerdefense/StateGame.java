@@ -1,6 +1,7 @@
 package net.iridgames.towerdefense;
 
 import java.io.IOException;
+import java.util.Random;
 
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
@@ -11,7 +12,7 @@ import org.newdawn.slick.geom.Circle;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 
-import net.iridgames.towerdefense.towers.TowerGatling;
+import net.iridgames.towerdefense.towers.TowerV2;
 import net.iridgames.towerdefense.world.World;
 
 public class StateGame extends BasicGameState {
@@ -43,18 +44,21 @@ public class StateGame extends BasicGameState {
 	}
 
 	private void renderTowers(GameContainer gc, StateBasedGame sbg, Graphics g) {
-		for ( int i = 0; i < worldObj.towerList.size(); i++ ) {
-			worldObj.towerList.get(i).draw(gc, sbg, g, startingPointX, startingPointY);
+		for ( Object[] obj : worldObj.getTowerList() ) {
+			// TODO create renderer
+			// worldObj.getTowerList().get(i).draw(gc, sbg, g,
+			// startingPointX,startingPointY);
+			TowerV2.render(g, obj, startingPointX, startingPointY);
 		}
 	}
 
 	private void renderProjectiles(GameContainer gc, StateBasedGame sbg, Graphics g) {
 		Circle c = new Circle(0, 0, 5);
-		for ( int i = 0; i < worldObj.projectileList.size(); i++ ) {
-			float x = (float) worldObj.projectileList.get(i)[0];
-			float y = (float) worldObj.projectileList.get(i)[1];
-			c.setCenterX(x+startingPointX);
-			c.setCenterY(y+startingPointY);
+		for ( int i = 0; i < worldObj.getProjectileList().size(); i++ ) {
+			float x = (float) worldObj.getProjectileList().get(i)[0];
+			float y = (float) worldObj.getProjectileList().get(i)[1];
+			c.setCenterX(x + startingPointX);
+			c.setCenterY(y + startingPointY);
 			g.fill(c);
 		}
 	}
@@ -183,10 +187,17 @@ public class StateGame extends BasicGameState {
 		char c = worldObj.loadedLevel.getTile((x - startingPointX) / tileSize,
 				(y - startingPointY) / tileSize);
 		if ( c == 'u' ) {
-			worldObj.towerList.add(new TowerGatling(worldObj, (x - startingPointX) / tileSize,
-					(y - startingPointY) / tileSize));
+			// worldObj.addTower(new TowerCannon(worldObj, (x - startingPointX) / tileSize,
+			// (y - startingPointY) / tileSize));
+			// {x, y, angle, charge, level, removeFlag, targetType, type, ID}
+			int newx = (x - startingPointX) / tileSize;
+			int newy = (y - startingPointY) / tileSize;
+			worldObj.addTower(newx * tileSize, newy * tileSize, 0, 0, 0, TowerV2.TARGET_CLOSEST,
+					rand.nextInt(2));
 		}
 	}
+
+	Random rand = new Random(System.nanoTime());
 
 	@Override
 	public void keyPressed(int key, char c) {
