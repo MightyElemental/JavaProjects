@@ -9,6 +9,7 @@ import org.newdawn.slick.state.StateBasedGame;
 
 import net.iridgames.towerdefense.StateGame;
 import net.iridgames.towerdefense.monsters.Monster;
+import net.iridgames.towerdefense.towers.BulletTrail;
 import net.iridgames.towerdefense.towers.ProjectileV2;
 import net.iridgames.towerdefense.towers.TowerV2;
 
@@ -23,6 +24,8 @@ public class World {
 
 	// {posX, posY, angle, speed, damage, removeFlag}
 	private List<Object[]> projectileList = new ArrayList<Object[]>();
+
+	private List<Object[]> bulletTrailList = new ArrayList<Object[]>();
 
 	public Level loadedLevel;
 
@@ -59,6 +62,17 @@ public class World {
 				break;
 			}
 		}
+		if ( !bulletTrailList.isEmpty() ) {
+			System.out.println(Float.parseFloat(bulletTrailList.get(0)[4].toString()));
+		}
+		for ( int i = 0; i < bulletTrailList.size(); i++ ) {
+			BulletTrail.update(bulletTrailList.get(i), this, delta);
+			float fade = Float.parseFloat(bulletTrailList.get(i)[4].toString());
+			if ( fade >= 1 ) {
+				bulletTrailList.remove(i);
+				break;
+			}
+		}
 	}
 
 	Random rand = new Random(System.nanoTime());
@@ -81,8 +95,14 @@ public class World {
 		return projectileList;
 	}
 
+	public List<Object[]> getBulletTrailList() {
+		return bulletTrailList;
+	}
+
 	// {posX, posY, angle, speed, damage, removeFlag}
-	public boolean addProjectile(float x, float y, float angle, float speed, float damage) {//TODO add lines as an alternative
+	public boolean addProjectile(float x, float y, float angle, float speed, float damage) {// TODO add lines
+																							// as an
+																							// alternative
 		if ( projectileList.size() < 210 ) {
 			projectileList.add(new Object[] { x, y, angle, speed, damage, false });
 			return true;
@@ -101,6 +121,18 @@ public class World {
 			towerList.add(
 					new Object[] { x, y, angle, charge, level, false, targetType, turretType, lastTurret });
 			lastTurret++;
+		}
+	}
+
+	// {startX, startY, endX, endY, fade, fadeRate, colour}
+	public boolean addBulletTrail(float sx, float sy, float ex, float ey, float fr) {
+		fr = rand.nextFloat() * 5;//TODO FIX
+		if ( bulletTrailList.size() < 210 ) {
+			bulletTrailList.add(new Object[] { sx, sy, ex, ey, 0, fr, null });
+			return true;
+		} else {
+			System.err.println("Too many objects");
+			return false;
 		}
 	}
 

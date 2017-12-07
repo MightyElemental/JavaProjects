@@ -21,7 +21,7 @@ public class Monster extends Rectangle {
 	
 	public float angle;
 	
-	public float health = 50;
+	public float health = 100;
 	
 	public Monster( World worldObj, float x, float y ) {
 		super(x, y, 36, 42);

@@ -12,6 +12,7 @@ import org.newdawn.slick.geom.Circle;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 
+import net.iridgames.towerdefense.towers.BulletTrail;
 import net.iridgames.towerdefense.towers.TowerV2;
 import net.iridgames.towerdefense.world.World;
 
@@ -41,6 +42,7 @@ public class StateGame extends BasicGameState {
 		renderMonsters(gc, sbg, g);
 		renderTowers(gc, sbg, g);
 		renderProjectiles(gc, sbg, g);
+		renderBulletTrails(gc, sbg, g);
 	}
 
 	private void renderTowers(GameContainer gc, StateBasedGame sbg, Graphics g) {
@@ -49,6 +51,12 @@ public class StateGame extends BasicGameState {
 			// worldObj.getTowerList().get(i).draw(gc, sbg, g,
 			// startingPointX,startingPointY);
 			TowerV2.render(g, obj, startingPointX, startingPointY);
+		}
+	}
+
+	private void renderBulletTrails(GameContainer gc, StateBasedGame sbg, Graphics g) {
+		for ( int i = 0; i < worldObj.getBulletTrailList().size(); i++ ) {
+			BulletTrail.render(g, worldObj.getBulletTrailList().get(i), startingPointX, startingPointY);
 		}
 	}
 
@@ -120,6 +128,7 @@ public class StateGame extends BasicGameState {
 	}
 
 	public void renderTiles(GameContainer gc, StateBasedGame sbg, Graphics g) {
+		g.setLineWidth(1);
 		startingPointX = gc.getWidth() / 2 - (worldObj.loadedLevel.width * tileSize) / 2;
 		startingPointY = gc.getHeight() / 2 - (worldObj.loadedLevel.height * tileSize) / 2;
 		for ( int y = 0; y < worldObj.loadedLevel.levelLayout.size(); y++ ) {
@@ -193,7 +202,7 @@ public class StateGame extends BasicGameState {
 			int newx = (x - startingPointX) / tileSize;
 			int newy = (y - startingPointY) / tileSize;
 			worldObj.addTower(newx * tileSize, newy * tileSize, 0, 0, 0, TowerV2.TARGET_CLOSEST,
-					rand.nextInt(2));
+					TowerV2.TYPE_GATLING);
 		}
 	}
 

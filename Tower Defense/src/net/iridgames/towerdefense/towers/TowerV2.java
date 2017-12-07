@@ -24,8 +24,8 @@ public class TowerV2 {
 	public static final int	TARGET_MOST_HEALTH	= 1;
 	public static final int	TARGET_LEAST_HEALTH	= 2;
 
-	// {{radius, radiusMultiplier, coolDown}}
-	private static float[][] turretTypeInfo = { { 7.5f, 1f, 1500 }, { 4f, 1.1f, 200 } };
+	// {{radius, radiusMultiplier, coolDown, damage}}
+	private static float[][] turretTypeInfo = { { 7.5f, 1f, 1500, 20 }, { 4f, 1.1f, 200, 5 } };
 
 	private static float	x, y, angle, charge, level;
 	private static int		targetType, turretType;
@@ -39,21 +39,42 @@ public class TowerV2 {
 		charge += d;
 
 		boolean flag = !getMonsterInRadius(worldObj).isEmpty();
+		Monster target = null;
 		if ( flag ) {
-			Monster target = getMonsterInRadius(worldObj).get(0);
+			target = getMonsterInRadius(worldObj).get(0);
 			angle = MathHelper.getAngle(new Point(x, y), new Point(target.getCenterX(), target.getCenterY()))
 					- 180;
 		}
+		if ( flag ) {
+			switch (turretType) {
+			case TYPE_SNIPER:
+				fireProjectiles(worldObj);
+				break;
+			case TYPE_GATLING:
+				fireBullet(worldObj, target);
+			}
+		}
+		saveVarsToArray(data);
+	}
 
-		if ( charge >= turretTypeInfo[turretType][2] && flag ) {
+	private static void fireProjectiles(World worldObj) {
+		if ( charge >= turretTypeInfo[turretType][2] ) {
 			boolean success = worldObj.addProjectile((x + StateGame.tileSize / 2), // TODO some towers shoot
 																					// bullets and some shoot
 																					// projectiles
-					(y + StateGame.tileSize / 2), angle, 5, 5);
+					(y + StateGame.tileSize / 2), angle, 5, turretTypeInfo[turretType][3]);
 			if ( success ) charge = 0;
 		}
+	}
 
-		saveVarsToArray(data);
+	// {startX, startY, endX, endY, fade, fadeRate, colour}
+	private static void fireBullet(World worldObj, Monster target) {
+		if ( charge >= turretTypeInfo[turretType][2] ) {
+			boolean success = worldObj.addBulletTrail((x + StateGame.tileSize / 2),
+					(y + StateGame.tileSize / 2), target.getCenterX(), target.getCenterY(), 1);
+			target.health -= turretTypeInfo[turretType][3];
+			if ( success ) charge = 0;
+		}
 	}
 
 	/**
@@ -89,15 +110,14 @@ public class TowerV2 {
 
 	public static void render(Graphics g, Object[] obj, int xoffset, int yoffset) {
 		setTempVars(obj);
-		System.out.println(obj[8] + " | " + area.getX() + " | " + area.getY() + " | " + area.radius);
 		getIcon(turretType).setRotation(angle);
 		g.drawImage(getIcon(turretType), x + xoffset - StateGame.tileSize / 2,
 				y + yoffset - StateGame.tileSize / 2);
 		getIcon(turretType).setRotation(0);
 
-		g.setColor(new Color(0f, 0f, 0f, 0.3f));// Only render when mouse hovers over
-		g.drawOval(area.getX() + xoffset + StateGame.tileSize / 2,
-				area.getY() + yoffset + StateGame.tileSize / 2, 2 * area.radius, 2 * area.radius);
+//		g.setColor(new Color(0f, 0f, 0f, 1f));// TODO Only render when mouse hovers over
+//		g.drawOval(area.getX() + xoffset + StateGame.tileSize / 2,
+//				area.getY() + yoffset + StateGame.tileSize / 2, 2 * area.radius, 2 * area.radius);
 
 		g.setColor(Color.cyan.darker());
 		float temp = (StateGame.tileSize / turretTypeInfo[turretType][2] * charge);
