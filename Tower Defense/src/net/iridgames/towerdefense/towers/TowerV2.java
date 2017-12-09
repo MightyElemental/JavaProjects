@@ -42,8 +42,8 @@ public class TowerV2 {
 		Monster target = null;
 		if ( flag ) {
 			target = getMonsterInRadius(worldObj).get(0);
-			angle = MathHelper.getAngle(new Point(x, y), new Point(target.getCenterX(), target.getCenterY()))
-					- 180;
+			angle = MathHelper.getAngle(new Point(x + StateGame.tileSize / 2, y + StateGame.tileSize / 2),
+					new Point(target.getCenterX(), target.getCenterY())) - 180;
 		}
 		if ( flag ) {
 			switch (turretType) {
@@ -63,17 +63,20 @@ public class TowerV2 {
 																					// bullets and some shoot
 																					// projectiles
 					(y + StateGame.tileSize / 2), angle, 5, turretTypeInfo[turretType][3]);
-			if ( success ) charge = 0;
+			if ( success ) charge -= turretTypeInfo[turretType][2];
 		}
 	}
 
 	// {startX, startY, endX, endY, fade, fadeRate, colour}
 	private static void fireBullet(World worldObj, Monster target) {
 		if ( charge >= turretTypeInfo[turretType][2] ) {
-			boolean success = worldObj.addBulletTrail((x + StateGame.tileSize / 2),
-					(y + StateGame.tileSize / 2), target.getCenterX(), target.getCenterY(), 1);
+
+			float sX = (float) ((x + StateGame.tileSize / 2) + Math.cos(Math.toRadians(angle)) * StateGame.tileSize);
+			float sY = (float) ((y + StateGame.tileSize / 2) + Math.sin(Math.toRadians(angle)) * StateGame.tileSize);
+
+			boolean success = worldObj.addBulletTrail(sX, sY, target.getCenterX(), target.getCenterY(), 1);
 			target.health -= turretTypeInfo[turretType][3];
-			if ( success ) charge = 0;
+			if ( success ) charge -= turretTypeInfo[turretType][2];
 		}
 	}
 
@@ -111,13 +114,14 @@ public class TowerV2 {
 	public static void render(Graphics g, Object[] obj, int xoffset, int yoffset) {
 		setTempVars(obj);
 		getIcon(turretType).setRotation(angle);
-		g.drawImage(getIcon(turretType), x + xoffset - StateGame.tileSize / 2,
-				y + yoffset - StateGame.tileSize / 2);
+		g.drawImage(getIcon(turretType), x + xoffset - StateGame.tileSize / 2, y + yoffset - StateGame.tileSize / 2);
 		getIcon(turretType).setRotation(0);
 
-//		g.setColor(new Color(0f, 0f, 0f, 1f));// TODO Only render when mouse hovers over
-//		g.drawOval(area.getX() + xoffset + StateGame.tileSize / 2,
-//				area.getY() + yoffset + StateGame.tileSize / 2, 2 * area.radius, 2 * area.radius);
+		// g.setColor(new Color(0f, 0f, 0f, 1f));// TODO Only render when mouse hovers
+		// over
+		// g.drawOval(area.getX() + xoffset + StateGame.tileSize / 2,
+		// area.getY() + yoffset + StateGame.tileSize / 2, 2 * area.radius, 2 *
+		// area.radius);
 
 		g.setColor(Color.cyan.darker());
 		float temp = (StateGame.tileSize / turretTypeInfo[turretType][2] * charge);

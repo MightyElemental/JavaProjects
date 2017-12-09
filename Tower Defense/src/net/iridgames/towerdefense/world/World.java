@@ -62,9 +62,6 @@ public class World {
 				break;
 			}
 		}
-		if ( !bulletTrailList.isEmpty() ) {
-			System.out.println(Float.parseFloat(bulletTrailList.get(0)[4].toString()));
-		}
 		for ( int i = 0; i < bulletTrailList.size(); i++ ) {
 			BulletTrail.update(bulletTrailList.get(i), this, delta);
 			float fade = Float.parseFloat(bulletTrailList.get(i)[4].toString());
@@ -115,20 +112,18 @@ public class World {
 	int lastTurret = 0;
 
 	// {x, y, angle, charge, level, removeFlag, targetType, type, ID}
-	public void addTower(float x, float y, float angle, float charge, float level, int targetType,
-			int turretType) {
+	public void addTower(float x, float y, float angle, float charge, float level, int targetType, int turretType) {
 		if ( !doesTowerExist(x, y) ) {
-			towerList.add(
-					new Object[] { x, y, angle, charge, level, false, targetType, turretType, lastTurret });
+			towerList.add(new Object[] { x, y, angle, charge, level, false, targetType, turretType, lastTurret });
 			lastTurret++;
 		}
 	}
 
 	// {startX, startY, endX, endY, fade, fadeRate, colour}
 	public boolean addBulletTrail(float sx, float sy, float ex, float ey, float fr) {
-		fr = rand.nextFloat() * 5;//TODO FIX
-		if ( bulletTrailList.size() < 210 ) {
-			bulletTrailList.add(new Object[] { sx, sy, ex, ey, 0, fr, null });
+		fr = (rand.nextInt(5) + 15) / 20f;// TODO FIX
+		if ( bulletTrailList.size() < 600 ) {
+			bulletTrailList.add(new Object[] { sx, sy, ex, ey, 0.05f, fr });
 			return true;
 		} else {
 			System.err.println("Too many objects");

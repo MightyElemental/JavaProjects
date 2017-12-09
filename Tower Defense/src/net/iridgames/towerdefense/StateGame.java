@@ -6,6 +6,7 @@ import java.util.Random;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
+import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Circle;
@@ -25,16 +26,28 @@ public class StateGame extends BasicGameState {
 		worldObj = wobj;
 	}
 
+	public Image		levelImg;
+	private Graphics	gLevelImg;
+
 	public World worldObj;
 
 	@Override
 	public void init(GameContainer gc, StateBasedGame sbg) throws SlickException {
+		String[] imgs = { "grass", "path", "base", "turret", "gatling" };
+		ResourceLoader.loadImageBatch(imgs);
+		initLevelImg(gc);
+	}
 
+	private void initLevelImg(GameContainer gc) throws SlickException {
+		levelImg = new Image(gc.getWidth(), gc.getHeight());
+		gLevelImg = levelImg.getGraphics();
+		renderTiles(gc, gLevelImg);
+		gLevelImg.destroy();
 	}
 
 	@Override
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
-		renderTiles(gc, sbg, g);
+		levelImg.draw();
 		changeColor(g, charList[selectedChar]);
 		g.fillRect(gc.getWidth() - 50, 100, 25, 25);
 		g.setColor(Color.black);
@@ -71,37 +84,69 @@ public class StateGame extends BasicGameState {
 		}
 	}
 
+	private void renderMonsters(GameContainer gc, StateBasedGame sbg, Graphics g) {
+		// g.setColor(Color.red.darker());
+		for ( int i = 0; i < worldObj.monsterList.size(); i++ ) {
+			// Monster m = worldObj.monsterList.get(i);
+			// List<Point> n = m.route;
+			// g.fillRect(startingPointX + m.getX(), startingPointY + m.getY(), 36, 42);
+			// for (int j = 0; j < n.size(); j++) {
+			// if (n.get(j) != null) g.fillOval(startingPointX + n.get(j).getX() - 5,
+			// startingPointY + n.get(j).getY() -
+			// 5, 10, 10);
+			// }
+			// for (int x = 0; x < m.mark.length; x++) {
+			// for (int y = 0; y < m.mark[x].length; y++) {
+			// g.drawString(m.mark[x][y] + "", startingPointX + x * tileSize, startingPointY
+			// + y * tileSize);
+			// }
+			// }
+			worldObj.monsterList.get(i).draw(gc, sbg, g, startingPointX, startingPointY);
+		}
+	}
+
 	public static final int	tileSize		= 48;
 	public int				startingPointX	= 5;
 	public int				startingPointY	= 5;
+
+	private void renderTiles(GameContainer gc, Graphics g) {
+		g.setLineWidth(1);
+		startingPointX = gc.getWidth() / 2 - (worldObj.loadedLevel.width * tileSize) / 2;
+		startingPointY = gc.getHeight() / 2 - (worldObj.loadedLevel.height * tileSize) / 2;
+		for ( int y = 0; y < worldObj.loadedLevel.levelLayout.size(); y++ ) {
+			for ( int x = 0; x < worldObj.loadedLevel.levelLayout.get(y).size(); x++ ) {
+				changeColor(g, x, y);
+				g.fillRect(startingPointX + x * tileSize, startingPointY + y * tileSize, tileSize, tileSize);
+				g.setColor(Color.black);
+				g.drawRect(startingPointX + x * tileSize, startingPointY + y * tileSize, tileSize, tileSize);
+			}
+		}
+	}
 
 	public void changeColor(Graphics g, int x, int y) {
 		switch (worldObj.loadedLevel.getTile(x, y)) {
 		case '-':// path
 			g.setColor(new Color(0f, 0f, 0f, 0f));
-			g.drawImage(ResourceLoader.loadImage("path"), startingPointX + x * tileSize,
-					startingPointY + y * tileSize);
+			g.drawImage(ResourceLoader.loadImage("path"), startingPointX + x * tileSize, startingPointY + y * tileSize);
 			break;
 		case 'u':// usable to player
 			g.setColor(new Color(0f, 0f, 0f, 0f));
-			g.drawImage(ResourceLoader.loadImage("base"), startingPointX + x * tileSize,
-					startingPointY + y * tileSize);
+			g.drawImage(ResourceLoader.loadImage("base"), startingPointX + x * tileSize, startingPointY + y * tileSize);
 			break;
 		case 'x':// scenary
 			g.setColor(new Color(0f, 0f, 0f, 0f));
-			g.drawImage(ResourceLoader.loadImage("grass"), startingPointX + x * tileSize,
-					startingPointY + y * tileSize);
+			g.drawImage(ResourceLoader.loadImage("grass"), startingPointX + x * tileSize, startingPointY + y * tileSize);
 			break;
 		case 's':// spawn
 			g.setColor(Color.gray.darker());
 			break;
 		case 'g':// goal
-			g.drawImage(ResourceLoader.loadImage("turret"), startingPointX + x * tileSize,
-					startingPointY + y * tileSize);
+			g.drawImage(ResourceLoader.loadImage("turret"), startingPointX + x * tileSize, startingPointY + y * tileSize);
 			g.setColor(new Color(0f, 0f, 0f, 0f));
 			break;
 		default:
-			g.setColor(Color.white);
+			g.drawImage(ResourceLoader.loadImage("null"), startingPointX + x * tileSize, startingPointY + y * tileSize);
+			break;
 		}
 	}
 
@@ -124,41 +169,6 @@ public class StateGame extends BasicGameState {
 			break;
 		default:
 			g.setColor(Color.white);
-		}
-	}
-
-	public void renderTiles(GameContainer gc, StateBasedGame sbg, Graphics g) {
-		g.setLineWidth(1);
-		startingPointX = gc.getWidth() / 2 - (worldObj.loadedLevel.width * tileSize) / 2;
-		startingPointY = gc.getHeight() / 2 - (worldObj.loadedLevel.height * tileSize) / 2;
-		for ( int y = 0; y < worldObj.loadedLevel.levelLayout.size(); y++ ) {
-			for ( int x = 0; x < worldObj.loadedLevel.levelLayout.get(y).size(); x++ ) {
-				changeColor(g, x, y);
-				g.fillRect(startingPointX + x * tileSize, startingPointY + y * tileSize, tileSize, tileSize);
-				g.setColor(Color.black);
-				g.drawRect(startingPointX + x * tileSize, startingPointY + y * tileSize, tileSize, tileSize);
-			}
-		}
-	}
-
-	public void renderMonsters(GameContainer gc, StateBasedGame sbg, Graphics g) {
-		// g.setColor(Color.red.darker());
-		for ( int i = 0; i < worldObj.monsterList.size(); i++ ) {
-			// Monster m = worldObj.monsterList.get(i);
-			// List<Point> n = m.route;
-			// g.fillRect(startingPointX + m.getX(), startingPointY + m.getY(), 36, 42);
-			// for (int j = 0; j < n.size(); j++) {
-			// if (n.get(j) != null) g.fillOval(startingPointX + n.get(j).getX() - 5,
-			// startingPointY + n.get(j).getY() -
-			// 5, 10, 10);
-			// }
-			// for (int x = 0; x < m.mark.length; x++) {
-			// for (int y = 0; y < m.mark[x].length; y++) {
-			// g.drawString(m.mark[x][y] + "", startingPointX + x * tileSize, startingPointY
-			// + y * tileSize);
-			// }
-			// }
-			worldObj.monsterList.get(i).draw(gc, sbg, g, startingPointX, startingPointY);
 		}
 	}
 
@@ -193,16 +203,14 @@ public class StateGame extends BasicGameState {
 		// worldObj.loadedLevel.setTile((x - startingPointX) / tileSize, (y -
 		// startingPointY) / tileSize,
 		// charList[selectedChar]);
-		char c = worldObj.loadedLevel.getTile((x - startingPointX) / tileSize,
-				(y - startingPointY) / tileSize);
+		char c = worldObj.loadedLevel.getTile((x - startingPointX) / tileSize, (y - startingPointY) / tileSize);
 		if ( c == 'u' ) {
 			// worldObj.addTower(new TowerCannon(worldObj, (x - startingPointX) / tileSize,
 			// (y - startingPointY) / tileSize));
 			// {x, y, angle, charge, level, removeFlag, targetType, type, ID}
 			int newx = (x - startingPointX) / tileSize;
 			int newy = (y - startingPointY) / tileSize;
-			worldObj.addTower(newx * tileSize, newy * tileSize, 0, 0, 0, TowerV2.TARGET_CLOSEST,
-					TowerV2.TYPE_GATLING);
+			worldObj.addTower(newx * tileSize, newy * tileSize, 0, 0, 0, TowerV2.TARGET_CLOSEST, TowerV2.TYPE_SNIPER);
 		}
 	}
 
