@@ -15,6 +15,8 @@ public class TowerDefense extends StateBasedGame {
 	public static World world = new World();
 	public static StateGame sGame = new StateGame(world);
 	
+	public static int money = 60000;
+	
 	public TowerDefense( String title ) {
 		super(title);
 		AppGameContainer appGc;

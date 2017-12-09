@@ -148,4 +148,8 @@ public class Level {
 			}
 		}
 	}
+
+	public char getTile(float f, float g) {
+		return getTile((int) f, (int) g);
+	}
 }

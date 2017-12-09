@@ -3,6 +3,7 @@ package net.iridgames.towerdefense.towers;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 
+import net.iridgames.towerdefense.Camera;
 import net.iridgames.towerdefense.world.World;
 
 public class BulletTrail {
@@ -16,15 +17,17 @@ public class BulletTrail {
 		saveVarsToArray(data);
 	}
 
-	public static void render(Graphics g, Object[] data, int xoffset, int yoffset) {
+	public static void render(Graphics g, Object[] data, float xoffset, float yoffset) {
 		setTempVars(data);
 		g.setColor(new Color(0.2f, 0.2f, 0.2f, (1 - fade)));
 		g.setLineWidth(5f * fade);
-		g.drawLine(startX + xoffset, startY + yoffset, endX + xoffset, endY + yoffset);
+		g.drawLine(startX * Camera.scale + xoffset, startY * Camera.scale + yoffset, endX * Camera.scale + xoffset,
+				endY * Camera.scale + yoffset);
 
-		g.setColor(new Color(0.1f, 0.1f, 0.1f, 0.9f * (1 - fade*1.2f)));
+		g.setColor(new Color(0.1f, 0.1f, 0.1f, 0.9f * (1 - fade * 1.2f)));
 		float size = 10f * (fade * 2f + 0.1f);
-		g.fillOval(endX + xoffset - size / 2, endY + yoffset - size / 2, size, size);
+		g.fillOval(endX * Camera.scale + xoffset - size * Camera.scale / 2,
+				endY * Camera.scale + yoffset - size * Camera.scale / 2, size * Camera.scale, size * Camera.scale);
 	}
 
 	public static void setTempVars(Object[] data) {

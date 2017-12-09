@@ -9,9 +9,9 @@ import org.newdawn.slick.Image;
 import org.newdawn.slick.geom.Circle;
 import org.newdawn.slick.geom.Point;
 
+import net.iridgames.towerdefense.Camera;
 import net.iridgames.towerdefense.MathHelper;
 import net.iridgames.towerdefense.ResourceLoader;
-import net.iridgames.towerdefense.StateGame;
 import net.iridgames.towerdefense.monsters.Monster;
 import net.iridgames.towerdefense.world.World;
 
@@ -20,12 +20,13 @@ public class TowerV2 {
 	public static final int	TYPE_SNIPER		= 0;
 	public static final int	TYPE_GATLING	= 1;
 
-	public static final int	TARGET_CLOSEST		= 0;	// Farthest along path
-	public static final int	TARGET_MOST_HEALTH	= 1;
-	public static final int	TARGET_LEAST_HEALTH	= 2;
+	public static final int	TARGET_CLOSEST_TO_TURRET	= 0;	// Closest to turret
+	public static final int	TARGET_CLOSEST				= 1;	// Closest to goal
+	public static final int	TARGET_MOST_HEALTH			= 2;
+	public static final int	TARGET_LEAST_HEALTH			= 3;
 
-	// {{radius, radiusMultiplier, coolDown, damage}}
-	private static float[][] turretTypeInfo = { { 7.5f, 1f, 1500, 20 }, { 4f, 1.1f, 200, 5 } };
+	// {{radius, radiusMultiplier, coolDown, damage, cost}}
+	private static float[][] turretTypeInfo = { { 7.5f, 1f, 1200, 40, 400 }, { 4f, 1.1f, 200, 5, 200 } };
 
 	private static float	x, y, angle, charge, level;
 	private static int		targetType, turretType;
@@ -37,13 +38,28 @@ public class TowerV2 {
 	public static void update(Object[] data, World worldObj, int d) {
 		setTempVars(data);
 		charge += d;
-
-		boolean flag = !getMonsterInRadius(worldObj).isEmpty();
+		List<Monster> mList = getMonstersInRadius(worldObj);
+		boolean flag = !mList.isEmpty();
 		Monster target = null;
 		if ( flag ) {
-			target = getMonsterInRadius(worldObj).get(0);
-			angle = MathHelper.getAngle(new Point(x + StateGame.tileSize / 2, y + StateGame.tileSize / 2),
-					new Point(target.getCenterX(), target.getCenterY())) - 180;
+			switch (targetType) {
+			case TARGET_LEAST_HEALTH:
+				target = getLeastHealth(mList);
+				break;
+			case TARGET_MOST_HEALTH:
+				target = getMostHealth(mList);
+				break;
+			case TARGET_CLOSEST_TO_TURRET:
+				target = getClosestToTurret(mList);
+				break;
+			case TARGET_CLOSEST:
+				target = getClosestToGoal(mList);
+				break;
+			default:
+				target = mList.get(0);
+				break;
+			}
+			angle = MathHelper.getAngle(new Point(x + 24, y + 24), new Point(target.getCenterX(), target.getCenterY())) - 180;
 		}
 		if ( flag ) {
 			switch (turretType) {
@@ -59,11 +75,10 @@ public class TowerV2 {
 
 	private static void fireProjectiles(World worldObj) {
 		if ( charge >= turretTypeInfo[turretType][2] ) {
-			boolean success = worldObj.addProjectile((x + StateGame.tileSize / 2), // TODO some towers shoot
-																					// bullets and some shoot
-																					// projectiles
-					(y + StateGame.tileSize / 2), angle, 5, turretTypeInfo[turretType][3]);
-			if ( success ) charge -= turretTypeInfo[turretType][2];
+			float sX = (float) ((x + 24) + Math.cos(Math.toRadians(angle)) * 48);
+			float sY = (float) ((y + 24) + Math.sin(Math.toRadians(angle)) * 48);
+			boolean success = worldObj.addProjectile(sX, sY, angle, 5, turretTypeInfo[turretType][3]);
+			if ( success ) charge = 0;
 		}
 	}
 
@@ -71,28 +86,80 @@ public class TowerV2 {
 	private static void fireBullet(World worldObj, Monster target) {
 		if ( charge >= turretTypeInfo[turretType][2] ) {
 
-			float sX = (float) ((x + StateGame.tileSize / 2) + Math.cos(Math.toRadians(angle)) * StateGame.tileSize);
-			float sY = (float) ((y + StateGame.tileSize / 2) + Math.sin(Math.toRadians(angle)) * StateGame.tileSize);
+			float sX = (float) ((x + 24) + Math.cos(Math.toRadians(angle)) * 48);
+			float sY = (float) ((y + 24) + Math.sin(Math.toRadians(angle)) * 48);
 
 			boolean success = worldObj.addBulletTrail(sX, sY, target.getCenterX(), target.getCenterY(), 1);
 			target.health -= turretTypeInfo[turretType][3];
-			if ( success ) charge -= turretTypeInfo[turretType][2];
+			if ( success ) charge = 0;
 		}
 	}
 
 	/**
 	 * Scans through all monsters and returns the monster(s) that is in the radius
 	 */
-	private static List<Monster> getMonsterInRadius(World worldObj) {
+	private static List<Monster> getMonstersInRadius(World worldObj) {
 		List<Monster> lm = new ArrayList<Monster>();
 		for ( int i = 0; i < worldObj.monsterList.size(); i++ ) {
 			Monster m = worldObj.monsterList.get(i);
 			if ( m.intersects(area) ) {
 				lm.add(m);
-				return lm;
 			}
 		}
 		return lm;
+	}
+
+	private static Monster getLeastHealth(List<Monster> mList) {
+		Monster least = null;
+		float lHealth = Float.MAX_VALUE;
+		for ( Monster m : mList ) {
+			if ( m.health < lHealth ) {
+				lHealth = m.health;
+				least = m;
+			}
+		}
+		return least;
+	}
+
+	private static Monster getMostHealth(List<Monster> mList) {
+		Monster most = null;
+		float mHealth = Integer.MIN_VALUE;
+		for ( Monster m : mList ) {
+			if ( m.health > mHealth ) {
+				mHealth = m.health;
+				most = m;
+			}
+		}
+		return most;
+	}
+
+	private static Monster getClosestToTurret(List<Monster> mList) {
+		Monster closest = null;
+		float distance = Integer.MAX_VALUE;
+		for ( Monster m : mList ) {
+			float mDist = MathHelper.getDistance(new Point(x + 24, y + 24), new Point(m.getCenterX(), m.getCenterY()));
+			if ( mDist < distance ) {
+				distance = mDist;
+				closest = m;
+			}
+		}
+		return closest;
+	}
+
+	private static Monster getClosestToGoal(List<Monster> mList) {
+		Monster closest = null;
+		float dist = Integer.MAX_VALUE;
+		for ( Monster m : mList ) {
+			if ( m.getPathSize() < dist ) {
+				dist = m.getPathSize();
+				closest = m;
+			}
+		}
+		return closest;
+	}
+
+	public static int getCost(int turretType) {
+		return (int) turretTypeInfo[turretType][4];
 	}
 
 	/*
@@ -111,10 +178,11 @@ public class TowerV2 {
 		return ResourceLoader.loadImage("null");
 	}
 
-	public static void render(Graphics g, Object[] obj, int xoffset, int yoffset) {
+	public static void render(Graphics g, Object[] obj) {
 		setTempVars(obj);
 		getIcon(turretType).setRotation(angle);
-		g.drawImage(getIcon(turretType), x + xoffset - StateGame.tileSize / 2, y + yoffset - StateGame.tileSize / 2);
+		g.drawImage(getIcon(turretType), x * Camera.scale + Camera.xOffset - Camera.tileSize / 2,
+				y * Camera.scale + Camera.yOffset - Camera.tileSize / 2);
 		getIcon(turretType).setRotation(0);
 
 		// g.setColor(new Color(0f, 0f, 0f, 1f));// TODO Only render when mouse hovers
@@ -124,8 +192,9 @@ public class TowerV2 {
 		// area.radius);
 
 		g.setColor(Color.cyan.darker());
-		float temp = (StateGame.tileSize / turretTypeInfo[turretType][2] * charge);
-		g.fillRect(xoffset + x, yoffset + y, 4, temp > StateGame.tileSize ? StateGame.tileSize : temp);
+		float temp = (Camera.tileSize / turretTypeInfo[turretType][2] * charge);
+		g.fillRect(Camera.xOffset + x * Camera.scale, Camera.yOffset + y * Camera.scale, 4,
+				temp > Camera.tileSize ? Camera.tileSize : temp);
 	}
 
 	/*
@@ -147,7 +216,7 @@ public class TowerV2 {
 	}
 
 	public static void setArea() {
-		float rad = turretTypeInfo[turretType][0] * StateGame.tileSize;
+		float rad = turretTypeInfo[turretType][0] * 48;
 		float mul = (float) Math.pow(turretTypeInfo[turretType][1], level);
 		area.setRadius(rad * mul);
 		area.setCenterX(x);

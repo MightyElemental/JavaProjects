@@ -10,8 +10,8 @@ import org.newdawn.slick.geom.Point;
 import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.state.StateBasedGame;
 
+import net.iridgames.towerdefense.Camera;
 import net.iridgames.towerdefense.MathHelper;
-import net.iridgames.towerdefense.StateGame;
 import net.iridgames.towerdefense.world.World;
 
 public class Monster extends Rectangle {
@@ -20,7 +20,8 @@ public class Monster extends Rectangle {
 
 	private float angle;
 
-	public float health = 70;
+	private float	maxHealth	= 70;
+	public float	health		= maxHealth;
 
 	private float speed = 0.8f;
 
@@ -28,6 +29,12 @@ public class Monster extends Rectangle {
 		super(x, y, 36, 42);
 		this.worldObj = worldObj;
 		route = this.getShortestRoute();
+	}
+
+	public Monster(World worldObj, float x, float y, float maxHealth) {
+		this(worldObj, x, y);
+		this.maxHealth = maxHealth;
+		this.health = maxHealth;
 	}
 
 	/** Which path tiles the monster has walked on */
@@ -39,8 +46,8 @@ public class Monster extends Rectangle {
 	public List<Point> route = new ArrayList<Point>();
 
 	public boolean touchedTile(float f, float g) {
-		f = (float) Math.floor(f / StateGame.tileSize);
-		g = (float) Math.floor(g / StateGame.tileSize);
+		f = (float) Math.floor(f / 48);
+		g = (float) Math.floor(g / 48);
 		for ( int i = 0; i < touchedPath.size(); i++ ) {
 			float tx = touchedPath.get(i).getX();
 			float ty = touchedPath.get(i).getY();
@@ -78,7 +85,7 @@ public class Monster extends Rectangle {
 		findRoute(mark, x, y, Integer.MAX_VALUE, lp);
 
 		for ( int i = 0; i < lp.size(); i++ ) {
-			lp.set(i, new Point(StateGame.tileSize * (lp.get(i).getX() + 0.5f), StateGame.tileSize * (lp.get(i).getY() + 0.5f)));
+			lp.set(i, new Point(48 * (lp.get(i).getX() + 0.5f), 48 * (lp.get(i).getY() + 0.5f)));
 		}
 
 		return lp;
@@ -163,7 +170,8 @@ public class Monster extends Rectangle {
 		for ( int y = 0; y < worldObj.loadedLevel.height; y++ ) {
 			for ( int x = 0; x < worldObj.loadedLevel.width; x++ ) {
 				if ( worldObj.loadedLevel.getTile(x, y) == '-' ) {
-					pathLocations.add(new Point((x + 0.5f) * StateGame.tileSize, (y + 0.5f) * StateGame.tileSize));
+					// pathLocations.add(new Point((x + 0.5f) * StateGame.tileSize, (y + 0.5f) *
+					// StateGame.tileSize)); // uncomment - this is an error
 				}
 			}
 		}
@@ -180,6 +188,8 @@ public class Monster extends Rectangle {
 
 	public void update(GameContainer gc, StateBasedGame sbg, int delta) {
 		float dRatio = delta / 9f;
+		speed = 0.8f * (2 - (health / maxHealth) * 2f);
+		// System.out.println("asd");
 		// Point nextPath = getClosestPath();
 		// if (nextPath != null) {
 		// float distance = MathHelper.getDistance(this.getCenterX(), this.getCenterY(),
@@ -216,9 +226,10 @@ public class Monster extends Rectangle {
 		y += Math.sin(Math.toRadians(angle)) * speed * dRatio;
 	}
 
-	public void draw(GameContainer gc, StateBasedGame sbg, Graphics g, int startingPointX, int startingPointY) {
-		g.setColor(Color.red.darker());
-		g.fillRect(startingPointX + getX(), startingPointY + getY(), width, height);
+	public void draw(GameContainer gc, StateBasedGame sbg, Graphics g) {
+		g.setColor(new Color(health / maxHealth, 0f, 0f, 1f));
+		g.fillRect(Camera.xOffset + getX() * Camera.scale, Camera.yOffset + getY() * Camera.scale, width * Camera.scale,
+				height * Camera.scale);
 		// for (int j = 0; j < route.size(); j++) {
 		// if (route.get(j) != null) {
 		// g.fillOval(startingPointX + route.get(j).getX() - 5, startingPointY +
@@ -226,6 +237,10 @@ public class Monster extends Rectangle {
 		// }
 		// }
 
+	}
+
+	public int getPathSize() {
+		return route.size();
 	}
 
 	@Override
@@ -239,8 +254,7 @@ public class Monster extends Rectangle {
 	}
 
 	public Point getCurrentTile() {
-		return new Point((float) Math.floor(getCenterX() / StateGame.tileSize),
-				(float) Math.floor(getCenterY() / StateGame.tileSize));
+		return new Point((float) Math.floor(getCenterX() / 48), (float) Math.floor(getCenterY() / 48));
 	}
 
 }

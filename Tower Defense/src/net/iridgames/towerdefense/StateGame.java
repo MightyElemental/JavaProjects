@@ -33,8 +33,9 @@ public class StateGame extends BasicGameState {
 
 	@Override
 	public void init(GameContainer gc, StateBasedGame sbg) throws SlickException {
-		String[] imgs = { "grass", "path", "base", "turret", "gatling" };
-		ResourceLoader.loadImageBatch(imgs);
+		Camera.init(gc, sbg, worldObj);
+		String[] imgs = { "grass", "path", "base", "turret", "gatling", "sniper" };
+		ResourceLoader.loadScaledImageBatch(imgs, Camera.tileSize / 48f);
 		initLevelImg(gc);
 	}
 
@@ -63,13 +64,13 @@ public class StateGame extends BasicGameState {
 			// TODO create renderer
 			// worldObj.getTowerList().get(i).draw(gc, sbg, g,
 			// startingPointX,startingPointY);
-			TowerV2.render(g, obj, startingPointX, startingPointY);
+			TowerV2.render(g, obj);
 		}
 	}
 
 	private void renderBulletTrails(GameContainer gc, StateBasedGame sbg, Graphics g) {
 		for ( int i = 0; i < worldObj.getBulletTrailList().size(); i++ ) {
-			BulletTrail.render(g, worldObj.getBulletTrailList().get(i), startingPointX, startingPointY);
+			BulletTrail.render(g, worldObj.getBulletTrailList().get(i), Camera.xOffset, Camera.yOffset);
 		}
 	}
 
@@ -78,8 +79,8 @@ public class StateGame extends BasicGameState {
 		for ( int i = 0; i < worldObj.getProjectileList().size(); i++ ) {
 			float x = (float) worldObj.getProjectileList().get(i)[0];
 			float y = (float) worldObj.getProjectileList().get(i)[1];
-			c.setCenterX(x + startingPointX);
-			c.setCenterY(y + startingPointY);
+			c.setCenterX(x * Camera.scale + Camera.xOffset);
+			c.setCenterY(y * Camera.scale + Camera.yOffset);
 			g.fill(c);
 		}
 	}
@@ -101,24 +102,20 @@ public class StateGame extends BasicGameState {
 			// + y * tileSize);
 			// }
 			// }
-			worldObj.monsterList.get(i).draw(gc, sbg, g, startingPointX, startingPointY);
+			worldObj.monsterList.get(i).draw(gc, sbg, g);
 		}
 	}
 
-	public static final int	tileSize		= 48;
-	public int				startingPointX	= 5;
-	public int				startingPointY	= 5;
-
 	private void renderTiles(GameContainer gc, Graphics g) {
 		g.setLineWidth(1);
-		startingPointX = gc.getWidth() / 2 - (worldObj.loadedLevel.width * tileSize) / 2;
-		startingPointY = gc.getHeight() / 2 - (worldObj.loadedLevel.height * tileSize) / 2;
 		for ( int y = 0; y < worldObj.loadedLevel.levelLayout.size(); y++ ) {
 			for ( int x = 0; x < worldObj.loadedLevel.levelLayout.get(y).size(); x++ ) {
 				changeColor(g, x, y);
-				g.fillRect(startingPointX + x * tileSize, startingPointY + y * tileSize, tileSize, tileSize);
+				g.fillRect(Camera.xOffset + x * Camera.tileSize, Camera.yOffset + y * Camera.tileSize, Camera.tileSize,
+						Camera.tileSize);
 				g.setColor(Color.black);
-				g.drawRect(startingPointX + x * tileSize, startingPointY + y * tileSize, tileSize, tileSize);
+				g.drawRect(Camera.xOffset + x * Camera.tileSize, Camera.yOffset + y * Camera.tileSize, Camera.tileSize,
+						Camera.tileSize);
 			}
 		}
 	}
@@ -127,25 +124,30 @@ public class StateGame extends BasicGameState {
 		switch (worldObj.loadedLevel.getTile(x, y)) {
 		case '-':// path
 			g.setColor(new Color(0f, 0f, 0f, 0f));
-			g.drawImage(ResourceLoader.loadImage("path"), startingPointX + x * tileSize, startingPointY + y * tileSize);
+			g.drawImage(ResourceLoader.loadImage("path"), Camera.xOffset + x * Camera.tileSize,
+					Camera.yOffset + y * Camera.tileSize);
 			break;
 		case 'u':// usable to player
 			g.setColor(new Color(0f, 0f, 0f, 0f));
-			g.drawImage(ResourceLoader.loadImage("base"), startingPointX + x * tileSize, startingPointY + y * tileSize);
+			g.drawImage(ResourceLoader.loadImage("base"), Camera.xOffset + x * Camera.tileSize,
+					Camera.yOffset + y * Camera.tileSize);
 			break;
 		case 'x':// scenary
 			g.setColor(new Color(0f, 0f, 0f, 0f));
-			g.drawImage(ResourceLoader.loadImage("grass"), startingPointX + x * tileSize, startingPointY + y * tileSize);
+			g.drawImage(ResourceLoader.loadImage("grass"), Camera.xOffset + x * Camera.tileSize,
+					Camera.yOffset + y * Camera.tileSize);
 			break;
 		case 's':// spawn
 			g.setColor(Color.gray.darker());
 			break;
 		case 'g':// goal
-			g.drawImage(ResourceLoader.loadImage("turret"), startingPointX + x * tileSize, startingPointY + y * tileSize);
+			g.drawImage(ResourceLoader.loadImage("turret"), Camera.xOffset + x * Camera.tileSize,
+					Camera.yOffset + y * Camera.tileSize);
 			g.setColor(new Color(0f, 0f, 0f, 0f));
 			break;
 		default:
-			g.drawImage(ResourceLoader.loadImage("null"), startingPointX + x * tileSize, startingPointY + y * tileSize);
+			g.drawImage(ResourceLoader.loadImage("null"), Camera.xOffset + x * Camera.tileSize,
+					Camera.yOffset + y * Camera.tileSize);
 			break;
 		}
 	}
@@ -172,10 +174,15 @@ public class StateGame extends BasicGameState {
 		}
 	}
 
+	int ticks = 0;
+
 	@Override
 	public void update(GameContainer gc, StateBasedGame sbg, int delta) throws SlickException {
 		// worldObj.loadedLevel = worldObj.levelList.get(selectedChar % 4);
-		worldObj.update(gc, sbg, delta);
+		ticks++;
+		//if ( ticks % 2 == 0 ) {
+			worldObj.update(gc, sbg, delta);
+		//}
 	}
 
 	@Override
@@ -196,6 +203,7 @@ public class StateGame extends BasicGameState {
 		// worldObj.loadedLevel.setTile((x - startingPointX) / tileSize, (y -
 		// startingPointY) / tileSize,
 		// charList[selectedChar]);
+		Camera.mouseDragged(oldx, oldy, x, y);
 	}
 
 	@Override
@@ -203,14 +211,18 @@ public class StateGame extends BasicGameState {
 		// worldObj.loadedLevel.setTile((x - startingPointX) / tileSize, (y -
 		// startingPointY) / tileSize,
 		// charList[selectedChar]);
-		char c = worldObj.loadedLevel.getTile((x - startingPointX) / tileSize, (y - startingPointY) / tileSize);
+		char c = worldObj.loadedLevel.getTile((x - Camera.xOffset) / Camera.tileSize, (y - Camera.yOffset) / Camera.tileSize);
 		if ( c == 'u' ) {
 			// worldObj.addTower(new TowerCannon(worldObj, (x - startingPointX) / tileSize,
 			// (y - startingPointY) / tileSize));
 			// {x, y, angle, charge, level, removeFlag, targetType, type, ID}
-			int newx = (x - startingPointX) / tileSize;
-			int newy = (y - startingPointY) / tileSize;
-			worldObj.addTower(newx * tileSize, newy * tileSize, 0, 0, 0, TowerV2.TARGET_CLOSEST, TowerV2.TYPE_SNIPER);
+			int newx = (int) ((x - Camera.xOffset) / Camera.tileSize);
+			int newy = (int) ((y - Camera.yOffset) / Camera.tileSize);
+			if ( button == 0 ) {
+				worldObj.addTower(newx * 48, newy * 48, 0, 0, 0, TowerV2.TARGET_MOST_HEALTH, TowerV2.TYPE_SNIPER);
+			} else {
+				worldObj.addTower(newx * 48, newy * 48, 0, 0, 0, rand.nextInt(5), TowerV2.TYPE_GATLING);
+			}
 		}
 	}
 

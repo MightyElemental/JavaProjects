@@ -28,6 +28,22 @@ public class ResourceLoader {
 		}
 	}
 
+	public static void loadScaledImageBatch(String[] imgs, int width, int height) {
+		for ( String img : imgs ) {
+			Image i = loadImage(img);
+			imageLoads.put(i.getName(), i.getScaledCopy(width, height));
+			System.out.println("Rescaled \t" + width + "w " + height + "h");
+		}
+	}
+
+	public static void loadScaledImageBatch(String[] imgs, float scale) {
+		for ( String img : imgs ) {
+			Image i = loadImage(img);
+			imageLoads.put(i.getName(), i.getScaledCopy(scale));
+			System.out.println("Rescaled \t" + scale + "x");
+		}
+	}
+
 	/**
 	 * Loads an image from the 'assets/textures' package
 	 * 
@@ -66,7 +82,7 @@ public class ResourceLoader {
 			}
 			imageLoads.put(location, loadedImage);
 		}
-
+		loadedImage.setName(location);
 		return loadedImage;
 	}
 

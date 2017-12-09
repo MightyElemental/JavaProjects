@@ -2,7 +2,6 @@ package net.iridgames.towerdefense.towers;
 
 import org.newdawn.slick.geom.Circle;
 
-import net.iridgames.towerdefense.StateGame;
 import net.iridgames.towerdefense.monsters.Monster;
 import net.iridgames.towerdefense.world.World;
 
@@ -16,8 +15,8 @@ public class ProjectileV2 {
 	public static void update(Object[] data, World worldObj, int delta) {
 		setTempVars(data);
 
-		if ( x > worldObj.loadedLevel.width * StateGame.tileSize || x < 0 ) delete = true;
-		if ( y > worldObj.loadedLevel.height * StateGame.tileSize || y < 0 ) delete = true;
+		if ( x > worldObj.loadedLevel.width * 48 || x < 0 ) delete = true;
+		if ( y > worldObj.loadedLevel.height * 48 || y < 0 ) delete = true;
 		if ( delete ) {
 			saveVarsToArray(data);
 			return;
