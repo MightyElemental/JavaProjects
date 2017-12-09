@@ -35,7 +35,7 @@ public class StateGame extends BasicGameState {
 	public void init(GameContainer gc, StateBasedGame sbg) throws SlickException {
 		Camera.init(gc, sbg, worldObj);
 		String[] imgs = { "grass", "path", "base", "turret", "gatling", "sniper" };
-		ResourceLoader.loadScaledImageBatch(imgs, Camera.tileSize / 48f);
+		ResourceLoader.loadImageBatch(imgs);
 		initLevelImg(gc);
 	}
 
@@ -48,7 +48,7 @@ public class StateGame extends BasicGameState {
 
 	@Override
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
-		levelImg.draw();
+		levelImg.getScaledCopy(Camera.scale).draw(Camera.xOffset, Camera.yOffset);
 		changeColor(g, charList[selectedChar]);
 		g.fillRect(gc.getWidth() - 50, 100, 25, 25);
 		g.setColor(Color.black);
@@ -111,11 +111,9 @@ public class StateGame extends BasicGameState {
 		for ( int y = 0; y < worldObj.loadedLevel.levelLayout.size(); y++ ) {
 			for ( int x = 0; x < worldObj.loadedLevel.levelLayout.get(y).size(); x++ ) {
 				changeColor(g, x, y);
-				g.fillRect(Camera.xOffset + x * Camera.tileSize, Camera.yOffset + y * Camera.tileSize, Camera.tileSize,
-						Camera.tileSize);
-				g.setColor(Color.black);
-				g.drawRect(Camera.xOffset + x * Camera.tileSize, Camera.yOffset + y * Camera.tileSize, Camera.tileSize,
-						Camera.tileSize);
+				g.fillRect(x * 48, y * 48, 48, 48);
+				g.setColor(new Color(0f, 0f, 0f, 0.5f));
+				g.drawRect(x * 48, y * 48, 48, 48);
 			}
 		}
 	}
@@ -124,30 +122,25 @@ public class StateGame extends BasicGameState {
 		switch (worldObj.loadedLevel.getTile(x, y)) {
 		case '-':// path
 			g.setColor(new Color(0f, 0f, 0f, 0f));
-			g.drawImage(ResourceLoader.loadImage("path"), Camera.xOffset + x * Camera.tileSize,
-					Camera.yOffset + y * Camera.tileSize);
+			g.drawImage(ResourceLoader.loadImage("path"), x * 48, y * 48);
 			break;
 		case 'u':// usable to player
 			g.setColor(new Color(0f, 0f, 0f, 0f));
-			g.drawImage(ResourceLoader.loadImage("base"), Camera.xOffset + x * Camera.tileSize,
-					Camera.yOffset + y * Camera.tileSize);
+			g.drawImage(ResourceLoader.loadImage("base"), x * 48, y * 48);
 			break;
 		case 'x':// scenary
 			g.setColor(new Color(0f, 0f, 0f, 0f));
-			g.drawImage(ResourceLoader.loadImage("grass"), Camera.xOffset + x * Camera.tileSize,
-					Camera.yOffset + y * Camera.tileSize);
+			g.drawImage(ResourceLoader.loadImage("grass"), x * 48, y * 48);
 			break;
 		case 's':// spawn
 			g.setColor(Color.gray.darker());
 			break;
 		case 'g':// goal
-			g.drawImage(ResourceLoader.loadImage("turret"), Camera.xOffset + x * Camera.tileSize,
-					Camera.yOffset + y * Camera.tileSize);
+			g.drawImage(ResourceLoader.loadImage("turret"), x * 48, y * 48);
 			g.setColor(new Color(0f, 0f, 0f, 0f));
 			break;
 		default:
-			g.drawImage(ResourceLoader.loadImage("null"), Camera.xOffset + x * Camera.tileSize,
-					Camera.yOffset + y * Camera.tileSize);
+			g.drawImage(ResourceLoader.loadImage("null"), Camera.xOffset + x * 48, Camera.yOffset + y * 48);
 			break;
 		}
 	}
@@ -180,9 +173,9 @@ public class StateGame extends BasicGameState {
 	public void update(GameContainer gc, StateBasedGame sbg, int delta) throws SlickException {
 		// worldObj.loadedLevel = worldObj.levelList.get(selectedChar % 4);
 		ticks++;
-		//if ( ticks % 2 == 0 ) {
-			worldObj.update(gc, sbg, delta);
-		//}
+		// if ( ticks % 2 == 0 ) {
+		worldObj.update(gc, sbg, delta);
+		// }
 	}
 
 	@Override
@@ -221,7 +214,7 @@ public class StateGame extends BasicGameState {
 			if ( button == 0 ) {
 				worldObj.addTower(newx * 48, newy * 48, 0, 0, 0, TowerV2.TARGET_MOST_HEALTH, TowerV2.TYPE_SNIPER);
 			} else {
-				worldObj.addTower(newx * 48, newy * 48, 0, 0, 0, rand.nextInt(5), TowerV2.TYPE_GATLING);
+				worldObj.addTower(newx * 48, newy * 48, 0, 0, 0, TowerV2.TARGET_CLOSEST, TowerV2.TYPE_GATLING);
 			}
 		}
 	}
@@ -243,7 +236,17 @@ public class StateGame extends BasicGameState {
 		if ( key == Input.KEY_SPACE ) {
 			worldObj.spawn();
 		}
+		if ( key == Input.KEY_LCONTROL || key == Input.KEY_RCONTROL ) {
+			TowerDefense.isCtrlDown = true;
+		}
 		super.keyPressed(key, c);
+	}
+
+	@Override
+	public void keyReleased(int key, char c) {
+		if ( key == Input.KEY_LCONTROL || key == Input.KEY_RCONTROL ) {
+			TowerDefense.isCtrlDown = false;
+		}
 	}
 
 }

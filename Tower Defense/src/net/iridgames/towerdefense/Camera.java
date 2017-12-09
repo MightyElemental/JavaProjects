@@ -7,7 +7,7 @@ import net.iridgames.towerdefense.world.World;
 
 public class Camera {
 
-	public static float xOffset, yOffset, scale = 40f / 48f;
+	public static float xOffset, yOffset, scale = 48f / 48f;
 
 	public static float tileSize = 48;
 
@@ -18,6 +18,10 @@ public class Camera {
 	}
 
 	public static void mouseDragged(int oldx, int oldy, int x, int y) {
+		if ( TowerDefense.isCtrlDown ) {
+			xOffset += x - oldx;
+			yOffset += y - oldy;
+		}
 		// worldObj.loadedLevel.setTile((x - startingPointX) / tileSize, (y -
 		// startingPointY) / tileSize,
 		// charList[selectedChar]);

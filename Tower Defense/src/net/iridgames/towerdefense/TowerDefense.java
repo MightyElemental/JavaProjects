@@ -10,14 +10,15 @@ import org.newdawn.slick.state.StateBasedGame;
 import net.iridgames.towerdefense.world.World;
 
 public class TowerDefense extends StateBasedGame {
-	
-	
-	public static World world = new World();
-	public static StateGame sGame = new StateGame(world);
-	
-	public static int money = 60000;
-	
-	public TowerDefense( String title ) {
+
+	public static World		world	= new World();
+	public static StateGame	sGame	= new StateGame(world);
+
+	public static boolean isCtrlDown;
+
+	public static int money = 600;
+
+	public TowerDefense(String title) {
 		super(title);
 		AppGameContainer appGc;
 		try {
@@ -34,25 +35,25 @@ public class TowerDefense extends StateBasedGame {
 			System.exit(1);
 		}
 	}
-	
+
 	public static void main(String[] args) {
 		System.setProperty("java.library.path", "lib");
 		String os = System.getProperty("os.name").toLowerCase();
 		String path = "windows";
-		if (os.contains("mac")) {
+		if ( os.contains("mac") ) {
 			path = "macosx";
-		} else if (os.contains("nix") || os.contains("nux") || os.contains("aix")) {
+		} else if ( os.contains("nix") || os.contains("nux") || os.contains("aix") ) {
 			path = "linux";
-		} else if (os.contains("sunos")) {
+		} else if ( os.contains("sunos") ) {
 			path = "solaris";
 		}
 		System.setProperty("org.lwjgl.librarypath", new File("lib/natives/" + path).getAbsolutePath());
 		new TowerDefense("Generic Tower Defense");
 	}
-	
+
 	@Override
 	public void initStatesList(GameContainer gc) throws SlickException {
 		this.addState(sGame);
 	}
-	
+
 }

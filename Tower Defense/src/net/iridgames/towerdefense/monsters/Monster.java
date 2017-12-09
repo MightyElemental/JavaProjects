@@ -188,7 +188,7 @@ public class Monster extends Rectangle {
 
 	public void update(GameContainer gc, StateBasedGame sbg, int delta) {
 		float dRatio = delta / 9f;
-		speed = 0.8f * (2 - (health / maxHealth) * 2f);
+		speed = 0.5f * (1 - (health / maxHealth))+0.1f;
 		// System.out.println("asd");
 		// Point nextPath = getClosestPath();
 		// if (nextPath != null) {
