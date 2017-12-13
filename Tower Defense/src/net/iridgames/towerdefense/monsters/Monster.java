@@ -115,44 +115,58 @@ public class Monster extends Rectangle {
 		// }
 		// recursively fill surrounding pixels
 		// (this is equivelant to depth-first search)
-
-		flood(mark, x - 1, y, currentNum);
-		flood(mark, x + 1, y, currentNum);
-		flood(mark, x, y - 1, currentNum);
-		flood(mark, x, y + 1, currentNum);
+		int rand = worldObj.rand.nextInt(2);
+		if ( rand == 0 ) {
+			flood(mark, x - 1, y, currentNum);
+			flood(mark, x + 1, y, currentNum);
+		} else {
+			flood(mark, x + 1, y, currentNum);
+			flood(mark, x - 1, y, currentNum);
+		}
+		rand = worldObj.rand.nextInt(2);
+		if ( rand == 0 ) {
+			flood(mark, x, y - 1, currentNum);
+			flood(mark, x, y + 1, currentNum);
+		} else {
+			flood(mark, x, y + 1, currentNum);
+			flood(mark, x, y - 1, currentNum);
+		}
 		return mark;
 	}
 
 	private List<Point> findRoute(int[][] mark, int x, int y, int lowestNum, List<Point> lp) {
-		Point lowestPoint = null;
+		List<Point> potentialPoints = new ArrayList<Point>();
 		// System.out.println(mark[x][y] + "|" + x + "|" + y + "|" + lowestNum);
+		int newLowest = lowestNum;
 
 		if ( x < worldObj.loadedLevel.width - 1 ) {
 			if ( mark[x + 1][y] < lowestNum && mark[x + 1][y] != 0 ) {
-				lowestNum = mark[x + 1][y];
-				lowestPoint = new Point(x + 1, y);
+				newLowest = mark[x + 1][y];
+				potentialPoints.add(new Point(x + 1, y));
 			}
 		}
 		if ( x > 0 ) {
 			if ( mark[x - 1][y] < lowestNum && mark[x - 1][y] != 0 ) {
-				lowestNum = mark[x - 1][y];
-				lowestPoint = new Point(x - 1, y);
+				newLowest = mark[x - 1][y];
+				potentialPoints.add(new Point(x - 1, y));
 			}
 		}
 		if ( y < worldObj.loadedLevel.height - 1 ) {
 			if ( mark[x][y + 1] < lowestNum && mark[x][y + 1] != 0 ) {
-				lowestNum = mark[x][y + 1];
-				lowestPoint = new Point(x, y + 1);
+				newLowest = mark[x][y + 1];
+				potentialPoints.add(new Point(x, y + 1));
 			}
 		}
 		if ( y > 0 ) {
 			if ( mark[x][y - 1] < lowestNum && mark[x][y - 1] != 0 ) {
-				lowestNum = mark[x][y - 1];
-				lowestPoint = new Point(x, y - 1);
+				newLowest = mark[x][y - 1];
+				potentialPoints.add(new Point(x, y - 1));
 			}
 		}
 
-		if ( lowestPoint == null ) { return lp; }
+		if ( potentialPoints.isEmpty() ) { return lp; }
+		lowestNum = newLowest;
+		Point lowestPoint = potentialPoints.get(worldObj.rand.nextInt(potentialPoints.size()));
 
 		lp.add(0, lowestPoint);
 
@@ -188,7 +202,7 @@ public class Monster extends Rectangle {
 
 	public void update(GameContainer gc, StateBasedGame sbg, int delta) {
 		float dRatio = delta / 9f;
-		speed = 0.5f * (1 - (health / maxHealth))+0.1f;
+		// speed = 0.5f * (1 - (health / maxHealth)) + 0.1f;
 		// System.out.println("asd");
 		// Point nextPath = getClosestPath();
 		// if (nextPath != null) {
@@ -230,13 +244,25 @@ public class Monster extends Rectangle {
 		g.setColor(new Color(health / maxHealth, 0f, 0f, 1f));
 		g.fillRect(Camera.xOffset + getX() * Camera.scale, Camera.yOffset + getY() * Camera.scale, width * Camera.scale,
 				height * Camera.scale);
-		// for (int j = 0; j < route.size(); j++) {
-		// if (route.get(j) != null) {
-		// g.fillOval(startingPointX + route.get(j).getX() - 5, startingPointY +
+		// for ( int j = 0; j < route.size(); j++ ) {
+		// if ( route.get(j) != null ) {
+		// g.fillOval(Camera.xOffset + route.get(j).getX() - 5, Camera.yOffset +
 		// route.get(j).getY() - 5, 10, 10);
+		// g.drawString("c"+j, Camera.xOffset + route.get(j).getX(), Camera.yOffset +
+		// route.get(j).getY());
 		// }
 		// }
 
+	}
+
+	public void drawFlood(Graphics g) {
+		for ( int x = 0; x < mark.length; x++ ) {
+			for ( int y = 0; y < mark[x].length; y++ ) {
+				if ( mark[x][y] != 0 ) {
+					g.drawString("c" + mark[x][y], Camera.xOffset + x * Camera.tileSize, Camera.yOffset + y * Camera.tileSize);
+				}
+			}
+		}
 	}
 
 	public int getPathSize() {

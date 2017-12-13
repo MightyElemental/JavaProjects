@@ -214,7 +214,7 @@ public class StateGame extends BasicGameState {
 			if ( button == 0 ) {
 				worldObj.addTower(newx * 48, newy * 48, 0, 0, 0, TowerV2.TARGET_MOST_HEALTH, TowerV2.TYPE_SNIPER);
 			} else {
-				worldObj.addTower(newx * 48, newy * 48, 0, 0, 0, TowerV2.TARGET_CLOSEST, TowerV2.TYPE_GATLING);
+				worldObj.addTower(newx * 48, newy * 48, 0, 0, 0, TowerV2.TARGET_LEAST_HEALTH, TowerV2.TYPE_GATLING);
 			}
 		}
 	}

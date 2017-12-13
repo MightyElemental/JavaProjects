@@ -32,7 +32,7 @@ public class World {
 
 	public World() {
 		loadLevels();
-		loadedLevel = levelList.get(6);
+		loadedLevel = levelList.get(2);
 	}
 
 	public void loadLevels() {
@@ -45,9 +45,10 @@ public class World {
 
 	public void update(GameContainer gc, StateBasedGame sbg, int delta) {
 		time += delta;
-		if ( monsterList.size() < 1 * (time / 1000f + 1) && monsterList.size() < 40 ) {
-			spawn();
-		}
+		// if ( monsterList.size() < 1 * (time / 1000f + 1) && monsterList.size() < 40 )
+		// {
+		// spawn();
+		// }
 		for ( int i = 0; i < monsterList.size(); i++ ) {
 			monsterList.get(i).update(gc, sbg, delta);
 			if ( monsterList.get(i).dead ) {
@@ -79,7 +80,7 @@ public class World {
 		}
 	}
 
-	Random rand = new Random(System.nanoTime());
+	public Random rand = new Random(System.nanoTime());
 
 	public List<Object[]> getTowerList() {
 		return towerList;
@@ -101,7 +102,7 @@ public class World {
 			Monster m = new Monster(this, x, y, 70 * (time / 10000f + 1));
 			monsterList.add(m);
 		}
-	
+
 	}
 
 	// {posX, posY, angle, speed, damage, removeFlag}
