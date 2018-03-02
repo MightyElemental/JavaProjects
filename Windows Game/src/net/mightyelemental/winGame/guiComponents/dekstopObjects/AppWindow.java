@@ -16,6 +16,8 @@ import net.mightyelemental.winGame.guiComponents.GUIComponent;
 
 public class AppWindow extends RoundedRectangle {
 
+	private TaskbarApp linkedTaskbarApp;
+
 	public Image windowButtons;
 
 	public String title;
@@ -53,24 +55,22 @@ public class AppWindow extends RoundedRectangle {
 		// }
 	}
 
-	private float minimizeX, minimizeY, minimizeScale = 1;
+	private float minimizeScale = 0;
 
 	private void animateMinimize(GameContainer gc, StateBasedGame sbg, Graphics g) {
-		if ( minimizeY < 680 ) {
+		if ( Math.round(minimizeScale * 100) / 100f < 1 ) {
 			g.setColor(Color.gray);
-			g.fillRoundRect(minimizeX, minimizeY, getWidth() / minimizeScale, getHeight() / minimizeScale,
-					15);
+			float x = this.getX() * (1 - minimizeScale) + linkedTaskbarApp.getX() * minimizeScale;
+			float y = this.getY() + Math.abs((720 - this.getY()) * minimizeScale * minimizeScale);
+			float width = this.getWidth() * (1 - minimizeScale) + linkedTaskbarApp.getWidth() * minimizeScale;
+			float height = this.getHeight() * (1 - minimizeScale) + linkedTaskbarApp.getHeight() * minimizeScale;
+			g.fillRoundRect(x, y, width, height, (int) (5 + 10 * (1 - minimizeScale)));
 		}
 	}
 
 	public void update(GameContainer gc, StateBasedGame sbg, int delta) {
-		if ( toMinimise ) {
-			minimizeScale += 0.1f;
-			// if ( minimizeX >= 100 ) minimizeX--;
-			if ( minimizeY < 680 ) minimizeY += 18;
-		} else {
-			minimizeX = getX();
-			minimizeY = getY();
+		if ( Math.round(minimizeScale * 100) / 100f < 1 && toMinimise ) {
+			minimizeScale += 0.02f;
 		}
 	}
 
@@ -90,6 +90,14 @@ public class AppWindow extends RoundedRectangle {
 				}
 			}
 		}
+	}
+
+	public TaskbarApp getLinkedTaskbarApp() {
+		return linkedTaskbarApp;
+	}
+
+	public void setLinkedTaskbarApp(TaskbarApp linkedTaskbarApp) {
+		this.linkedTaskbarApp = linkedTaskbarApp;
 	}
 
 }

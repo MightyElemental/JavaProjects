@@ -16,8 +16,9 @@ public class TaskbarApp extends GUIButton {
 	public AppWindow linkedWindow;
 	
 	public TaskbarApp( float x, String uid, AppWindow linkedWindow ) {
-		super(x, 720 - 43, 86, 43, uid + "_appwindow");
+		super(x, 720 - 43, 86, 43, uid + "_taskbarapp");
 		this.linkedWindow = linkedWindow;
+		this.linkedWindow.setLinkedTaskbarApp(this);
 	}
 	
 	public void draw(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
