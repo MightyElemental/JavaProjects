@@ -7,6 +7,7 @@ import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
+import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.RoundedRectangle;
 import org.newdawn.slick.state.StateBasedGame;
 
@@ -18,34 +19,42 @@ public class AppWindow extends RoundedRectangle {
 
 	private TaskbarApp linkedTaskbarApp;
 
-	public Image windowButtons;
+	public Image	windowButtons;
+	public Image	content;
+	public Graphics	contentGraphics;
 
-	public String title;
+	private String title;
 
-	public boolean toMinimise, fullscreen, toClose;
+	public boolean toMinimise, isMinimised, fullscreen, toClose;
 
 	public List<GUIComponent> menuButtons = new ArrayList<GUIComponent>();
 
 	public AppWindow(float x, float y, float width, float height, String title) {
-		super(x, y, width, height, 15);
+		super(x, y, width, height, 3);
 		this.title = title;
+		try {
+			content = new Image((int) (width - 3), (int) height - 28);
+			contentGraphics = content.getGraphics();
+		} catch (SlickException e) {
+			e.printStackTrace();
+		}
 		windowButtons = ResourceLoader.loadImage("desktop.windowButtons").getScaledCopy(21f / 15f);
-		menuButtons.add(new GUIButton(x + width - 85, y + 2, 21, 21, "minimise"));
-		menuButtons.add(new GUIButton(x + width - 60, y + 2, 21, 21, "maximise"));
-		menuButtons.add(new GUIButton(x + width - 35, y + 2, 21, 21, "exit"));
+		menuButtons.add(new GUIButton(x + width - 85, y + 2, 21, 21, "#minimise"));
+		menuButtons.add(new GUIButton(x + width - 60, y + 2, 21, 21, "#maximise"));
+		menuButtons.add(new GUIButton(x + width - 35, y + 2, 21, 21, "#exit"));
 	}
 
 	private static final long serialVersionUID = 1L;
 
 	public void draw(GameContainer gc, StateBasedGame sbg, Graphics g) {
-		if ( toMinimise ) {
+		if ( toMinimise || (isMinimised && !toMinimise) ) {
 			animateMinimize(gc, sbg, g);
 			return;
 		}
 		g.setColor(Color.lightGray);
 		g.fill(this);
 		g.setColor(new Color(30, 79, 178));
-		g.fillRoundRect(x, y, width - 1, 25, 15);
+		g.fillRoundRect(x, y, width - 1, 25, 3);
 		g.fillRect(x, y + 10, width - 1, 15);
 		windowButtons.draw(x + width - 85, y + 2);
 		g.setColor(Color.white);
@@ -53,42 +62,98 @@ public class AppWindow extends RoundedRectangle {
 		// for (int i = 0; i < menuButtons.size(); i++) {
 		// g.draw(menuButtons.get(i));
 		// }
+		drawContent(contentGraphics);
+		g.drawImage(content, (int) getX() + 1, (int) getY() + 26);
+	}
+
+	public void drawContent(Graphics g) {
+		g.setColor(Color.blue);
+		g.fillRect(0, 0, 1000, 1000);
 	}
 
 	private float minimizeScale = 0;
 
 	private void animateMinimize(GameContainer gc, StateBasedGame sbg, Graphics g) {
-		if ( Math.round(minimizeScale * 100) / 100f < 1 ) {
-			g.setColor(Color.gray);
-			float x = this.getX() * (1 - minimizeScale) + linkedTaskbarApp.getX() * minimizeScale;
-			float y = this.getY() + Math.abs((720 - this.getY()) * minimizeScale * minimizeScale);
-			float width = this.getWidth() * (1 - minimizeScale) + linkedTaskbarApp.getWidth() * minimizeScale;
-			float height = this.getHeight() * (1 - minimizeScale) + linkedTaskbarApp.getHeight() * minimizeScale;
-			g.fillRoundRect(x, y, width, height, (int) (5 + 10 * (1 - minimizeScale)));
-		}
+		// if ( (!isMinimised && toMinimise) || (isMinimised && !toMinimise) ) {
+		g.setColor(Color.gray);
+		float x = this.getX() * (1 - minimizeScale) + linkedTaskbarApp.getX() * minimizeScale;
+		float y = this.getY() + Math.abs((720 - this.getY()) * minimizeScale * minimizeScale);
+		float width = this.getWidth() * (1 - minimizeScale) + linkedTaskbarApp.getWidth() * minimizeScale;
+		float height = this.getHeight() * (1 - minimizeScale) + linkedTaskbarApp.getHeight() * minimizeScale;
+		g.fillRoundRect(x, y, width, height, (int) (5 + 10 * (1 - minimizeScale)));
+		// }
 	}
 
 	public void update(GameContainer gc, StateBasedGame sbg, int delta) {
-		if ( Math.round(minimizeScale * 100) / 100f < 1 && toMinimise ) {
-			minimizeScale += 0.02f;
+		if ( toMinimise ) {
+			if ( Math.round(minimizeScale * 100) / 100f < 1 ) {
+				minimizeScale += 0.02f;
+			} else {
+				isMinimised = true;
+			}
+		} else if ( isMinimised ) {
+			if ( Math.round(minimizeScale * 100) / 100f > 0 ) {
+				minimizeScale -= 0.02f;
+			} else {
+				isMinimised = false;
+			}
 		}
 	}
 
-	public void onMousePressed(int button, int x, int y) {
+	private boolean canDrag = false;
+
+	public void mouseDragged(int x, int y) {
+		this.changeXBy(x);
+		this.changeYBy(y);
+	}
+
+	public void onMouseReleased(int button) {
+		canDrag = false;
+	}
+
+	public boolean onMousePressed(int button, int x, int y) {
+		boolean flag = false;
+		if ( isMinimised ) return false;
 		for ( int i = 0; i < menuButtons.size(); i++ ) {
 			if ( menuButtons.get(i).contains(x, y) ) {
 				switch (menuButtons.get(i).getUID()) {
-				case "EXIT":
-					toClose = true;
+				case "#EXIT":
+					if ( !toMinimise ) {
+						toClose = true;
+					}
 					break;
-				case "MINIMISE":
-					toMinimise = true;
+				case "#MINIMISE":
+					if ( !toMinimise ) {
+						toMinimise = true;
+					}
+					System.out.println(getLinkedTaskbarApp().getUID());
 					break;
-				case "MAXIMISE":
+				case "#MAXIMISE":
 					fullscreen = true;
 					break;
 				}
+				flag = true;
 			}
+		}
+		if ( !flag && y < getY() + 27 ) {
+			canDrag = true;
+		}
+
+		return flag;
+
+	}
+
+	public void changeXBy(float x) {
+		super.setX(super.getX() + x);
+		for ( GUIComponent c : menuButtons ) {
+			c.setX(c.getX() + x);
+		}
+	}
+
+	public void changeYBy(float y) {
+		super.setY(super.getY() + y);
+		for ( GUIComponent c : menuButtons ) {
+			c.setY(c.getY() + y);
 		}
 	}
 
@@ -98,6 +163,14 @@ public class AppWindow extends RoundedRectangle {
 
 	public void setLinkedTaskbarApp(TaskbarApp linkedTaskbarApp) {
 		this.linkedTaskbarApp = linkedTaskbarApp;
+	}
+
+	public String getTitle() {
+		return this.title;
+	}
+
+	public boolean isDraggable() {
+		return canDrag;
 	}
 
 }

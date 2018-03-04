@@ -71,7 +71,7 @@ public class WindowsMain extends StateBasedGame {
 
 	@Override
 	public void initStatesList(GameContainer gc) throws SlickException {
-		// this.enterState(STATE_DESKTOP);
+		this.enterState(STATE_DESKTOP);
 	}
 
 }
