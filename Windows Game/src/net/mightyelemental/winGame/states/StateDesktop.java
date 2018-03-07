@@ -20,6 +20,7 @@ import net.mightyelemental.winGame.guiComponents.GUIComponent;
 import net.mightyelemental.winGame.guiComponents.dekstopObjects.AppWindow;
 import net.mightyelemental.winGame.guiComponents.dekstopObjects.StartWindow;
 import net.mightyelemental.winGame.guiComponents.dekstopObjects.TaskbarApp;
+import net.mightyelemental.winGame.programs.AppTest;
 
 public class StateDesktop extends BasicGameState {
 
@@ -67,7 +68,7 @@ public class StateDesktop extends BasicGameState {
 		}
 	}
 
-	public void drawWindows(GameContainer gc, StateBasedGame sbg, Graphics g) {
+	private void drawWindows(GameContainer gc, StateBasedGame sbg, Graphics g) {
 		for ( int i = 0; i < windowList.size(); i++ ) {
 			windowList.get(i).draw(gc, sbg, g);
 		}
@@ -93,8 +94,7 @@ public class StateDesktop extends BasicGameState {
 		for ( int i = 0; i < windowList.size(); i++ ) {
 			windowList.get(i).update(gc, sbg, delta);
 			if ( windowList.get(i).toClose ) {
-				AppWindow aw = windowList.remove(i);
-				taskbarAppOrder.remove(aw.getLinkedTaskbarApp().getUID());
+				deleteWindow(windowList.get(i));
 			}
 		}
 		for ( int i = 0; i < guiComponents.size(); i++ ) {
@@ -196,11 +196,20 @@ public class StateDesktop extends BasicGameState {
 	public void createNewWindow(int width, int height, String title) {
 		int x = 1280 / 2 - width / 2;
 		int y = 720 / 2 - height / 2;
-		AppWindow wa = new AppWindow(x, y, 800, 600, title);
+		AppWindow wa = new AppTest(x, y, 800, 600, title);
 		windowList.add(wa);
 		TaskbarApp t = new TaskbarApp(110, wa, taskbarAppOrder.size());
 		guiComponents.add(t);
 		taskbarAppOrder.add(t.getUID());
+	}
+
+	public void deleteWindow(AppWindow aw) {
+		windowList.remove(aw);
+		taskbarAppOrder.remove(aw.getLinkedTaskbarApp().getUID());
+		for ( AppWindow a : windowList ) {
+			TaskbarApp t = a.getLinkedTaskbarApp();
+			t.setIndex(taskbarAppOrder.indexOf(t.getUID()));
+		}
 	}
 
 	@Override
@@ -209,10 +218,17 @@ public class StateDesktop extends BasicGameState {
 			if ( g.getUID().equals(selectedUID) ) {
 				System.out.println(selectedUID);
 				g.onKeyPressed(key, c);
+				break;
 			}
 		}
+		for ( int i = windowList.size() - 1; i >= 0; i-- ) {
+			AppWindow aw = windowList.get(i);
+			if ( aw.isMinimised ) continue;
+			aw.keyPressed(key, c);
+			break;
+		}
 		if ( key == Input.KEY_I ) {
-			createNewWindow(800, 600, "test" + System.currentTimeMillis());
+			createNewWindow(800, 600, "test" + (System.currentTimeMillis() % 1234));
 		}
 	}
 

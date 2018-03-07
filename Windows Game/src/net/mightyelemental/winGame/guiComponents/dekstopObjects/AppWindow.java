@@ -15,7 +15,7 @@ import net.mightyelemental.winGame.ResourceLoader;
 import net.mightyelemental.winGame.guiComponents.GUIButton;
 import net.mightyelemental.winGame.guiComponents.GUIComponent;
 
-public class AppWindow extends RoundedRectangle {
+public abstract class AppWindow extends RoundedRectangle {
 
 	private TaskbarApp linkedTaskbarApp;
 
@@ -23,7 +23,12 @@ public class AppWindow extends RoundedRectangle {
 	public Image	content;
 	public Graphics	contentGraphics;
 
-	private String title;
+	private String			displayTitle;
+	private final String	baseTitle;
+
+	protected long	lastDrawTime;
+	private boolean	showFPS;
+	private int		tickCount;
 
 	public boolean toMinimise, isMinimised, fullscreen, toClose;
 
@@ -31,7 +36,8 @@ public class AppWindow extends RoundedRectangle {
 
 	public AppWindow(float x, float y, float width, float height, String title) {
 		super(x, y, width, height, 3);
-		this.title = title;
+		this.displayTitle = title;
+		this.baseTitle = title;
 		try {
 			content = new Image((int) (width - 3), (int) height - 28);
 			contentGraphics = content.getGraphics();
@@ -46,7 +52,13 @@ public class AppWindow extends RoundedRectangle {
 
 	private static final long serialVersionUID = 1L;
 
+	private String getFPSText() {
+		long ms = (System.nanoTime() - lastDrawTime);
+		return " (" + (Math.round(10000000000f / ms) / 10f) + "fps | " + (ms / 1000000) + "ms)";
+	}
+
 	public void draw(GameContainer gc, StateBasedGame sbg, Graphics g) {
+
 		if ( toMinimise || (isMinimised && !toMinimise) ) {
 			animateMinimize(gc, sbg, g);
 			return;
@@ -58,18 +70,17 @@ public class AppWindow extends RoundedRectangle {
 		g.fillRect(x, y + 10, width - 1, 15);
 		windowButtons.draw(x + width - 85, y + 2);
 		g.setColor(Color.white);
-		g.drawString(title, x + 15, y + 5);
+		g.drawString(displayTitle, x + 15, y + 5);
+
 		// for (int i = 0; i < menuButtons.size(); i++) {
 		// g.draw(menuButtons.get(i));
 		// }
 		drawContent(contentGraphics);
 		g.drawImage(content, (int) getX() + 1, (int) getY() + 26);
+		lastDrawTime = System.nanoTime();
 	}
 
-	public void drawContent(Graphics g) {
-		g.setColor(Color.blue);
-		g.fillRect(0, 0, 1000, 1000);
-	}
+	public abstract void drawContent(Graphics g);
 
 	private float minimizeScale = 0;
 
@@ -98,6 +109,10 @@ public class AppWindow extends RoundedRectangle {
 				isMinimised = false;
 			}
 		}
+		if ( tickCount % 110 == 0 && showFPS() ) {
+			displayTitle = baseTitle + getFPSText();
+		}
+		tickCount++;
 	}
 
 	private boolean canDrag = false;
@@ -166,11 +181,21 @@ public class AppWindow extends RoundedRectangle {
 	}
 
 	public String getTitle() {
-		return this.title;
+		return this.displayTitle;
 	}
 
 	public boolean isDraggable() {
 		return canDrag;
+	}
+
+	public abstract void keyPressed(int key, char c);
+
+	public boolean showFPS() {
+		return showFPS;
+	}
+
+	public void setShowFPS(boolean showFPS) {
+		this.showFPS = showFPS;
 	}
 
 }

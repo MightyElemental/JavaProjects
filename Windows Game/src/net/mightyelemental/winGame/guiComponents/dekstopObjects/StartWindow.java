@@ -35,5 +35,17 @@ public class StartWindow extends AppWindow {
 		// g.setColor(Color.white.darker());
 		// g.fillRect(211, gc.getHeight() - 440, 210, 350);
 	}
+
+	@Override
+	public void drawContent(Graphics g) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void keyPressed(int key, char c) {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }

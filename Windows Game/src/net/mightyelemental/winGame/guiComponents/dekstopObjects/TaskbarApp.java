@@ -15,10 +15,13 @@ public class TaskbarApp extends GUIButton {
 
 	// private int index = -1;
 
+	private final float startX;
+
 	public AppWindow linkedWindow;
 
 	public TaskbarApp(int x, AppWindow linkedWindow, int index) {
 		super(x, 720 - 43, 86, 43, linkedWindow.getTitle() + TASKBARAPP);
+		startX = x;
 		this.linkedWindow = linkedWindow;
 		this.linkedWindow.setLinkedTaskbarApp(this);
 		setIndex(index);
@@ -27,7 +30,7 @@ public class TaskbarApp extends GUIButton {
 	public void setIndex(int index) {
 		// this.index = index;
 		float xOffset = index * (this.getWidth() + 2);
-		this.setX(getX() + xOffset);
+		this.setX(startX + xOffset);
 	}
 
 	public void draw(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
@@ -46,7 +49,11 @@ public class TaskbarApp extends GUIButton {
 
 	@Override
 	public void onMousePressed(int button, int x, int y) {
-		this.linkedWindow.toMinimise = !this.linkedWindow.toMinimise;
+		if ( button == 0 ) {
+			this.linkedWindow.toMinimise = !this.linkedWindow.toMinimise;
+		} else if ( button == 1 ) {
+
+		}
 	}
 
 }
