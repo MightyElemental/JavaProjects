@@ -9,23 +9,22 @@ import org.newdawn.slick.state.StateBasedGame;
 import net.mightyelemental.winGame.ResourceLoader;
 
 public class StartWindow extends AppWindow {
-	
-	
+
 	private static final long serialVersionUID = 6373909456505514103L;
-	
+
 	public StartWindow() {
 		super(0, 219, 430, 458, "Start");
 	}
-	
+
 	private Image menu;
-	
+
 	public void init(GameContainer gc, StateBasedGame delta) throws SlickException {
 		menu = ResourceLoader.loadImage("desktop.startMenu");
 	}
-	
+
 	public void update(GameContainer gc, StateBasedGame sbg, int delta) {
 	}
-	
+
 	public void draw(GameContainer gc, StateBasedGame sbg, Graphics g) {
 		menu.draw(x, y);
 		// g.setColor(new Color(30, 79, 178));
@@ -37,15 +36,15 @@ public class StartWindow extends AppWindow {
 	}
 
 	@Override
-	public void drawContent(Graphics g) {
+	public void drawContent(Graphics g, int width, int height) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void keyPressed(int key, char c) {
 		// TODO Auto-generated method stub
-		
+
 	}
-	
+
 }

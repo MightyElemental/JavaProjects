@@ -70,7 +70,9 @@ public class StateDesktop extends BasicGameState {
 
 	private void drawWindows(GameContainer gc, StateBasedGame sbg, Graphics g) {
 		for ( int i = 0; i < windowList.size(); i++ ) {
+			// if ( windowList.size() > 0 ) {
 			windowList.get(i).draw(gc, sbg, g);
+			// }
 		}
 		if ( getComponent("#START") != null && getComponent("#START").isSelected() ) {
 			startWin.draw(gc, sbg, g);
@@ -93,7 +95,7 @@ public class StateDesktop extends BasicGameState {
 	public void updateWindows(GameContainer gc, StateBasedGame sbg, int delta) {
 		for ( int i = 0; i < windowList.size(); i++ ) {
 			windowList.get(i).update(gc, sbg, delta);
-			if ( windowList.get(i).toClose ) {
+			if ( windowList.get(i).toClose && windowList.get(i).isMinimised ) {
 				deleteWindow(windowList.get(i));
 			}
 		}

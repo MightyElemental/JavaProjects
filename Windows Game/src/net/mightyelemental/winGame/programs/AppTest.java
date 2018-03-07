@@ -27,18 +27,23 @@ public class AppTest extends AppWindow {
 	}
 
 	@Override
-	public void drawContent(Graphics g) {
+	public void drawContent(Graphics g, int width, int height) {
 		Color c = getRandomColor();
 		boolean banFlag = false;
 		g.setColor(c);
-		if ( c.getBlue() > 100 && c.getGreen() < 100 ) {
+		if ( true) {
 			banFlag = true;
 		}
-		for ( int x = 0; x < 20; x++ ) {
-			int i = rand.nextInt(200);
-			int y = rand.nextInt(150);
+		int i = rand.nextInt(200);
+		int y = rand.nextInt(150);
+		for ( int x = 0; x < 30; x++ ) {
+			i += rand.nextInt(3) - 1;
+			i = Math.abs(i);
+			y += rand.nextInt(3) - 1;
+			y = Math.abs(y);
+			if ( y > 150 ) y = 150;
+			if ( i > 200 ) i = 200;
 			if ( bannedPixels[i][y] ) {
-				x--;
 				continue;
 			}
 			g.fillRect(i * 4, y * 4, 4, 4);

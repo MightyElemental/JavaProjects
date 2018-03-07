@@ -57,7 +57,7 @@ public abstract class AppWindow extends RoundedRectangle {
 		return " (" + (Math.round(10000000000f / ms) / 10f) + "fps | " + (ms / 1000000) + "ms)";
 	}
 
-	public void draw(GameContainer gc, StateBasedGame sbg, Graphics g) {
+	public /**final*/ void draw(GameContainer gc, StateBasedGame sbg, Graphics g) {
 
 		if ( toMinimise || (isMinimised && !toMinimise) ) {
 			animateMinimize(gc, sbg, g);
@@ -75,12 +75,12 @@ public abstract class AppWindow extends RoundedRectangle {
 		// for (int i = 0; i < menuButtons.size(); i++) {
 		// g.draw(menuButtons.get(i));
 		// }
-		drawContent(contentGraphics);
+		drawContent(contentGraphics, content.getWidth(), content.getHeight());
 		g.drawImage(content, (int) getX() + 1, (int) getY() + 26);
 		lastDrawTime = System.nanoTime();
 	}
 
-	public abstract void drawContent(Graphics g);
+	public abstract void drawContent(Graphics g, int width, int height);
 
 	private float minimizeScale = 0;
 
@@ -135,6 +135,7 @@ public abstract class AppWindow extends RoundedRectangle {
 				case "#EXIT":
 					if ( !toMinimise ) {
 						toClose = true;
+						toMinimise = true;
 					}
 					break;
 				case "#MINIMISE":
@@ -158,14 +159,14 @@ public abstract class AppWindow extends RoundedRectangle {
 
 	}
 
-	public void changeXBy(float x) {
+	public final void changeXBy(float x) {
 		super.setX(super.getX() + x);
 		for ( GUIComponent c : menuButtons ) {
 			c.setX(c.getX() + x);
 		}
 	}
 
-	public void changeYBy(float y) {
+	public final void changeYBy(float y) {
 		super.setY(super.getY() + y);
 		for ( GUIComponent c : menuButtons ) {
 			c.setY(c.getY() + y);
