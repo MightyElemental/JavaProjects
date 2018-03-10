@@ -25,10 +25,10 @@ public class WindowsMain extends StateBasedGame {
 			appGc = new AppGameContainer(this);
 			appGc.setDisplayMode(WIDTH, (int) (WIDTH / 16.0 * 9.0), false);
 			appGc.setTargetFrameRate(120);
-			appGc.setShowFPS(false);
+			// appGc.setVSync(true);
 			appGc.setAlwaysRender(true);
 			appGc.setFullscreen(false);
-			appGc.setShowFPS(true);
+			appGc.setShowFPS(false);
 			appGc.start();
 		} catch (SlickException e) {
 			e.printStackTrace();

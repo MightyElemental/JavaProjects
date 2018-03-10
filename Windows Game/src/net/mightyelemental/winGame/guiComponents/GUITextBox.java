@@ -1,7 +1,6 @@
 package net.mightyelemental.winGame.guiComponents;
 
 import org.newdawn.slick.Color;
-import org.newdawn.slick.Font;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
@@ -11,8 +10,6 @@ public class GUITextBox extends GUIComponent {
 	
 	
 	private static final long serialVersionUID = 7295479133012661247L;
-	
-	private Font f;
 	
 	private StringBuilder text = new StringBuilder("");
 	
@@ -36,7 +33,6 @@ public class GUITextBox extends GUIComponent {
 	@Override
 	public void draw(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
 		super.draw(gc, sbg, g);
-		if (f == null) f = g.getFont();
 		
 		g.setColor(Color.black);
 		g.drawString(text.toString() + (isSelected() ? "|" : ""), x + (width / 2) - g.getFont().getWidth(text.toString()) / 2,

@@ -5,6 +5,8 @@ import java.util.Random;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 
+import net.mightyelemental.winGame.guiComponents.GUIButton;
+import net.mightyelemental.winGame.guiComponents.GUIComponent;
 import net.mightyelemental.winGame.guiComponents.dekstopObjects.AppWindow;
 
 public class AppTest extends AppWindow {
@@ -20,10 +22,15 @@ public class AppTest extends AppWindow {
 	public AppTest(float x, float y, float width, float height, String title) {
 		super(x, y, width, height, title);
 		this.setShowFPS(true);
+		this.addGUIObject(new GUIButton(150, 30, "#dead", this).setText("Reset Screen"), 10, 100);
 	}
 
 	private Color getRandomColor() {
 		return new Color(rand.nextFloat(), rand.nextFloat(), rand.nextFloat(), 1f);
+	}
+
+	public void updateContent(int delta) {
+		// System.out.println(delta);
 	}
 
 	@Override
@@ -31,12 +38,18 @@ public class AppTest extends AppWindow {
 		Color c = getRandomColor();
 		boolean banFlag = false;
 		g.setColor(c);
-		if ( true) {
+		if ( true ) {
 			banFlag = true;
 		}
 		int i = rand.nextInt(200);
 		int y = rand.nextInt(150);
-		for ( int x = 0; x < 30; x++ ) {
+		int count = 0;
+		for ( int x = 0; x < 50; x++ ) {
+			count++;
+			if ( count > 500000 ) {
+				this.setNotResponding(true);
+				break;
+			}
 			i += rand.nextInt(3) - 1;
 			i = Math.abs(i);
 			y += rand.nextInt(3) - 1;
@@ -44,6 +57,7 @@ public class AppTest extends AppWindow {
 			if ( y > 150 ) y = 150;
 			if ( i > 200 ) i = 200;
 			if ( bannedPixels[i][y] ) {
+				x--;
 				continue;
 			}
 			g.fillRect(i * 4, y * 4, 4, 4);
@@ -58,6 +72,14 @@ public class AppTest extends AppWindow {
 	@Override
 	public void keyPressed(int key, char c) {
 		text += c;
+	}
+
+	@Override
+	public void onComponentPressed(int button, GUIComponent c) {
+		if ( c.getUID().equals("#DEAD") ) {
+			this.contentGraphics.clear();
+			this.bannedPixels = new boolean[201][151];
+		}
 	}
 
 }

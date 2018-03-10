@@ -48,7 +48,7 @@ public class TaskbarApp extends GUIButton {
 	}
 
 	@Override
-	public void onMousePressed(int button, int x, int y) {
+	public void onMousePressed(int button) {
 		if ( button == 0 ) {
 			this.linkedWindow.toMinimise = !this.linkedWindow.toMinimise;
 		} else if ( button == 1 ) {

@@ -22,9 +22,6 @@ public class StartWindow extends AppWindow {
 		menu = ResourceLoader.loadImage("desktop.startMenu");
 	}
 
-	public void update(GameContainer gc, StateBasedGame sbg, int delta) {
-	}
-
 	public void draw(GameContainer gc, StateBasedGame sbg, Graphics g) {
 		menu.draw(x, y);
 		// g.setColor(new Color(30, 79, 178));
@@ -43,6 +40,12 @@ public class StartWindow extends AppWindow {
 
 	@Override
 	public void keyPressed(int key, char c) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void updateContent(int delta) {
 		// TODO Auto-generated method stub
 
 	}
