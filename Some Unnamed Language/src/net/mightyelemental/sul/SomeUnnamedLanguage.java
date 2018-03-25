@@ -14,6 +14,12 @@ public class SomeUnnamedLanguage {
 		//interpretLine(splitLineIntoArgs("display :name"));
 		interpretLine(splitLineIntoArgs("set :name to \"Jack\""));
 		interpretLine(splitLineIntoArgs("display \"Hello \" :name \". What do you think about this language? I think it is \" :cool"));
+		interpretLine(splitLineIntoArgs("set :name to :name \" \" :name"));
+		interpretLine(splitLineIntoArgs("display \"Hello \" :name"));
+		interpretLine(splitLineIntoArgs("set :num to 5"));
+		interpretLine(splitLineIntoArgs("add 1000 to :num"));
+		interpretLine(splitLineIntoArgs("display \"The answer is \" :num"));
+		
 	}
 
 	public static void main(String[] args) {
@@ -53,8 +59,11 @@ public class SomeUnnamedLanguage {
 		case "display":
 			display(line);
 			break;
+		case "add":
+			add(line);
+			break;
 		default:
-			System.err.println("Command not recognised");
+			SULExceptions.commandNotRecognised(line);
 		}
 	}
 

@@ -74,6 +74,48 @@ public class SULCommands {
 		return buffer.toString();
 	}
 
+	public static boolean add(List<String> line) {
+		// line.remove(0);
+		float amount = 0;
+		float oldAmount = 0;
+		boolean flag = false;
+		try {
+			if ( getVarVal(line.get(1)) != null ) {
+				if ( isNumber(getVarVal(line.get(1)) + "") ) {
+					amount = Float.parseFloat(getVarVal(line.get(1)) + "");
+					flag = true;
+				}
+			}
+			if ( !flag ) {
+				if ( isNumber(line.get(1)) ) {
+					amount = Float.parseFloat(line.get(1));
+					flag = true;
+				}
+			}
+
+			if ( !flag ) {
+				SULExceptions.invalidSyntaxException("A number or a number variable needs to be used in the first argument",
+						line);
+				return false;
+			}
+
+			Object o = getVarVal(line.get(3));
+			if ( o == null ) {
+				SULExceptions.varNotSetException(line.get(3));
+				return false;
+			} else {
+				oldAmount = Float.parseFloat(o + "");
+			}
+		} catch (Exception e) {
+			SULExceptions.invalidSyntaxException("", line);
+			return false;
+		}
+
+		variables.put(line.get(3), oldAmount + amount);
+
+		return true;
+	}
+
 	public static Object getVarVal(String var) {
 		return variables.get(var);
 	}
