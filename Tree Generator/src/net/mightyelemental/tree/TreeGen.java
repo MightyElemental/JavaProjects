@@ -60,7 +60,7 @@ public class TreeGen extends StateBasedGame {
 			appGc = new AppGameContainer(new TreeGen("Tree Gen"));
 			appGc.setDisplayMode(1280, (int) (1280 / 16.0 * 9.0), false);
 			appGc.setTargetFrameRate(60);
-			appGc.setShowFPS(false);
+			appGc.setShowFPS(true);
 			appGc.setAlwaysRender(true);
 			appGc.setUpdateOnlyWhenVisible(false);
 			appGc.start();

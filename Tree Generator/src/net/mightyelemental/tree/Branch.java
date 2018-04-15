@@ -12,6 +12,7 @@ public class Branch extends Line {
 	private boolean drawn = false;
 	private float percent;
 	private Branch parent;
+	public boolean hasBurst = false;
 	
 	public boolean drawn() {
 		return drawn;
