@@ -91,47 +91,55 @@ public class Monster extends Rectangle {
 		return lp;
 	}
 
-	private int[][] flood(int[][] mark, int x, int y, int currentNum) {
+	private int[][] flood(int[][] mark, int x, int y, int currentNum) {//TODO FIX THE BROKEN PATH FINDER
 		// make sure row and col are inside the image
-		if ( x < 0 ) return null;
-		if ( y < 0 ) return null;
-		if ( x > worldObj.loadedLevel.width - 1 ) return null;
-		if ( y > worldObj.loadedLevel.height - 1 ) return null;
+		if ( !isPointInWorld(x, y) ) return null;
 
 		// make sure this pixel hasn't been visited yet
 		if ( mark[x][y] > 0 ) return null;
 
-		// make sure this pixel is the right color to fill
-		if ( worldObj.loadedLevel.getTile(x, y) != '-' && worldObj.loadedLevel.getTile(x, y) != 's' ) return null;
+		// make sure this tile is walkable
+		if ( !isTileWalkable(x, y) ) return null;
 
 		// fill pixel with target color and mark it as visited
-		// img.set(col, row, tgtColor);
-		// if (worldObj.loadedLevel.getTile(x, y) == '-') {
-		// worldObj.loadedLevel.setTile(x, y, (char) currentNum);
 		mark[x][y] = currentNum;
 		currentNum++;
-		// } else {
-		// mark[x][y] = Integer.MAX_VALUE;
-		// }
-		// recursively fill surrounding pixels
-		// (this is equivelant to depth-first search)
-		int rand = worldObj.rand.nextInt(2);
-		if ( rand == 0 ) {
-			flood(mark, x - 1, y, currentNum);
-			flood(mark, x + 1, y, currentNum);
-		} else {
-			flood(mark, x + 1, y, currentNum);
-			flood(mark, x - 1, y, currentNum);
-		}
-		rand = worldObj.rand.nextInt(2);
-		if ( rand == 0 ) {
-			flood(mark, x, y - 1, currentNum);
-			flood(mark, x, y + 1, currentNum);
-		} else {
-			flood(mark, x, y + 1, currentNum);
-			flood(mark, x, y - 1, currentNum);
+		// if ( testForAdjacentWalkableTiles(x, y) > 2 ) {}
+
+		for ( int a = 0; a < 360; a += 90 ) {
+			int x1 = (int) (Math.cos(Math.toRadians(a)));
+			int y1 = (int) (Math.sin(Math.toRadians(a)));
+			flood(mark, x + x1, y + y1, currentNum);
 		}
 		return mark;
+	}
+
+	private char testForTile(int x, int y) {
+		return worldObj.loadedLevel.getTile(x, y);
+	}
+
+	private int testForAdjacentWalkableTiles(int x, int y) {
+		int total = 0;
+		for ( int a = 0; a < 360; a += 90 ) {
+			int x1 = (int) (Math.cos(Math.toRadians(a)));
+			int y1 = (int) (Math.sin(Math.toRadians(a)));
+			if ( isPointInWorld(x + x1, y + y1) && isTileWalkable(x + x1, y + y1) ) {
+				total++;
+			}
+		}
+		return total;
+	}
+
+	private boolean isTileWalkable(int x, int y) {
+		return testForTile(x, y) == '-' || testForTile(x, y) == 's';
+	}
+
+	private boolean isPointInWorld(int x, int y) {
+		if ( x < 0 ) return false;
+		if ( y < 0 ) return false;
+		if ( x > worldObj.loadedLevel.width - 1 ) return false;
+		if ( y > worldObj.loadedLevel.height - 1 ) return false;
+		return true;
 	}
 
 	private List<Point> findRoute(int[][] mark, int x, int y, int lowestNum, List<Point> lp) {
@@ -252,7 +260,7 @@ public class Monster extends Rectangle {
 		// route.get(j).getY());
 		// }
 		// }
-
+		drawFlood(g);
 	}
 
 	public void drawFlood(Graphics g) {

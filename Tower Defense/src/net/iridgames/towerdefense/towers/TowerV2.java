@@ -78,7 +78,10 @@ public class TowerV2 {
 			float sX = (float) ((x + 24) + Math.cos(Math.toRadians(angle)) * 48);
 			float sY = (float) ((y + 24) + Math.sin(Math.toRadians(angle)) * 48);
 			boolean success = worldObj.addProjectile(sX, sY, angle, 5, turretTypeInfo[turretType][3]);
-			if ( success ) charge = 0;
+			if ( success ) {
+				charge = 0;
+				worldObj.addSmoke(sX, sY);
+			}
 		}
 	}
 
@@ -91,7 +94,10 @@ public class TowerV2 {
 
 			boolean success = worldObj.addBulletTrail(sX, sY, target.getCenterX(), target.getCenterY(), 1);
 			target.health -= turretTypeInfo[turretType][3];
-			if ( success ) charge = 0;
+			if ( success ) {
+				charge = 0;
+				worldObj.addSmoke(sX, sY);
+			}
 		}
 	}
 

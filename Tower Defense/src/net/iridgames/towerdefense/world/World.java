@@ -1,12 +1,20 @@
 package net.iridgames.towerdefense.world;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 import org.newdawn.slick.GameContainer;
+import org.newdawn.slick.Graphics;
+import org.newdawn.slick.SlickException;
+import org.newdawn.slick.particles.ConfigurableEmitter;
+import org.newdawn.slick.particles.ParticleIO;
+import org.newdawn.slick.particles.ParticleSystem;
 import org.newdawn.slick.state.StateBasedGame;
 
+import net.iridgames.towerdefense.Camera;
+import net.iridgames.towerdefense.ResourceLoader;
 import net.iridgames.towerdefense.TowerDefense;
 import net.iridgames.towerdefense.monsters.Monster;
 import net.iridgames.towerdefense.towers.BulletTrail;
@@ -30,20 +38,34 @@ public class World {
 
 	public Level loadedLevel;
 
+	public ParticleSystem ps;
+
 	public World() {
 		loadLevels();
-		loadedLevel = levelList.get(2);
+		loadedLevel = levelList.get(0);
+		smokeConfig = new File("assets/particles/smoke_emitter.xml");
+	}
+
+	public void init() {
+		ps = new ParticleSystem(ResourceLoader.loadImage("smoke"), 400);
+		ps.setRemoveCompletedEmitters(true);
+		ps.setBlendingMode(ParticleSystem.BLEND_COMBINE);
 	}
 
 	public void loadLevels() {
-		for ( int i = 0; i <= 6; i++ ) {
+		for ( int i = 0; i <= 7; i++ ) {
 			levelList.add(new Level("level", i));
 		}
+	}
+
+	public void renderSmoke(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
+		ps.render();
 	}
 
 	int time = 0;
 
 	public void update(GameContainer gc, StateBasedGame sbg, int delta) {
+		ps.update(delta);
 		time += delta;
 		// if ( monsterList.size() < 1 * (time / 1000f + 1) && monsterList.size() < 40 )
 		// {
@@ -95,13 +117,13 @@ public class World {
 	}
 
 	public void spawn() {
-		// int r = rand.nextInt(loadedLevel.spawningPoints.size());
-		for ( int r = 0; r < loadedLevel.spawningPoints.size(); r++ ) {
-			float x = loadedLevel.spawningPoints.get(r).getCenterX() * 48;
-			float y = loadedLevel.spawningPoints.get(r).getCenterY() * 48;
-			Monster m = new Monster(this, x, y, 70 * (time / 10000f + 1));
-			monsterList.add(m);
-		}
+		int r = rand.nextInt(loadedLevel.spawningPoints.size());
+		// for ( int r = 0; r < loadedLevel.spawningPoints.size(); r++ ) {
+		float x = loadedLevel.spawningPoints.get(r).getCenterX() * 48;
+		float y = loadedLevel.spawningPoints.get(r).getCenterY() * 48;
+		Monster m = new Monster(this, x, y, 70 * (time / 10000f + 1));
+		monsterList.add(m);
+		// }
 
 	}
 
@@ -149,6 +171,18 @@ public class World {
 			if ( smally == sy2 ) return true;
 		}
 		return false;
+	}
+
+	private File smokeConfig;
+
+	public void addSmoke(float x, float y) {// TODO: Pin to world
+		try {
+			ConfigurableEmitter emitter = ParticleIO.loadEmitter(smokeConfig);
+			emitter.setPosition(x + Camera.xOffset, y + Camera.yOffset, false);
+			ps.addEmitter(emitter);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 }

@@ -34,9 +34,10 @@ public class StateGame extends BasicGameState {
 	@Override
 	public void init(GameContainer gc, StateBasedGame sbg) throws SlickException {
 		Camera.init(gc, sbg, worldObj);
-		String[] imgs = { "grass", "path", "base", "turret", "gatling", "sniper" };
+		String[] imgs = { "grass", "path", "base", "turret", "gatling", "sniper", "smoke" };
 		ResourceLoader.loadImageBatch(imgs);
 		initLevelImg(gc);
+		worldObj.init();
 	}
 
 	private void initLevelImg(GameContainer gc) throws SlickException {
@@ -57,6 +58,7 @@ public class StateGame extends BasicGameState {
 		renderTowers(gc, sbg, g);
 		renderProjectiles(gc, sbg, g);
 		renderBulletTrails(gc, sbg, g);
+		worldObj.renderSmoke(gc, sbg, g);
 	}
 
 	private void renderTowers(GameContainer gc, StateBasedGame sbg, Graphics g) {
@@ -201,20 +203,20 @@ public class StateGame extends BasicGameState {
 
 	@Override
 	public void mousePressed(int button, int x, int y) {
-		// worldObj.loadedLevel.setTile((x - startingPointX) / tileSize, (y -
-		// startingPointY) / tileSize,
-		// charList[selectedChar]);
-		char c = worldObj.loadedLevel.getTile((x - Camera.xOffset) / Camera.tileSize, (y - Camera.yOffset) / Camera.tileSize);
+		int newx = (int) ((x - Camera.xOffset) / Camera.tileSize);
+		int newy = (int) ((y - Camera.yOffset) / Camera.tileSize);
+		// worldObj.loadedLevel.setTile(newx, newy, charList[selectedChar]);
+		char c = worldObj.loadedLevel.getTile(newx, newy);
 		if ( c == 'u' ) {
 			// worldObj.addTower(new TowerCannon(worldObj, (x - startingPointX) / tileSize,
 			// (y - startingPointY) / tileSize));
 			// {x, y, angle, charge, level, removeFlag, targetType, type, ID}
-			int newx = (int) ((x - Camera.xOffset) / Camera.tileSize);
-			int newy = (int) ((y - Camera.yOffset) / Camera.tileSize);
+			// int newx = (int) ((x - Camera.xOffset) / Camera.tileSize);
+			// int newy = (int) ((y - Camera.yOffset) / Camera.tileSize);
 			if ( button == 0 ) {
 				worldObj.addTower(newx * 48, newy * 48, 0, 0, 0, TowerV2.TARGET_MOST_HEALTH, TowerV2.TYPE_SNIPER);
 			} else {
-				worldObj.addTower(newx * 48, newy * 48, 0, 0, 0, TowerV2.TARGET_LEAST_HEALTH, TowerV2.TYPE_GATLING);
+				worldObj.addTower(newx * 48, newy * 48, 0, 0, 0, TowerV2.TARGET_CLOSEST, TowerV2.TYPE_GATLING);
 			}
 		}
 	}
