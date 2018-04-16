@@ -18,6 +18,7 @@ public class Blur {
 		return null;
 	}
 	
+	@SuppressWarnings("unused")
 	private static Image convertToImage(BufferedImage img) throws IOException, SlickException {
 		Texture texture = BufferedImageUtil.getTexture("", img);
 		Image slickImage = new Image(texture.getImageWidth(), texture.getImageHeight());
@@ -25,6 +26,7 @@ public class Blur {
 		return slickImage;
 	}
 	
+	@SuppressWarnings("unused")
 	private static BufferedImage convertToBufferedImage(Image img) throws IOException, SlickException {
 		Texture texture = img.getTexture();
 		BufferedImage buffimg = new BufferedImage(texture.getImageWidth(), texture.getImageHeight(), BufferedImage.TYPE_INT_ARGB);
@@ -39,6 +41,7 @@ public class Blur {
 		return buffimg;
 	}
 	
+	@SuppressWarnings("unused")
 	private static BufferedImage ProcessImage(BufferedImage image) {
 		int width = image.getWidth();
 		int height = image.getHeight();
