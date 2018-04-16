@@ -139,7 +139,7 @@ public class ImageEvolution implements Game {
 	@Override
 	public void init(GameContainer gc) throws SlickException {
 		gc.setClearEachFrame(true);
-		target = new ImageGen(ResourceLoader.loadImage("wolf_low1"));
+		target = new ImageGen(ResourceLoader.loadImage("biancalow"));
 		targetFit = calcFitness(target);
 		guess = new ImageGen(target.imgSize);
 	}
@@ -180,7 +180,7 @@ public class ImageEvolution implements Game {
 		}
 
 		if ( ticks > 1 ) {
-			newGenerationV4();
+			newGenerationV3();
 		}
 
 		if ( pos == -1 ) {
