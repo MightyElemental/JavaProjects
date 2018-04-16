@@ -18,13 +18,15 @@ import net.iridgames.towerdefense.StateGame;
 import net.iridgames.towerdefense.monsters.Monster;
 import net.iridgames.towerdefense.world.World;
 
+@Deprecated
 public abstract class Tower extends Rectangle {
 	
 	
 	private static final long serialVersionUID = 2910144072239689558L;
 	public Image topLayer;
 	
-	protected float i = StateGame.tileSize;
+	//protected float i = StateGame.tileSize; // THIS IS THE REAL CODE
+	protected float i = 0; // THIS IS THE FAKE CODE
 	public boolean removed;
 	protected World worldObj;
 	

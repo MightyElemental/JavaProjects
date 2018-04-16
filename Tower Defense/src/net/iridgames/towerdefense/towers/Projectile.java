@@ -9,6 +9,7 @@ import net.iridgames.towerdefense.StateGame;
 import net.iridgames.towerdefense.monsters.Monster;
 import net.iridgames.towerdefense.world.World;
 
+@Deprecated
 public class Projectile extends Circle {
 	
 	
@@ -25,8 +26,8 @@ public class Projectile extends Circle {
 	}
 	
 	public void update(GameContainer gc, StateBasedGame sbg, int delta) {
-		if (x > worldObj.loadedLevel.width * StateGame.tileSize || x < 0) delete = true;
-		if (y > worldObj.loadedLevel.height * StateGame.tileSize || y < 0) delete = true;
+		//if (x > worldObj.loadedLevel.width * StateGame.tileSize || x < 0) delete = true; //uncomment to restore
+		//if (y > worldObj.loadedLevel.height * StateGame.tileSize || y < 0) delete = true;
 		if (delete) return;
 		for (Monster m : worldObj.monsterList) {
 			if (this.intersects(m)) {
