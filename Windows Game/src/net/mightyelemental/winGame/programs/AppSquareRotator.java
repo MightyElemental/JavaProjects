@@ -10,13 +10,13 @@ import net.mightyelemental.winGame.guiComponents.dekstopObjects.AppWindow;
 
 public class AppSquareRotator extends AppWindow {
 
-	private static final long serialVersionUID = -5362114223313401429L;
-	private Rectangle rect = new Rectangle(50, 50, 50, 50);
-	private Shape transformedRect = rect;
-	private float angle = 0;
+	private static final long	serialVersionUID	= -5362114223313401429L;
+	private Rectangle			rect				= new Rectangle(50, 50, 50, 50);
+	private Shape				transformedRect		= rect;
+	private float				angle				= 0;
 
-	private float xLoc = 50, yLoc = 50;
-	private float yVel = 0;
+	private float	xLoc	= 50, yLoc = 50;
+	private float	yVel	= 0.0f, xVel = 0.0f;
 
 	public AppSquareRotator(float x, float y, float width, float height, String title) {
 		super(x, y, width, height, title);
@@ -31,32 +31,51 @@ public class AppSquareRotator extends AppWindow {
 		g.drawLine(0, height - 1, width, height - 1);
 	}
 
-	private float gravity = 0.01f;
+	private float	gravity	= 0.05f;
+	private boolean	onGround;
 
 	@Override
 	public void updateContent(int delta) {
-		if (on[0]) {
+		if ( on[0] || on[2] ) {
 			angle -= delta / 5f;
-			xLoc -= delta / 5f;
-		} else if (on[1]) {
+			if ( onGround ) {
+				xVel -= delta / 50f;
+			} else {
+				xVel -= delta / 200f;
+			}
+		} else if ( on[1] || on[3] ) {
 			angle += delta / 5f;
-			xLoc += delta / 5f;
+			if ( onGround ) {
+				xVel += delta / 50f;
+			} else {
+				xVel += delta / 200f;
+			}
 		}
-		if (transformedRect.getMaxY() + transformedRect.getHeight() / 2 < height) {
+		if ( xVel > 2.6f ) xVel = 2.6f;
+		if ( xVel < -2.6f ) xVel = -2.6f;
+		if ( onGround ) {
+			xVel /= 1.1f;
+		} else {
+			xVel /= 1.005f;
+		}
+		if ( transformedRect.getMaxY() + transformedRect.getHeight() / 2 < height ) {
 			yVel += gravity;
-		} else if (transformedRect.getMaxY() + transformedRect.getHeight() / 2 >= height) {
+			onGround = false;
+		} else if ( transformedRect.getMaxY() + transformedRect.getHeight() / 2 >= height ) {
 			yLoc = height - transformedRect.getHeight();
+			onGround = true;
 		} else {
 			yVel = 0;
 		}
-		for (float i = 0; i < yVel; i += gravity) {
-			if (transformedRect.getMaxY() + i + transformedRect.getHeight() / 2 >= height) {
+		for ( float i = 0; i < yVel; i += gravity ) {
+			if ( transformedRect.getMaxY() + i + transformedRect.getHeight() / 2 >= height ) {
 				yVel = i + 5;
 				break;
 			}
 		}
 		yLoc += yVel;
-		if (on[0] || on[1]) {
+		xLoc += xVel;
+		if ( on[0] || on[1] || on[2] || on[3] ) {
 			transformedRect = rect.transform(Transform.createRotateTransform((float) Math.toRadians(angle)));
 		}
 		transformedRect.setCenterX(xLoc);
@@ -67,16 +86,41 @@ public class AppSquareRotator extends AppWindow {
 
 	@Override
 	public void keyPressed(int key, char c) {
-		on[0] = key == Input.KEY_Q;
-		on[1] = key == Input.KEY_E;
-		on[2] = key == Input.KEY_A;
-		on[3] = key == Input.KEY_D;
+		switch (key) {
+		case Input.KEY_Q:
+			on[0] = true;
+			break;
+		case Input.KEY_E:
+			on[1] = true;
+			break;
+		case Input.KEY_A:
+			on[2] = true;
+			break;
+		case Input.KEY_D:
+			on[3] = true;
+			break;
+		}
+		if ( onGround && key == Input.KEY_SPACE ) {
+			yVel = -2f;
+		}
 	}
 
 	@Override
 	public void keyReleased(int key, char c) {
-		for (int i = 0; i < on.length; i++)
-			on[i] = false;
+		switch (key) {
+		case Input.KEY_Q:
+			on[0] = false;
+			break;
+		case Input.KEY_E:
+			on[1] = false;
+			break;
+		case Input.KEY_A:
+			on[2] = false;
+			break;
+		case Input.KEY_D:
+			on[3] = false;
+			break;
+		}
 
 	}
 
