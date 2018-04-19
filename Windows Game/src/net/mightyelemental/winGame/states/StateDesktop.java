@@ -20,7 +20,7 @@ import net.mightyelemental.winGame.guiComponents.GUIComponent;
 import net.mightyelemental.winGame.guiComponents.dekstopObjects.AppWindow;
 import net.mightyelemental.winGame.guiComponents.dekstopObjects.StartWindow;
 import net.mightyelemental.winGame.guiComponents.dekstopObjects.TaskbarApp;
-import net.mightyelemental.winGame.programs.AppTest;
+import net.mightyelemental.winGame.programs.AppSquareRotator;
 
 public class StateDesktop extends BasicGameState {
 
@@ -224,7 +224,7 @@ public class StateDesktop extends BasicGameState {
 	public void createNewWindow(int width, int height, String title) {
 		int x = 1280 / 2 - width / 2;
 		int y = 720 / 2 - height / 2;
-		AppWindow wa = new AppTest(x, y, 800, 600, title);
+		AppWindow wa = new AppSquareRotator(x, y, 800, 600, title);
 		windowList.add(wa);
 		TaskbarApp t = new TaskbarApp(110, wa, taskbarAppOrder.size());
 		guiComponents.add(t);
@@ -257,6 +257,21 @@ public class StateDesktop extends BasicGameState {
 		}
 		if ( key == Input.KEY_I ) {
 			createNewWindow(800, 600, "test" + (System.currentTimeMillis() % 1234));
+		}
+		if( key == Input.KEY_DELETE) {
+			for(AppWindow w : windowList) {
+				deleteWindow(w);
+			}
+		}
+	}
+
+	@Override
+	public void keyReleased(int key, char c) {
+		for ( int i = windowList.size() - 1; i >= 0; i-- ) {
+			AppWindow aw = windowList.get(i);
+			if ( aw.isMinimised ) continue;
+			aw.keyReleased(key, c);
+			break;
 		}
 	}
 
