@@ -17,30 +17,37 @@ import net.mightyelemental.winGame.guiComponents.GUIComponent;
 
 public abstract class AppWindow extends RoundedRectangle implements Runnable {
 
+	// HIDE FIELDS
+	private float height, width;
+
 	private Thread programThread = new Thread(this);
 
 	private TaskbarApp linkedTaskbarApp;
 
-	public Image windowButtons;
-	public Image content;
-	public Graphics contentGraphics;
+	public Image	windowButtons;
+	public Image	content;
+	public Graphics	contentGraphics;
 
-	private String displayTitle;
-	private final String baseTitle;
+	private String			displayTitle;
+	private final String	baseTitle;
 
-	protected long lastDrawTime = System.nanoTime(), lastUpdateTime;
-	private boolean showFPS, canDrag;
-	private int tickCount;
+	protected long	lastDrawTime	= System.nanoTime(), lastUpdateTime;
+	private boolean	showFPS, canDrag;
+	private int		tickCount;
+
+	private int sleepTime = 9;
 
 	public boolean toMinimise, isMinimised, fullscreen, toClose, isNotResponding;
 
-	private GUIButton[] menuButtons = new GUIButton[3];
-	public List<GUIComponent> guiObjects = new ArrayList<GUIComponent>();
+	private GUIButton[]			menuButtons	= new GUIButton[3];
+	public List<GUIComponent>	guiObjects	= new ArrayList<GUIComponent>();
 
 	private float minimizeScale = 0;
 
 	public AppWindow(float x, float y, float width, float height, String title) {
 		super(x, y, width, height, 3);
+		this.height = height;
+		this.width = width;
 		this.displayTitle = title;
 		this.baseTitle = title;
 		try {
@@ -69,28 +76,30 @@ public abstract class AppWindow extends RoundedRectangle implements Runnable {
 
 	public /** final */
 	void draw(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
-		if (toClose && contentGraphics != null) {
+		if ( toClose && contentGraphics != null ) {
 			contentGraphics.flush();
 			contentGraphics.destroy();
 			contentGraphics = null;
 		}
-		if (toMinimise || (isMinimised && !toMinimise)) {
+		if ( toMinimise || (isMinimised && !toMinimise) ) {
 			animateMinimize(gc, sbg, g);
 			return;
 		}
 		g.setColor(Color.lightGray);
 		g.fill(this);
+		g.setColor(Color.black);
+		g.draw(this);
 		g.setColor(new Color(30, 79, 178));
-		g.fillRoundRect(x, y, width - 1, 25, 3);
-		g.fillRect(x, y + 10, width - 1, 15);
-		windowButtons.draw(x + width - 85, y + 2);
+		g.fillRoundRect(x, y, super.getWidth() - 1, 25, 3);
+		g.fillRect(x, y + 10, super.getWidth() - 1, 15);
+		windowButtons.draw(x + super.getWidth() - 85, y + 2);
 		g.setColor(Color.white);
 		g.drawString(displayTitle, x + 15, y + 5);
 
 		// for ( int i = 0; i < menuButtons.size(); i++ ) {
 		// g.draw(menuButtons.get(i));
 		// }
-		if (!isNotResponding && contentGraphics != null) {
+		if ( !isNotResponding && contentGraphics != null ) {
 			drawContent(contentGraphics, content.getWidth(), content.getHeight());
 		}
 		drawGUIObjects(gc, sbg, contentGraphics);
@@ -100,7 +109,7 @@ public abstract class AppWindow extends RoundedRectangle implements Runnable {
 	}
 
 	private void drawGUIObjects(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
-		for (GUIComponent gui : guiObjects) {
+		for ( GUIComponent gui : guiObjects ) {
 			gui.draw(gc, sbg, g);
 		}
 	}
@@ -126,9 +135,9 @@ public abstract class AppWindow extends RoundedRectangle implements Runnable {
 			update(time);
 			lastUpdateTime = System.currentTimeMillis();
 			try {
-				int sleep = 9 - Math.abs(time - 9);
-				sleep = sleep < 0 ? 9 : sleep;
-				if (isMinimised && toMinimise) {
+				int sleep = sleepTime - Math.abs(time - sleepTime);
+				sleep = sleep < 0 ? sleepTime : sleep;
+				if ( isMinimised && toMinimise ) {
 					sleep += 400;
 				}
 				Thread.sleep(sleep);
@@ -139,32 +148,32 @@ public abstract class AppWindow extends RoundedRectangle implements Runnable {
 	}
 
 	public final void update(int delta) {
-		if (toMinimise) {
-			if (Math.round(minimizeScale * 100) / 100f < 1) {
-				minimizeScale += 0.02f;
+		if ( toMinimise ) {
+			if ( Math.round(minimizeScale * 100) / 100f < 1 ) {
+				minimizeScale += 1f / (500f / delta);
 			} else {
 				isMinimised = true;
 			}
-		} else if (isMinimised) {
-			if (Math.round(minimizeScale * 100) / 100f > 0) {
-				minimizeScale -= 0.02f;
+		} else if ( isMinimised ) {
+			if ( Math.round(minimizeScale * 100) / 100f > 0 ) {
+				System.out.println(delta);
+				minimizeScale -= 1f / (500f / delta);
 			} else {
 				isMinimised = false;
 			}
 		}
 		updateTitle();
-		if (!isNotResponding)
-			updateContent(delta);
+		if ( !isNotResponding ) updateContent(delta);
 		tickCount++;
 	}
 
 	private final void updateTitle() {
-		if (tickCount % 110 == 0) {
+		if ( tickCount % 110 == 0 ) {
 			displayTitle = baseTitle;
-			if (showFPS()) {
+			if ( showFPS() ) {
 				displayTitle += getFPSText();
 			}
-			if (isNotResponding) {
+			if ( isNotResponding ) {
 				displayTitle += " (Not Responding)";
 			}
 		}
@@ -183,19 +192,18 @@ public abstract class AppWindow extends RoundedRectangle implements Runnable {
 
 	public final boolean onMousePressed(int button, int x, int y) {
 		boolean flag = false;
-		if (isMinimised)
-			return false;
-		for (int i = 0; i < menuButtons.length; i++) {
-			if (menuButtons[i].contains(x, y)) {
+		if ( isMinimised ) return false;
+		for ( int i = 0; i < menuButtons.length; i++ ) {
+			if ( menuButtons[i].contains(x, y) ) {
 				switch (menuButtons[i].getUID()) {
 				case "#EXIT":
-					if (!toMinimise) {
+					if ( !toMinimise ) {
 						toClose = true;
 						toMinimise = true;
 					}
 					break;
 				case "#MINIMISE":
-					if (!toMinimise) {
+					if ( !toMinimise ) {
 						toMinimise = true;
 					}
 					System.out.println(getLinkedTaskbarApp().getUID());
@@ -207,7 +215,7 @@ public abstract class AppWindow extends RoundedRectangle implements Runnable {
 				flag = true;
 			}
 		}
-		if (!flag && y < getY() + 27) {
+		if ( !flag && y < getY() + 27 ) {
 			canDrag = true;
 		}
 
@@ -217,14 +225,14 @@ public abstract class AppWindow extends RoundedRectangle implements Runnable {
 
 	public final void changeXBy(float x) {
 		super.setX(super.getX() + x);
-		for (GUIButton c : menuButtons) {
+		for ( GUIButton c : menuButtons ) {
 			c.setX(c.getX() + x);
 		}
 	}
 
 	public final void changeYBy(float y) {
 		super.setY(super.getY() + y);
-		for (GUIButton c : menuButtons) {
+		for ( GUIButton c : menuButtons ) {
 			c.setY(c.getY() + y);
 		}
 	}
@@ -278,6 +286,30 @@ public abstract class AppWindow extends RoundedRectangle implements Runnable {
 	}
 
 	public void onComponentPressed(int button, GUIComponent c) {
+	}
+
+	public float getFrameHeight() {
+		return this.content.getHeight();
+	}
+
+	public float getFrameWidth() {
+		return this.content.getWidth();
+	}
+
+	public float getWindowHeight() {
+		return height;
+	}
+
+	public float getWindowWidth() {
+		return width;
+	}
+
+	public void setSleepTime(int mil) {
+		this.sleepTime = mil;
+	}
+
+	public float getSleepTime() {
+		return this.sleepTime;
 	}
 
 }
