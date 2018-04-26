@@ -13,11 +13,13 @@ import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 
+import net.mightyelemental.winGame.OSSettings;
 import net.mightyelemental.winGame.ResourceLoader;
 import net.mightyelemental.winGame.WindowsMain;
 import net.mightyelemental.winGame.guiComponents.GUIButton;
 import net.mightyelemental.winGame.guiComponents.GUIComponent;
 import net.mightyelemental.winGame.guiComponents.dekstopObjects.AppWindow;
+import net.mightyelemental.winGame.guiComponents.dekstopObjects.FileObject;
 import net.mightyelemental.winGame.guiComponents.dekstopObjects.StartWindow;
 import net.mightyelemental.winGame.guiComponents.dekstopObjects.TaskbarApp;
 import net.mightyelemental.winGame.programs.AppSquareRotator;
@@ -44,12 +46,13 @@ public class StateDesktop extends BasicGameState {
 
 		startWin = new StartWindow();
 		guiComponents.add(new GUIButton(0, gc.getHeight() - 43, 105, 43, "#START").setTransparent(true));
-		guiComponents.add(new GUIButton(5, 5, 25, 25, "#APP").setColor(Color.magenta));
+		guiComponents.add(new FileObject(5, 5, "#APP", "Cube Fall").setColor(Color.magenta));
 		startWin.init(gc, delta);
 	}
 
 	@Override
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
+		g.setFont(OSSettings.FILE_FONT);
 		background.draw();
 		g.setColor(Color.white);
 		// g.drawString("<Some GUI goes here>", gc.getWidth() / 2 -
@@ -158,11 +161,8 @@ public class StateDesktop extends BasicGameState {
 		oldy = y;
 		selectedUID = "";
 		for (GUIComponent c : guiComponents) {
-			c.setSelected(false);
-			if (!c.getUID().equals("#START")) {
-				c.setSelected(false);
-			}
 			if (c.contains(x, y)) {
+				c.setSelected(!c.isSelected());
 				c.onMousePressed(button);
 				if (c instanceof TaskbarApp) {
 					AppWindow aw = ((TaskbarApp) c).linkedWindow;
@@ -171,16 +171,18 @@ public class StateDesktop extends BasicGameState {
 				}
 				onComponentPressed(button, c);
 				selectedUID = c.getUID();
-//				if (c.getUID().equals("#START")) {
-//					boolean sel = c.isSelected();
-//					c.setSelected(!sel);
-//				} else {
-//					c.setSelected(true);
-//				}
+				// if (c.getUID().equals("#START")) {
+				// boolean sel = c.isSelected();
+				// c.setSelected(!sel);
+				// } else {
+				// c.setSelected(true);
+				// }
 				if (c.getUID().equals("#APP")) {
 					this.createNewWindow(800, 600, "Amazing Test");
 					break;
 				}
+			} else {
+				c.setSelected(false);
 			}
 		}
 		for (AppWindow aw : windowList) {

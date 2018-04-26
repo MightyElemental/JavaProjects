@@ -19,7 +19,6 @@ public class WindowsMain extends StateBasedGame {
 		this.addState(loadState);
 		this.addState(loginState);
 		this.addState(desktopState);
-
 		AppGameContainer appGc;
 		try {
 			appGc = new AppGameContainer(this);
