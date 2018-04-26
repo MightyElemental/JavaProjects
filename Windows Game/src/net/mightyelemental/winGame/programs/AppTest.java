@@ -70,7 +70,7 @@ public class AppTest extends AppWindow {
 	}
 
 	@Override
-	public void keyPressed(int key, char c) {
+	public void onKeyPressed(int key, char c) {
 		text += c;
 	}
 

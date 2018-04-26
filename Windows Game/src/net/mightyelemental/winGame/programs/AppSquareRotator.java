@@ -117,7 +117,7 @@ public class AppSquareRotator extends AppWindow {
 	private boolean[] on = new boolean[4];
 
 	@Override
-	public void keyPressed(int key, char c) {
+	public void onKeyPressed(int key, char c) {
 		switch (key) {
 		case Input.KEY_Q:
 			on[0] = true;

@@ -39,12 +39,6 @@ public class StartWindow extends AppWindow {
 	}
 
 	@Override
-	public void keyPressed(int key, char c) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
 	public void updateContent(int delta) {
 		// TODO Auto-generated method stub
 
