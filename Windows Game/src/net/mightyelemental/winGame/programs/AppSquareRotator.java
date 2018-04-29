@@ -7,6 +7,7 @@ import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.geom.Shape;
 import org.newdawn.slick.geom.Transform;
 
+import net.mightyelemental.winGame.OSSettings;
 import net.mightyelemental.winGame.guiComponents.dekstopObjects.AppWindow;
 
 public class AppSquareRotator extends AppWindow {
@@ -28,6 +29,7 @@ public class AppSquareRotator extends AppWindow {
 	protected void drawContent(Graphics g, int width, int height) {
 		// g.setAntiAlias(true);
 		this.clearScreen();
+		g.setFont(OSSettings.FILE_FONT);
 		g.drawString("This should be in comic sans....", 20, 20);
 		g.setColor(Color.white);
 		g.fill(transformedRect);
