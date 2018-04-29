@@ -11,11 +11,12 @@ import org.newdawn.slick.state.StateBasedGame;
 import net.mightyelemental.winGame.states.StateDesktop;
 import net.mightyelemental.winGame.states.StateLoading;
 import net.mightyelemental.winGame.states.StateLogin;
+import net.mightyelemental.winGame.util.ProgramLoader;
 
 public class WindowsMain extends StateBasedGame {
 
 	public WindowsMain() {
-		super("WinGameXP");
+		super("WinGameXD");
 		this.addState(loadState);
 		this.addState(loginState);
 		this.addState(desktopState);
@@ -65,6 +66,7 @@ public class WindowsMain extends StateBasedGame {
 
 	public static void main(String[] args) {
 		resetLib();
+		ProgramLoader.loadJar("/test.jar");
 		new WindowsMain();
 	}
 
