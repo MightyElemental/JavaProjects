@@ -44,7 +44,7 @@ public class TaskbarApp extends GUIButton {
 			temp = linkedWindow.getTitle().substring(0, 6) + "...";
 		}
 
-		g.drawString(temp, x + 2, y + 10);
+		g.drawString(temp, x + 2, y - g.getFont().getHeight(temp) / 2f + height / 2f);
 	}
 
 	@Override
