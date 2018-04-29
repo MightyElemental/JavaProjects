@@ -1,8 +1,6 @@
 package net.mightyelemental.winGame;
 
-import java.awt.Font;
-
-import org.newdawn.slick.TrueTypeFont;
+import org.newdawn.slick.UnicodeFont;
 
 public class OSSettings {
 
@@ -10,5 +8,6 @@ public class OSSettings {
 	}
 
 	public static final int FILE_DISPLAY_SIZE = 32;
-	public static TrueTypeFont FILE_FONT = new TrueTypeFont(new Font("New Times Romans", Font.PLAIN, 10), true);
+
+	public static UnicodeFont FILE_FONT = ResourceLoader.loadFont("comic_sans", 15);
 }
