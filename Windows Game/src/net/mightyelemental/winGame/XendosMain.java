@@ -83,4 +83,8 @@ public class XendosMain extends StateBasedGame {
 		this.enterState(STATE_LOGIN);
 	}
 
+	public static void registerProgram(Class<? extends AppWindow> c) {
+		programs.add(c);
+	}
+
 }
