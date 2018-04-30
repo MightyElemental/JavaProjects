@@ -250,8 +250,8 @@ public class StateDesktop extends BasicGameState {
 		int x = 1280 / 2 - width / 2;
 		int y = 720 / 2 - height / 2;
 		// AppWindow wa = new AppSquareRotator(x, y, 800, 600);
-		AppWindow wa = c.getConstructor(new Class<?>[] { float.class, float.class, float.class, float.class, String.class })
-				.newInstance(x, y, width, height, "Opened");
+		AppWindow wa = c.getConstructor(new Class<?>[] { float.class, float.class, float.class, float.class }).newInstance(x, y,
+				width, height);
 		windowList.add(wa);
 		TaskbarApp t = new TaskbarApp(110, wa, taskbarAppOrder.size());
 		guiComponents.add(t);
