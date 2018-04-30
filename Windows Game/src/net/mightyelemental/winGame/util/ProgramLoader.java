@@ -6,6 +6,8 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.Arrays;
 
+import net.mightyelemental.winGame.OSSettings;
+
 public class ProgramLoader {
 
 	public static synchronized void loadJar(String path) {
@@ -14,10 +16,10 @@ public class ProgramLoader {
 			loader.addFile(path);
 			System.out.println(Arrays.asList(loader.getURLs()));
 			Class<?> c = Class.forName("Main", true, loader);
-			Method method = c.getMethod("initWindow", Object.class);
+			Method method = c.getMethod("init", Object.class);
 			method.setAccessible(true); /* promote the method to public access */
 			System.out.println(Arrays.asList(method.getParameters()));
-			method.invoke(c.newInstance(), "asd");
+			method.invoke(c.newInstance(), OSSettings.VERSION);
 		} catch (IOException | IllegalArgumentException | NoSuchMethodException | SecurityException | ClassNotFoundException
 				| IllegalAccessException | InvocationTargetException | InstantiationException e) {
 			e.printStackTrace();
