@@ -16,6 +16,7 @@ import net.mightyelemental.winGame.programs.AppTest;
 import net.mightyelemental.winGame.states.StateDesktop;
 import net.mightyelemental.winGame.states.StateLoading;
 import net.mightyelemental.winGame.states.StateLogin;
+import net.mightyelemental.winGame.util.ProgramLoader;
 
 public class XendosMain extends StateBasedGame {
 
@@ -23,8 +24,9 @@ public class XendosMain extends StateBasedGame {
 
 	public XendosMain() {
 		super("XendosXD");
-		programs.add(AppTest.class);
-		programs.add(AppSquareRotator.class);
+
+		loadPrograms();
+
 		this.addState(loadState);
 		this.addState(loginState);
 		this.addState(desktopState);
@@ -41,6 +43,19 @@ public class XendosMain extends StateBasedGame {
 		} catch (SlickException e) {
 			e.printStackTrace();
 			System.exit(1);
+		}
+	}
+
+	private void loadPrograms() {
+		programs.add(AppTest.class);
+		programs.add(AppSquareRotator.class);
+
+		File dir = new File("assets/programs");
+		System.out.println(dir.getAbsolutePath().replaceFirst("[A-Z]{1}:", ""));
+		File[] files = dir.listFiles((d, name) -> name.endsWith(".jar"));
+
+		for ( File f : files ) {
+			ProgramLoader.loadJar(f.getAbsolutePath().replaceFirst("[A-Z]{1}:", ""));
 		}
 	}
 
@@ -74,13 +89,13 @@ public class XendosMain extends StateBasedGame {
 
 	public static void main(String[] args) {
 		resetLib();
-		// ProgramLoader.loadJar("/test.jar");
+		//ProgramLoader.loadJar("/test.jar");
 		new XendosMain();
 	}
 
 	@Override
 	public void initStatesList(GameContainer gc) throws SlickException {
-		this.enterState(STATE_LOGIN);
+		this.enterState(STATE_DESKTOP);
 	}
 
 	public static void registerProgram(Class<? extends AppWindow> c) {
