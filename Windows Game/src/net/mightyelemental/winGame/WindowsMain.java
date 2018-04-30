@@ -11,6 +11,7 @@ import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.StateBasedGame;
 
 import net.mightyelemental.winGame.guiComponents.dekstopObjects.AppWindow;
+import net.mightyelemental.winGame.programs.AppSquareRotator;
 import net.mightyelemental.winGame.programs.AppTest;
 import net.mightyelemental.winGame.states.StateDesktop;
 import net.mightyelemental.winGame.states.StateLoading;
@@ -23,6 +24,7 @@ public class WindowsMain extends StateBasedGame {
 	public WindowsMain() {
 		super("XendosXD");
 		programs.add(AppTest.class);
+		programs.add(AppSquareRotator.class);
 		this.addState(loadState);
 		this.addState(loginState);
 		this.addState(desktopState);
@@ -48,23 +50,23 @@ public class WindowsMain extends StateBasedGame {
 
 	public static final Image NULL_IMAGE = null;
 
-	public static final int STATE_LOADING = 0;
-	public static final int STATE_LOGIN = 1;
-	public static final int STATE_DESKTOP = 2;
+	public static final int	STATE_LOADING	= 0;
+	public static final int	STATE_LOGIN		= 1;
+	public static final int	STATE_DESKTOP	= 2;
 
-	public StateLoading loadState = new StateLoading(STATE_LOADING);
-	public StateLogin loginState = new StateLogin();
-	public StateDesktop desktopState = new StateDesktop();
+	public StateLoading	loadState		= new StateLoading(STATE_LOADING);
+	public StateLogin	loginState		= new StateLogin();
+	public StateDesktop	desktopState	= new StateDesktop();
 
 	private static void resetLib() {
 		System.setProperty("java.library.path", "lib");
 		String os = System.getProperty("os.name").toLowerCase();
 		String path = "windows";
-		if (os.contains("mac")) {
+		if ( os.contains("mac") ) {
 			path = "macosx";
-		} else if (os.contains("nix") || os.contains("nux") || os.contains("aix")) {
+		} else if ( os.contains("nix") || os.contains("nux") || os.contains("aix") ) {
 			path = "linux";
-		} else if (os.contains("sunos")) {
+		} else if ( os.contains("sunos") ) {
 			path = "solaris";
 		}
 		System.setProperty("org.lwjgl.librarypath", new File("lib/natives/" + path).getAbsolutePath());
@@ -78,7 +80,7 @@ public class WindowsMain extends StateBasedGame {
 
 	@Override
 	public void initStatesList(GameContainer gc) throws SlickException {
-		this.enterState(STATE_DESKTOP);
+		this.enterState(STATE_LOGIN);
 	}
 
 }
