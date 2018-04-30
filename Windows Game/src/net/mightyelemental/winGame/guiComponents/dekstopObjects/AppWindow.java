@@ -82,7 +82,7 @@ public abstract class AppWindow extends RoundedRectangle implements Runnable {
 			contentGraphics.destroy();
 			contentGraphics = null;
 		}
-		if ( toMinimise || (isMinimised && !toMinimise) ) {
+		if ( toMinimise || isMinimised ) { // toMinimise || (isMinimised && !toMinimise)
 			animateMinimize(gc, sbg, g);
 			return;
 		}
@@ -91,8 +91,11 @@ public abstract class AppWindow extends RoundedRectangle implements Runnable {
 		g.setColor(Color.black);
 		g.draw(this);
 		g.setColor(new Color(30, 79, 178));
-		g.fillRoundRect(x, y, super.getWidth() - 1, 25, 3);
-		g.fillRect(x, y + 10, super.getWidth() - 1, 15);
+		g.fillRoundRect(x, y, super.getWidth()-2, 25, 3);
+		g.setColor(Color.black);
+		g.drawRoundRect(x-1, y, super.getWidth()-0.5f, 20, 3);
+		g.setColor(new Color(30, 79, 178));
+		g.fillRect(x, y + 10, super.getWidth() - 2, 15);
 		windowButtons.draw(x + super.getWidth() - 85, y + 2);
 		g.setColor(Color.white);
 		g.drawString(displayTitle, x + 15, y + 22 / 2f - g.getFont().getHeight(displayTitle) / 2f);
@@ -124,9 +127,8 @@ public abstract class AppWindow extends RoundedRectangle implements Runnable {
 		float y = this.getY() + Math.abs((720 - this.getY()) * minimizeScale * minimizeScale);
 		float width = this.getWidth() * (1 - minimizeScale) + linkedTaskbarApp.getWidth() * minimizeScale;
 		float height = this.getHeight() * (1 - minimizeScale) + linkedTaskbarApp.getHeight() * minimizeScale;
-		g.fillRoundRect(x, y, width, height, (int) (5 + 10 * (1 - minimizeScale)));// TODO:
-																					// java.lang.IllegalArgumentException:
-																					// corner radius must be > 0
+		int rad = (int) (5 + 10 * (1 - minimizeScale));
+		g.fillRoundRect(x, y, width, height, rad > 0 ? rad : 1);
 		// }
 	}
 
