@@ -6,12 +6,13 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.StateBasedGame;
 
+import net.mightyelemental.winGame.OSSettings;
 import net.mightyelemental.winGame.guiComponents.GUIButton;
 
 public class TaskbarApp extends GUIButton {
 
-	private static final long serialVersionUID = 8086670225644581843L;
-	public static final String TASKBARAPP = "_taskbarapp";
+	private static final long	serialVersionUID	= 8086670225644581843L;
+	public static final String	TASKBARAPP			= "_taskbarapp";
 
 	// private int index = -1;
 
@@ -43,18 +44,23 @@ public class TaskbarApp extends GUIButton {
 	}
 
 	public void drawText(GameContainer gc, StateBasedGame sbg, Graphics g) {
-		String temp = linkedWindow.getTitle();
-		if (linkedWindow.getTitle().length() >= 9) {
-			temp = linkedWindow.getTitle().substring(0, 6) + "...";
+		StringBuilder temp = new StringBuilder(linkedWindow.getTitle());
+		boolean flag = false;
+		while (OSSettings.NORMAL_FONT.getWidth(temp.toString()) > this.getWidth()) {
+			if ( !flag ) {
+				temp.append("...");
+				flag = true;
+			}
+			temp.deleteCharAt(temp.length() - 4);
 		}
-		g.drawString(temp, x + 2, y - g.getFont().getHeight(temp) / 2f + height / 2f);
+		g.drawString(temp.toString(), x + 2, y - g.getFont().getHeight(temp.toString()) / 2f + height / 2f);
 	}
 
 	@Override
 	public void onMousePressed(int button) {
-		if (button == 0) {
+		if ( button == 0 ) {
 			this.linkedWindow.toMinimise = !this.linkedWindow.toMinimise;
-		} else if (button == 1) {
+		} else if ( button == 1 ) {
 
 		}
 	}
