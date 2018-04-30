@@ -1,6 +1,8 @@
 package net.mightyelemental.winGame;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.GameContainer;
@@ -8,15 +10,19 @@ import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.StateBasedGame;
 
+import net.mightyelemental.winGame.guiComponents.dekstopObjects.AppWindow;
+import net.mightyelemental.winGame.programs.AppTest;
 import net.mightyelemental.winGame.states.StateDesktop;
 import net.mightyelemental.winGame.states.StateLoading;
 import net.mightyelemental.winGame.states.StateLogin;
-import net.mightyelemental.winGame.util.ProgramLoader;
 
 public class WindowsMain extends StateBasedGame {
 
+	public static List<Class<? extends AppWindow>> programs = new ArrayList<Class<? extends AppWindow>>();
+
 	public WindowsMain() {
-		super("WinGameXD");
+		super("XendosXD");
+		programs.add(AppTest.class);
 		this.addState(loadState);
 		this.addState(loginState);
 		this.addState(desktopState);
@@ -42,23 +48,23 @@ public class WindowsMain extends StateBasedGame {
 
 	public static final Image NULL_IMAGE = null;
 
-	public static final int	STATE_LOADING	= 0;
-	public static final int	STATE_LOGIN		= 1;
-	public static final int	STATE_DESKTOP	= 2;
+	public static final int STATE_LOADING = 0;
+	public static final int STATE_LOGIN = 1;
+	public static final int STATE_DESKTOP = 2;
 
-	public StateLoading	loadState		= new StateLoading(STATE_LOADING);
-	public StateLogin	loginState		= new StateLogin();
-	public StateDesktop	desktopState	= new StateDesktop();
+	public StateLoading loadState = new StateLoading(STATE_LOADING);
+	public StateLogin loginState = new StateLogin();
+	public StateDesktop desktopState = new StateDesktop();
 
 	private static void resetLib() {
 		System.setProperty("java.library.path", "lib");
 		String os = System.getProperty("os.name").toLowerCase();
 		String path = "windows";
-		if ( os.contains("mac") ) {
+		if (os.contains("mac")) {
 			path = "macosx";
-		} else if ( os.contains("nix") || os.contains("nux") || os.contains("aix") ) {
+		} else if (os.contains("nix") || os.contains("nux") || os.contains("aix")) {
 			path = "linux";
-		} else if ( os.contains("sunos") ) {
+		} else if (os.contains("sunos")) {
 			path = "solaris";
 		}
 		System.setProperty("org.lwjgl.librarypath", new File("lib/natives/" + path).getAbsolutePath());
@@ -66,7 +72,7 @@ public class WindowsMain extends StateBasedGame {
 
 	public static void main(String[] args) {
 		resetLib();
-		ProgramLoader.loadJar("/test.jar");
+		// ProgramLoader.loadJar("/test.jar");
 		new WindowsMain();
 	}
 

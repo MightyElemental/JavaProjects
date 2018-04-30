@@ -8,6 +8,7 @@ import java.lang.annotation.Target;
 
 @Retention(RUNTIME)
 @Target(TYPE)
-public @interface Window {
+public @interface WindowDetails {
 	boolean hasGraphics() default true;
+	String title() default "UNNAMED PROGRAM";
 }

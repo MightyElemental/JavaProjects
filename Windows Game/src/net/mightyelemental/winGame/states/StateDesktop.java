@@ -1,5 +1,6 @@
 package net.mightyelemental.winGame.states;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,6 +24,7 @@ import net.mightyelemental.winGame.guiComponents.dekstopObjects.FileObject;
 import net.mightyelemental.winGame.guiComponents.dekstopObjects.StartWindow;
 import net.mightyelemental.winGame.guiComponents.dekstopObjects.TaskbarApp;
 import net.mightyelemental.winGame.programs.AppSquareRotator;
+import net.mightyelemental.winGame.programs.AppTest;
 
 public class StateDesktop extends BasicGameState {
 
@@ -46,13 +48,17 @@ public class StateDesktop extends BasicGameState {
 
 		startWin = new StartWindow();
 		guiComponents.add(new GUIButton(0, gc.getHeight() - 43, 105, 43, "#START").setTransparent(true));
-		guiComponents.add(new FileObject(5, 5, "#APP", "Cube Fall").setColor(Color.magenta));
+
+		for (Class<? extends AppWindow> c : WindowsMain.programs) {
+			String title = c.getSimpleName();
+			guiComponents.add(new FileObject(5, 5, "File_" + title, title).setLinkedClass(c).setColor(Color.magenta));
+		}
 		startWin.init(gc, delta);
 	}
 
 	@Override
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
-		g.setFont(OSSettings.FILE_FONT);
+		g.setFont(OSSettings.NORMAL_FONT);
 		background.draw();
 		g.setColor(Color.white);
 		// g.drawString("<Some GUI goes here>", gc.getWidth() / 2 -
@@ -155,6 +161,7 @@ public class StateDesktop extends BasicGameState {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void mousePressed(int button, int x, int y) {
 		oldx = x;
@@ -166,7 +173,6 @@ public class StateDesktop extends BasicGameState {
 				c.onMousePressed(button);
 				if (c instanceof TaskbarApp) {
 					AppWindow aw = ((TaskbarApp) c).linkedWindow;
-					System.out.println("CLICK");
 					foregroundWindow(aw);
 				}
 				onComponentPressed(button, c);
@@ -177,9 +183,17 @@ public class StateDesktop extends BasicGameState {
 				// } else {
 				// c.setSelected(true);
 				// }
-				if (c.getUID().equals("#APP")) {
-					this.createNewWindow(800, 600, "Amazing Test");
-					break;
+				if (c instanceof FileObject) {
+					FileObject fo = (FileObject) c;
+					if (fo.getLinkedClass() != null) {
+						try {
+							this.createNewWindow(800, 600, (Class<? extends AppWindow>) fo.getLinkedClass());
+						} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
+								| InvocationTargetException | NoSuchMethodException | SecurityException e) {
+							e.printStackTrace();
+						}
+						break;
+					}
 				}
 			} else {
 				c.setSelected(false);
@@ -233,10 +247,16 @@ public class StateDesktop extends BasicGameState {
 		}
 	}
 
-	public void createNewWindow(int width, int height, String title) {
+	public void createNewWindow(int width, int height, Class<? extends AppWindow> c)
+			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
+			NoSuchMethodException, SecurityException {
 		int x = 1280 / 2 - width / 2;
 		int y = 720 / 2 - height / 2;
-		AppWindow wa = new AppSquareRotator(x, y, 800, 600, title);
+		// AppWindow wa = new AppSquareRotator(x, y, 800, 600);
+		AppWindow wa = c
+				.getDeclaredConstructor(
+						new Class<?>[] { Float.class, Float.class, Float.class, Float.class, String.class })
+				.newInstance(x, y, width, height, "Opened");
 		windowList.add(wa);
 		TaskbarApp t = new TaskbarApp(110, wa, taskbarAppOrder.size());
 		guiComponents.add(t);
@@ -269,7 +289,12 @@ public class StateDesktop extends BasicGameState {
 			break;
 		}
 		if (key == Input.KEY_I) {
-			createNewWindow(800, 600, "test" + (System.currentTimeMillis() % 1234));
+			try {
+				createNewWindow(800, 600, AppTest.class);
+			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
+					| InvocationTargetException | NoSuchMethodException | SecurityException e) {
+				e.printStackTrace();
+			}
 		}
 		if (key == Input.KEY_DELETE) {
 			for (AppWindow w : windowList) {

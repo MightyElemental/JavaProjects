@@ -10,8 +10,8 @@ import net.mightyelemental.winGame.guiComponents.GUIButton;
 
 public class TaskbarApp extends GUIButton {
 
-	private static final long	serialVersionUID	= 8086670225644581843L;
-	public static final String	TASKBARAPP			= "_taskbarapp";
+	private static final long serialVersionUID = 8086670225644581843L;
+	public static final String TASKBARAPP = "_taskbarapp";
 
 	// private int index = -1;
 
@@ -39,19 +39,22 @@ public class TaskbarApp extends GUIButton {
 		g.setColor(new Color(30, 79, 178).darker());
 		g.drawRoundRect(x, y, width, height, 5);
 		g.setColor(Color.white);
+		drawText(gc, sbg, g);
+	}
+
+	public void drawText(GameContainer gc, StateBasedGame sbg, Graphics g) {
 		String temp = linkedWindow.getTitle();
-		if ( linkedWindow.getTitle().length() >= 9 ) {
+		if (linkedWindow.getTitle().length() >= 9) {
 			temp = linkedWindow.getTitle().substring(0, 6) + "...";
 		}
-
 		g.drawString(temp, x + 2, y - g.getFont().getHeight(temp) / 2f + height / 2f);
 	}
 
 	@Override
 	public void onMousePressed(int button) {
-		if ( button == 0 ) {
+		if (button == 0) {
 			this.linkedWindow.toMinimise = !this.linkedWindow.toMinimise;
-		} else if ( button == 1 ) {
+		} else if (button == 1) {
 
 		}
 	}

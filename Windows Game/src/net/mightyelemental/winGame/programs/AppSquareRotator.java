@@ -12,16 +12,16 @@ import net.mightyelemental.winGame.guiComponents.dekstopObjects.AppWindow;
 
 public class AppSquareRotator extends AppWindow {
 
-	private static final long	serialVersionUID	= -5362114223313401429L;
-	private Rectangle			rect				= new Rectangle(50, 50, 50, 50);
-	private Shape				transformedRect		= rect;
-	private double				angle				= 0;
+	private static final long serialVersionUID = -5362114223313401429L;
+	private Rectangle rect = new Rectangle(50, 50, 50, 50);
+	private Shape transformedRect = rect;
+	private double angle = 0;
 
-	private float	xLoc	= 50, yLoc = 50;
-	private double	yVel	= 0.0, xVel = 0.0;
+	private float xLoc = 50, yLoc = 50;
+	private double yVel = 0.0, xVel = 0.0;
 
-	public AppSquareRotator(float x, float y, float width, float height, String title) {
-		super(x, y, width, height, title);
+	public AppSquareRotator(float x, float y, float width, float height) {
+		super(x, y, width, height, "Cube Fall");
 		this.setSleepTime(2);
 	}
 
@@ -29,7 +29,7 @@ public class AppSquareRotator extends AppWindow {
 	protected void drawContent(Graphics g, int width, int height) {
 		// g.setAntiAlias(true);
 		this.clearScreen();
-		g.setFont(OSSettings.FILE_FONT);
+		g.setFont(OSSettings.NORMAL_FONT);
 		g.drawString("This should be in comic sans....", 20, 20);
 		g.setColor(Color.white);
 		g.fill(transformedRect);
@@ -37,32 +37,33 @@ public class AppSquareRotator extends AppWindow {
 		g.drawLine(0, transformedRect.getCenterY(), width, transformedRect.getCenterY());
 		// g.setColor(Color.black);
 		// g.drawLine(0, height - 1, width, height - 1);
-		if ( xLoc > width ) {
+		if (xLoc > width) {
 			g.setColor(Color.red);
 			g.fillRect(0, 0, 10, 10);
 		}
-		if ( xLoc < 0 ) {
+		if (xLoc < 0) {
 			g.setColor(Color.green);
 			g.fillRect(0, 0, 10, 10);
 		}
 	}
 
-	private float	gravity	= 0.05f;
-	private boolean	onGround;
+	private float gravity = 0.05f;
+	private boolean onGround;
 
 	@Override
 	public void updateContent(int delta) {
-		if ( Math.abs(delta - getSleepTime()) > 10 ) return;
-		if ( on[0] || on[2] ) {
+		if (Math.abs(delta - getSleepTime()) > 10)
+			return;
+		if (on[0] || on[2]) {
 			angle -= delta / 5.0;
 			xLoc -= delta / 5.0;
-		} else if ( on[1] || on[3] ) {
+		} else if (on[1] || on[3]) {
 			angle += delta / 5.0;
 			xLoc += delta / 5.0;
-		} else if ( onGround && angle % 90 != 0 ) {
+		} else if (onGround && angle % 90 != 0) {
 			double tempAng = Math.abs(angle) % 90;
 			// System.out.println(angle + "|" + tempAng);
-			if ( tempAng > 45 ) {
+			if (tempAng > 45) {
 				angle += ((tempAng + 1.0) * (tempAng + 5.0)) / 3000.0 * (gravity * 20) * (delta / 8f);
 				// angle += Math.cos(Math.toRadians(angle % 90)) * (gravity * 25 * Math.PI) *
 				// (delta / 10f);
@@ -73,31 +74,35 @@ public class AppSquareRotator extends AppWindow {
 				// angle -= Math.cos(Math.toRadians(angle % 90)) * (gravity * 25 * Math.PI) *
 				// (delta / 10f);
 			}
-			if ( tempAng <= 2f || tempAng >= 88f ) {
+			if (tempAng <= 2f || tempAng >= 88f) {
 				angle = (float) Math.floor(angle / 90f) * 90f;
 			}
 		}
-		if ( angle < 0 ) angle += 360;
+		if (angle < 0)
+			angle += 360;
 		angle = angle % 360;
 		updateSquare();
-		if ( xVel > 2f ) xVel = 2f;
-		if ( xVel < -2f ) xVel = -2f;
+		if (xVel > 2f)
+			xVel = 2f;
+		if (xVel < -2f)
+			xVel = -2f;
 		this.setSleepTime(10);
 		// xVel *= 0.90f/Math.sqrt(delta);
 		float difference = getFrameHeight() - transformedRect.getMaxY();
 		onGround = difference <= 0.0f;
-		if ( transformedRect.getMaxY() < getFrameHeight() ) {
+		if (transformedRect.getMaxY() < getFrameHeight()) {
 			yVel += gravity * delta / 10f;
-		} else if ( transformedRect.getMaxY() > getFrameHeight() ) {
+		} else if (transformedRect.getMaxY() > getFrameHeight()) {
 			yLoc += difference;
 			// System.out.println(difference + "|" + yVel);
-			if ( Math.abs(difference) > 0.1 ) {
+			if (Math.abs(difference) > 0.1) {
 				yVel = -gravity * (1 - difference) * (delta / 10f);
 			} else {
 				yVel = 0;
 			}
 		}
-		if ( Math.abs(yVel) < 0.001 ) yVel = 0;
+		if (Math.abs(yVel) < 0.001)
+			yVel = 0;
 
 		// for ( float i = 0; i < yVel; i += gravity ) {
 		// if ( transformedRect.getMaxY() + i > getFrameHeight() ) {
@@ -135,8 +140,8 @@ public class AppSquareRotator extends AppWindow {
 			on[3] = true;
 			break;
 		}
-		if ( key == Input.KEY_SPACE ) {
-			if ( onGround ) {
+		if (key == Input.KEY_SPACE) {
+			if (onGround) {
 				yLoc -= 1;
 				yVel = -2;
 				System.out.println("yes");
