@@ -17,11 +17,11 @@ import net.mightyelemental.winGame.states.StateDesktop;
 import net.mightyelemental.winGame.states.StateLoading;
 import net.mightyelemental.winGame.states.StateLogin;
 
-public class WindowsMain extends StateBasedGame {
+public class XendosMain extends StateBasedGame {
 
 	public static List<Class<? extends AppWindow>> programs = new ArrayList<Class<? extends AppWindow>>();
 
-	public WindowsMain() {
+	public XendosMain() {
 		super("XendosXD");
 		programs.add(AppTest.class);
 		programs.add(AppSquareRotator.class);
@@ -75,7 +75,7 @@ public class WindowsMain extends StateBasedGame {
 	public static void main(String[] args) {
 		resetLib();
 		// ProgramLoader.loadJar("/test.jar");
-		new WindowsMain();
+		new XendosMain();
 	}
 
 	@Override

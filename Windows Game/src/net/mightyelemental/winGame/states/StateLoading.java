@@ -9,7 +9,7 @@ import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 
 import net.mightyelemental.winGame.ResourceLoader;
-import net.mightyelemental.winGame.WindowsMain;
+import net.mightyelemental.winGame.XendosMain;
 
 public class StateLoading extends BasicGameState {
 	
@@ -31,7 +31,7 @@ public class StateLoading extends BasicGameState {
 		loadingScreen = ResourceLoader.loadImage("loading.loadScreen");
 		loadingBar = ResourceLoader.loadImage("loading.loadingBar");
 		biosScreen = ResourceLoader.loadImage("loading.loadBios");
-		float scale = (WindowsMain.WIDTH / 16.0f * 9.0f) / loadingScreen.getHeight();
+		float scale = (XendosMain.WIDTH / 16.0f * 9.0f) / loadingScreen.getHeight();
 		loadingScreen = loadingScreen.getScaledCopy(scale);
 		loadingBar = loadingBar.getScaledCopy(scale);
 	}
@@ -71,7 +71,7 @@ public class StateLoading extends BasicGameState {
 		}
 		
 		if (counts >= 3) {
-			sbg.enterState(WindowsMain.STATE_LOGIN);
+			sbg.enterState(XendosMain.STATE_LOGIN);
 		}
 	}
 	

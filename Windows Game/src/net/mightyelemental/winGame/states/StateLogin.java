@@ -14,7 +14,7 @@ import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 
 import net.mightyelemental.winGame.ResourceLoader;
-import net.mightyelemental.winGame.WindowsMain;
+import net.mightyelemental.winGame.XendosMain;
 import net.mightyelemental.winGame.guiComponents.GUIButton;
 import net.mightyelemental.winGame.guiComponents.GUIComponent;
 import net.mightyelemental.winGame.guiComponents.GUITextBox;
@@ -77,13 +77,13 @@ public class StateLogin extends BasicGameState {
 			welcomeTime -= delta / 8f;
 		}
 		if ( welcomeTime < 0 ) {
-			sbg.enterState(WindowsMain.STATE_DESKTOP);
+			sbg.enterState(XendosMain.STATE_DESKTOP);
 		}
 	}
 
 	@Override
 	public int getID() {
-		return WindowsMain.STATE_LOGIN;
+		return XendosMain.STATE_LOGIN;
 	}
 
 	public void onComponentPressed(int button, GUIComponent c) {
