@@ -41,8 +41,8 @@ public class StateLogin extends BasicGameState {
 		welcomeScreen = ResourceLoader.loadImage("login.welcomeScreen");
 		startup = ResourceLoader.loadSound("startup");
 		guiComponents.add(new GUIButton(832, 496, 44, 44, "#go").setTransparent(true));
-		guiComponents.add(
-				new GUITextBox(505, 495, 294, 45, "#password").setSelectedShape(new RoundedRectangle(503, 492, 298, 51, 10)));
+		guiComponents.add(new GUITextBox(505, 495, 294, 45, "#password").setPasswordChar('*')
+				.setSelectedShape(new RoundedRectangle(503, 492, 298, 51, 10)));
 	}
 
 	@Override

@@ -56,7 +56,8 @@ public class GUITextBox extends GUIComponent {
 		text.append(newText);
 	}
 
-	public void setPasswordChar(char c) {
-
+	public GUITextBox setPasswordChar(char c) {
+		this.passwordSym = c;
+		return this;
 	}
 }
