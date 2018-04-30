@@ -19,10 +19,10 @@ public class AppTest extends AppWindow {
 
 	private boolean[][] bannedPixels = new boolean[201][151];
 
-	public AppTest(float x, float y, float width, float height, String title) {
-		super(x, y, width, height, title);
+	public AppTest(float x, float y, float width, float height) {
+		super(x, y, width, height, "Random Splatter Painter");
 		this.setShowFPS(true);
-		this.addGUIObject(new GUIButton(150, 30, "#dead", this).setText("Reset Screen"), 10, 100);
+		this.addGUIObject(new GUIButton(150, 30, "#reset", this).setText("Reset Screen"), 10, 100);
 	}
 
 	private Color getRandomColor() {
@@ -76,7 +76,7 @@ public class AppTest extends AppWindow {
 
 	@Override
 	public void onComponentPressed(int button, GUIComponent c) {
-		if ( c.getUID().equals("#DEAD") ) {
+		if ( c.getUID().equals("#RESET") ) {
 			this.contentGraphics.clear();
 			this.bannedPixels = new boolean[201][151];
 		}

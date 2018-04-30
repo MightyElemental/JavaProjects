@@ -20,7 +20,7 @@ public class AppSquareRotator extends AppWindow {
 	private float xLoc = 50, yLoc = 50;
 	private double yVel = 0.0, xVel = 0.0;
 
-	public AppSquareRotator(float x, float y, float width, float height, String title) {
+	public AppSquareRotator(float x, float y, float width, float height) {
 		super(x, y, width, height, "Cube Fall");
 		this.setSleepTime(2);
 	}
