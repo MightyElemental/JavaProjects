@@ -11,6 +11,7 @@ import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.StateBasedGame;
 
 import net.mightyelemental.winGame.guiComponents.dekstopObjects.AppWindow;
+import net.mightyelemental.winGame.programs.AppCalculator;
 import net.mightyelemental.winGame.programs.AppSquareRotator;
 import net.mightyelemental.winGame.programs.AppTest;
 import net.mightyelemental.winGame.states.StateDesktop;
@@ -49,12 +50,13 @@ public class XendosMain extends StateBasedGame {
 	private void loadPrograms() {
 		programs.add(AppTest.class);
 		programs.add(AppSquareRotator.class);
+		programs.add(AppCalculator.class);
 
 		File dir = new File("assets/programs");
 		System.out.println(dir.getAbsolutePath().replaceFirst("[A-Z]{1}:", ""));
 		File[] files = dir.listFiles((d, name) -> name.endsWith(".jar"));
 
-		for ( File f : files ) {
+		for (File f : files) {
 			ProgramLoader.loadJar(f.getAbsolutePath().replaceFirst("[A-Z]{1}:", ""));
 		}
 	}
@@ -65,23 +67,23 @@ public class XendosMain extends StateBasedGame {
 
 	public static final Image NULL_IMAGE = null;
 
-	public static final int	STATE_LOADING	= 0;
-	public static final int	STATE_LOGIN		= 1;
-	public static final int	STATE_DESKTOP	= 2;
+	public static final int STATE_LOADING = 0;
+	public static final int STATE_LOGIN = 1;
+	public static final int STATE_DESKTOP = 2;
 
-	public StateLoading	loadState		= new StateLoading(STATE_LOADING);
-	public StateLogin	loginState		= new StateLogin();
-	public StateDesktop	desktopState	= new StateDesktop();
+	public StateLoading loadState = new StateLoading(STATE_LOADING);
+	public StateLogin loginState = new StateLogin();
+	public StateDesktop desktopState = new StateDesktop();
 
 	private static void resetLib() {
 		System.setProperty("java.library.path", "lib");
 		String os = System.getProperty("os.name").toLowerCase();
 		String path = "windows";
-		if ( os.contains("mac") ) {
+		if (os.contains("mac")) {
 			path = "macosx";
-		} else if ( os.contains("nix") || os.contains("nux") || os.contains("aix") ) {
+		} else if (os.contains("nix") || os.contains("nux") || os.contains("aix")) {
 			path = "linux";
-		} else if ( os.contains("sunos") ) {
+		} else if (os.contains("sunos")) {
 			path = "solaris";
 		}
 		System.setProperty("org.lwjgl.librarypath", new File("lib/natives/" + path).getAbsolutePath());
@@ -89,7 +91,7 @@ public class XendosMain extends StateBasedGame {
 
 	public static void main(String[] args) {
 		resetLib();
-		//ProgramLoader.loadJar("/test.jar");
+		// ProgramLoader.loadJar("/test.jar");
 		new XendosMain();
 	}
 

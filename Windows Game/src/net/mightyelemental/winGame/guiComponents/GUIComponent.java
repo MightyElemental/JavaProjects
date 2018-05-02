@@ -1,7 +1,6 @@
 package net.mightyelemental.winGame.guiComponents;
 
 import org.newdawn.slick.Color;
-import org.newdawn.slick.Font;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
@@ -23,7 +22,6 @@ public class GUIComponent extends Rectangle {
 	private AppWindow linkedWindow;
 
 	private Shape selectedShape;
-	protected Font f;
 
 	private long lastClicked = 0;
 
@@ -52,8 +50,6 @@ public class GUIComponent extends Rectangle {
 	}
 
 	public void draw(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
-		if (f == null)
-			f = g.getFont();
 		if (!transparent) {
 			g.setColor(color);
 			g.fillRoundRect(x, y, width, height, 3);

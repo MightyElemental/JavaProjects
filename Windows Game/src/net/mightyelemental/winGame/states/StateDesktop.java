@@ -72,11 +72,11 @@ public class StateDesktop extends BasicGameState {
 			g.setColor(new Color(0f, 0f, 0.7f, 1f));
 			g.draw(selection);
 		}
-		drawWindows(gc, sbg, g);
 		taskbar.draw(0, gc.getHeight() - taskbar.getHeight());
 		for (GUIComponent c : guiComponents) {
 			c.draw(gc, sbg, g);
 		}
+		drawWindows(gc, sbg, g);
 	}
 
 	private void drawWindows(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {

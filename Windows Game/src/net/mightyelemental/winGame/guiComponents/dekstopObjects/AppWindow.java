@@ -45,7 +45,7 @@ public abstract class AppWindow extends RoundedRectangle implements Runnable {
 
 	private float minimizeScale = 0;
 
-	public AppWindow(float x, float y, float width, float height, String title) {
+	protected AppWindow(float x, float y, float width, float height, String title) {
 		super(x, y, width, height, 3);
 		this.height = height;
 		this.width = width;
@@ -92,8 +92,10 @@ public abstract class AppWindow extends RoundedRectangle implements Runnable {
 		g.draw(this);
 		g.setColor(new Color(30, 79, 178));
 		g.fillRoundRect(x, y, super.getWidth() - 2, 25, 3);
-		g.setColor(Color.black);
-		g.drawRoundRect(x - 1, y, super.getWidth() - 0.5f, 20, 3);
+		
+		//g.setColor(Color.black);//draw border
+		//g.drawRoundRect(x - 1, y, super.getWidth() - 0.5f, 20, 3);
+		
 		g.setColor(new Color(30, 79, 178));
 		g.fillRect(x, y + 10, super.getWidth() - 2, 15);
 		windowButtons.draw(x + super.getWidth() - 85, y + 2);

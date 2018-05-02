@@ -8,6 +8,8 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.StateBasedGame;
 
+import net.mightyelemental.winGame.OSSettings;
+
 public class GUITextBox extends GUIComponent {
 
 	private static final long serialVersionUID = 7295479133012661247L;
@@ -21,7 +23,7 @@ public class GUITextBox extends GUIComponent {
 
 	@Override
 	public void onKeyPressed(int key, char c) {
-		if ( f.getWidth(text.toString()) < width * 0.95f ) {
+		if ( OSSettings.NORMAL_FONT.getWidth(text.toString()) < width * 0.95f ) {
 			text.append((c + "").replaceAll("[^A-Za-z0-9 -_+=./|\\;:\"'`~!@#$%^&*(){}]", ""));
 		}
 		if ( key == 14 && text.length() > 0 ) {

@@ -28,11 +28,12 @@ public class GUIButton extends GUIComponent {
 	public void draw(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
 		super.draw(gc, sbg, g);
 		String tempText = text;
-		while (f.getWidth(tempText) >= width) {
+		while (g.getFont().getWidth(tempText) >= width) {
 			tempText = tempText.substring(0, tempText.length() - 1);
 		}
 		g.setColor(getInvertColor(color));
-		g.drawString(tempText, x + (width / 2) - f.getWidth(tempText) / 2, y + (height / 2) - f.getHeight(tempText) / 2);
+		g.drawString(tempText, x + (width / 2) - g.getFont().getWidth(tempText) / 2,
+				y + (height / 2) - g.getFont().getHeight(tempText) / 2);
 	}
 
 	public Color getInvertColor(Color c) {
@@ -40,7 +41,6 @@ public class GUIButton extends GUIComponent {
 		int g = c.getGreen();
 		int b = c.getBlue();
 		return new Color(255 - r, 255 - g, 255 - b);
-
 	}
 
 	public String getText() {
