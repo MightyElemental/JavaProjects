@@ -29,13 +29,13 @@ public class StateDesktop extends BasicGameState {
 	public StateDesktop() {
 	}
 
-	private List<GUIComponent>	guiComponents	= new ArrayList<GUIComponent>();
-	private List<AppWindow>		windowList		= new ArrayList<AppWindow>();
-	private List<String>		taskbarAppOrder	= new ArrayList<String>();
+	private List<GUIComponent> guiComponents = new ArrayList<GUIComponent>();
+	private List<AppWindow> windowList = new ArrayList<AppWindow>();
+	private List<String> taskbarAppOrder = new ArrayList<String>();
 
-	private Image		background, taskbar;
-	private Rectangle	selection;
-	private StartWindow	startWin;
+	private Image background, taskbar;
+	private Rectangle selection;
+	private StartWindow startWin;
 
 	private String selectedUID = "";
 
@@ -48,7 +48,7 @@ public class StateDesktop extends BasicGameState {
 		guiComponents.add(new GUIButton(0, gc.getHeight() - 43, 105, 43, "#START").setTransparent(true));
 
 		int i = 0;
-		for ( Class<? extends AppWindow> c : XendosMain.programs ) {
+		for (Class<? extends AppWindow> c : XendosMain.programs) {
 			String title = c.getSimpleName().replaceFirst("App", "");
 			guiComponents.add(new FileObject(15, 15 + (OSSettings.FILE_DISPLAY_SIZE + 25) * i, "File_" + title, title)
 					.setLinkedClass(c).setColor(Color.magenta));
@@ -66,7 +66,7 @@ public class StateDesktop extends BasicGameState {
 		// (g.getFont().getWidth("<Some GUI goes here>") / 2),
 		// gc.getHeight() / 2);
 
-		if ( selection != null ) {
+		if (selection != null) {
 			g.setColor(new Color(0f, 0f, 0.5f, 0.3f));
 			g.fill(selection);
 			g.setColor(new Color(0f, 0f, 0.7f, 1f));
@@ -74,18 +74,18 @@ public class StateDesktop extends BasicGameState {
 		}
 		drawWindows(gc, sbg, g);
 		taskbar.draw(0, gc.getHeight() - taskbar.getHeight());
-		for ( GUIComponent c : guiComponents ) {
+		for (GUIComponent c : guiComponents) {
 			c.draw(gc, sbg, g);
 		}
 	}
 
 	private void drawWindows(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
-		for ( int i = 0; i < windowList.size(); i++ ) {
+		for (int i = 0; i < windowList.size(); i++) {
 			// if ( windowList.size() > 0 ) {
 			windowList.get(i).draw(gc, sbg, g);
 			// }
 		}
-		if ( getComponent("#START") != null && getComponent("#START").isSelected() ) {
+		if (getComponent("#START") != null && getComponent("#START").isSelected()) {
 			startWin.draw(gc, sbg, g);
 			startWin.isMinimised = true;
 		} else {
@@ -94,8 +94,9 @@ public class StateDesktop extends BasicGameState {
 	}
 
 	public GUIComponent getComponent(String uid) {
-		for ( int i = 0; i < guiComponents.size(); i++ ) {
-			if ( guiComponents.get(i).getUID().equals(uid.toUpperCase()) ) return guiComponents.get(i);
+		for (int i = 0; i < guiComponents.size(); i++) {
+			if (guiComponents.get(i).getUID().equals(uid.toUpperCase()))
+				return guiComponents.get(i);
 		}
 		return null;
 	}
@@ -106,16 +107,17 @@ public class StateDesktop extends BasicGameState {
 	}
 
 	public void updateWindows(GameContainer gc, StateBasedGame sbg, int delta) {
-		for ( int i = 0; i < windowList.size(); i++ ) {
+		for (int i = 0; i < windowList.size(); i++) {
 			// windowList.get(i).update(gc, sbg, delta);
-			if ( windowList.get(i).toClose && windowList.get(i).isMinimised ) {
+			windowList.get(i).updateMinimize(delta);
+			if (windowList.get(i).toClose && windowList.get(i).isMinimised) {
 				deleteWindow(windowList.get(i));
 			}
 		}
-		for ( int i = 0; i < guiComponents.size(); i++ ) {
-			if ( guiComponents.get(i) instanceof TaskbarApp ) {
-				if ( ((TaskbarApp) guiComponents.get(i)).linkedWindow == null
-						|| ((TaskbarApp) guiComponents.get(i)).linkedWindow.toClose ) {
+		for (int i = 0; i < guiComponents.size(); i++) {
+			if (guiComponents.get(i) instanceof TaskbarApp) {
+				if (((TaskbarApp) guiComponents.get(i)).linkedWindow == null
+						|| ((TaskbarApp) guiComponents.get(i)).linkedWindow.toClose) {
 					guiComponents.remove(i);
 				}
 			}
@@ -130,14 +132,14 @@ public class StateDesktop extends BasicGameState {
 	@Override
 	public void mouseDragged(int oldx, int oldy, int newx, int newy) {
 		boolean selectFlag = true;
-		for ( int i = windowList.size() - 1; i >= 0; i-- ) {
-			if ( windowList.get(i).isDraggable() ) {
+		for (int i = windowList.size() - 1; i >= 0; i--) {
+			if (windowList.get(i).isDraggable()) {
 				windowList.get(i).mouseDragged(newx - oldx, newy - oldy);
 				selectFlag = false;
 				break;
 			}
 		}
-		if ( selectFlag && selectedUID.equals("") ) {
+		if (selectFlag && selectedUID.equals("")) {
 			selection = new Rectangle(this.oldx, this.oldy, newx - this.oldx, newy - this.oldy);
 		}
 	}
@@ -145,18 +147,19 @@ public class StateDesktop extends BasicGameState {
 	@Override
 	public void mouseReleased(int button, int x, int y) {
 		selection = null;
-		for ( int i = windowList.size() - 1; i >= 0; i-- ) {
+		for (int i = windowList.size() - 1; i >= 0; i--) {
 			AppWindow aw = windowList.get(i);
-			if ( aw.isDraggable() ) {
+			if (aw.isDraggable()) {
 				aw.onMouseReleased(button);
 				break;
 			}
-			if ( aw.contains(x, y) && !aw.isMinimised ) for ( GUIComponent c : aw.guiObjects ) {
-				if ( c.contains(x - aw.getX(), y - aw.getY() - 26) ) {
-					onComponentReleased(button, c);
-					break;
+			if (aw.contains(x, y) && !aw.isMinimised)
+				for (GUIComponent c : aw.guiObjects) {
+					if (c.contains(x - aw.getX(), y - aw.getY() - 26)) {
+						onComponentReleased(button, c);
+						break;
+					}
 				}
-			}
 		}
 	}
 
@@ -166,11 +169,11 @@ public class StateDesktop extends BasicGameState {
 		oldx = x;
 		oldy = y;
 		selectedUID = "";
-		for ( GUIComponent c : guiComponents ) {
-			if ( c.contains(x, y) ) {
+		for (GUIComponent c : guiComponents) {
+			if (c.contains(x, y)) {
 				c.setSelected(!c.isSelected());
 				c.onMousePressed(button);
-				if ( c instanceof TaskbarApp ) {
+				if (c instanceof TaskbarApp) {
 					AppWindow aw = ((TaskbarApp) c).linkedWindow;
 					foregroundWindow(aw);
 				}
@@ -182,9 +185,9 @@ public class StateDesktop extends BasicGameState {
 				// } else {
 				// c.setSelected(true);
 				// }
-				if ( c instanceof FileObject ) {
+				if (c instanceof FileObject) {
 					FileObject fo = (FileObject) c;
-					if ( fo.getLinkedClass() != null ) {
+					if (fo.getLinkedClass() != null) {
 						try {
 							this.createNewWindow(800, 600, (Class<? extends AppWindow>) fo.getLinkedClass());
 						} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
@@ -198,24 +201,26 @@ public class StateDesktop extends BasicGameState {
 				c.setSelected(false);
 			}
 		}
-		for ( AppWindow aw : windowList ) {
-			if ( aw.contains(x, y) && !aw.isMinimised ) for ( GUIComponent c : aw.guiObjects ) {
-				if ( c.contains(x - aw.getX(), y - aw.getY() - 26) ) {
-					onComponentPressed(button, c);
-					break;
+		for (AppWindow aw : windowList) {
+			if (aw.contains(x, y) && !aw.isMinimised)
+				for (GUIComponent c : aw.guiObjects) {
+					if (c.contains(x - aw.getX(), y - aw.getY() - 26)) {
+						onComponentPressed(button, c);
+						break;
+					}
 				}
-			}
 		}
-		if ( y > 720 - 43 ) return;
-		for ( int i = windowList.size() - 1; i >= 0; i-- ) {
-			if ( windowList.get(i).contains(x, y) ) {
+		if (y > 720 - 43)
+			return;
+		for (int i = windowList.size() - 1; i >= 0; i--) {
+			if (windowList.get(i).contains(x, y)) {
 				boolean success = windowList.get(i).onMousePressed(button, x, y);
-				if ( success ) {
+				if (success) {
 					break;
 				} else {
 					System.out.println("WINDOW");
 					foregroundWindow(windowList.get(i));// TODO FIX THIS
-					if ( !windowList.get(i).isMinimised ) {
+					if (!windowList.get(i).isMinimised) {
 						break;
 					}
 				}
@@ -232,14 +237,14 @@ public class StateDesktop extends BasicGameState {
 	}
 
 	public void onComponentPressed(int button, GUIComponent c) {
-		if ( c.getLinkedWindow() != null ) {
+		if (c.getLinkedWindow() != null) {
 			c.getLinkedWindow().onComponentPressed(button, c);
 			c.onMousePressed(button);
 		}
 	}
 
 	public void onComponentReleased(int button, GUIComponent c) {
-		if ( c.getLinkedWindow() != null ) {
+		if (c.getLinkedWindow() != null) {
 			c.onMouseReleased(button);
 		}
 	}
@@ -250,8 +255,8 @@ public class StateDesktop extends BasicGameState {
 		int x = 1280 / 2 - width / 2;
 		int y = 720 / 2 - height / 2;
 		// AppWindow wa = new AppSquareRotator(x, y, 800, 600);
-		AppWindow wa = c.getConstructor(new Class<?>[] { float.class, float.class, float.class, float.class }).newInstance(x, y,
-				width, height);
+		AppWindow wa = c.getConstructor(new Class<?>[] { float.class, float.class, float.class, float.class })
+				.newInstance(x, y, width, height);
 		windowList.add(wa);
 		TaskbarApp t = new TaskbarApp(110, wa, taskbarAppOrder.size());
 		guiComponents.add(t);
@@ -261,7 +266,7 @@ public class StateDesktop extends BasicGameState {
 	public void deleteWindow(AppWindow aw) {
 		windowList.remove(aw);
 		taskbarAppOrder.remove(aw.getLinkedTaskbarApp().getUID());
-		for ( AppWindow a : windowList ) {
+		for (AppWindow a : windowList) {
 			TaskbarApp t = a.getLinkedTaskbarApp();
 			t.setIndex(taskbarAppOrder.indexOf(t.getUID()));
 		}
@@ -269,16 +274,17 @@ public class StateDesktop extends BasicGameState {
 
 	@Override
 	public void keyPressed(int key, char c) {
-		for ( GUIComponent g : guiComponents ) {
-			if ( g.getUID().equals(selectedUID) ) {
+		for (GUIComponent g : guiComponents) {
+			if (g.getUID().equals(selectedUID)) {
 				System.out.println(selectedUID);
 				g.onKeyPressed(key, c);
 				break;
 			}
 		}
-		for ( int i = windowList.size() - 1; i >= 0; i-- ) {
+		for (int i = windowList.size() - 1; i >= 0; i--) {
 			AppWindow aw = windowList.get(i);
-			if ( aw.isMinimised ) continue;
+			if (aw.isMinimised)
+				continue;
 			aw.keyPressed(key, c);
 			break;
 		}
@@ -291,8 +297,8 @@ public class StateDesktop extends BasicGameState {
 		// e.printStackTrace();
 		// }
 		// }
-		if ( key == Input.KEY_DELETE ) {
-			for ( AppWindow w : windowList ) {
+		if (key == Input.KEY_DELETE) {
+			for (AppWindow w : windowList) {
 				deleteWindow(w);
 			}
 		}
@@ -300,9 +306,10 @@ public class StateDesktop extends BasicGameState {
 
 	@Override
 	public void keyReleased(int key, char c) {
-		for ( int i = windowList.size() - 1; i >= 0; i-- ) {
+		for (int i = windowList.size() - 1; i >= 0; i--) {
 			AppWindow aw = windowList.get(i);
-			if ( aw.isMinimised ) continue;
+			if (aw.isMinimised)
+				continue;
 			aw.keyReleased(key, c);
 			break;
 		}
