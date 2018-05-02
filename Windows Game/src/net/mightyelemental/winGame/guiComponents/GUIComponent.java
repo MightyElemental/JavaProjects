@@ -15,15 +15,17 @@ public class GUIComponent extends Rectangle {
 
 	private static final long serialVersionUID = 5967548527327574045L;
 
-	public Color	color	= Color.white;
-	private String	UID;
+	public Color color = Color.white;
+	private String UID;
 
 	private boolean selected, transparent = true;
 
 	private AppWindow linkedWindow;
 
-	private Shape	selectedShape;
-	protected Font	f;
+	private Shape selectedShape;
+	protected Font f;
+
+	private long lastClicked = 0;
 
 	public GUIComponent setColor(Color c) {
 		color = c;
@@ -37,7 +39,7 @@ public class GUIComponent extends Rectangle {
 
 	public GUIComponent(float x, float y, float width, float height, String uid) {
 		super(x, y, width, height);
-		if ( uid.startsWith("#") ) {
+		if (uid.startsWith("#")) {
 			UID = uid.toUpperCase();
 		} else {
 			UID = (System.currentTimeMillis() % 15937) + "_" + uid.toUpperCase();
@@ -50,14 +52,15 @@ public class GUIComponent extends Rectangle {
 	}
 
 	public void draw(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
-		if ( f == null ) f = g.getFont();
-		if ( !transparent ) {
+		if (f == null)
+			f = g.getFont();
+		if (!transparent) {
 			g.setColor(color);
 			g.fillRoundRect(x, y, width, height, 3);
 		}
-		if ( this.isSelected() ) {
+		if (this.isSelected()) {
 			g.setColor(color.darker());
-			if ( selectedShape != null ) {
+			if (selectedShape != null) {
 				g.draw(selectedShape);
 			} else {
 				g.drawRoundRect(x, y, width, height, 3);
@@ -66,7 +69,7 @@ public class GUIComponent extends Rectangle {
 	}
 
 	public void onMousePressed(int button) {
-
+		lastClicked = System.currentTimeMillis();
 	}
 
 	public void onMouseReleased(int button) {
@@ -86,7 +89,7 @@ public class GUIComponent extends Rectangle {
 	}
 
 	public String getNID() {
-		if ( !getUID().startsWith("#") ) {
+		if (!getUID().startsWith("#")) {
 			return getUID().split("_", 2)[0];
 		} else {
 			return getUID();
@@ -112,6 +115,10 @@ public class GUIComponent extends Rectangle {
 
 	protected void setLinkedWindow(AppWindow aw) {
 		this.linkedWindow = aw;
+	}
+
+	public long lastClicked() {
+		return lastClicked;
 	}
 
 }

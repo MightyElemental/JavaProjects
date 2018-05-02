@@ -172,7 +172,6 @@ public class StateDesktop extends BasicGameState {
 		for (GUIComponent c : guiComponents) {
 			if (c.contains(x, y)) {
 				c.setSelected(!c.isSelected());
-				c.onMousePressed(button);
 				if (c instanceof TaskbarApp) {
 					AppWindow aw = ((TaskbarApp) c).linkedWindow;
 					foregroundWindow(aw);
@@ -187,8 +186,9 @@ public class StateDesktop extends BasicGameState {
 				// }
 				if (c instanceof FileObject) {
 					FileObject fo = (FileObject) c;
-					if (fo.getLinkedClass() != null) {
+					if (fo.getLinkedClass() != null && fo.lastClicked() + 500 > System.currentTimeMillis()) {
 						try {
+							// TODO: Calc double tap
 							this.createNewWindow(800, 600, (Class<? extends AppWindow>) fo.getLinkedClass());
 						} catch (InstantiationException | IllegalAccessException | IllegalArgumentException
 								| InvocationTargetException | NoSuchMethodException | SecurityException e) {
@@ -197,6 +197,7 @@ public class StateDesktop extends BasicGameState {
 						break;
 					}
 				}
+				c.onMousePressed(button);
 			} else {
 				c.setSelected(false);
 			}
