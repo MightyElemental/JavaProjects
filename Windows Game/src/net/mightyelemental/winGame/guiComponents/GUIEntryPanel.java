@@ -9,6 +9,7 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.StateBasedGame;
 
+import net.mightyelemental.winGame.OSSettings;
 import net.mightyelemental.winGame.guiComponents.dekstopObjects.AppWindow;
 
 public class GUIEntryPanel extends GUIComponent {
@@ -34,14 +35,45 @@ public class GUIEntryPanel extends GUIComponent {
 		addEntry(text, onRight, null);
 	}
 
+	public void addEntry(String text, boolean onRight, boolean finalize) {
+		Entry e = new Entry(text, onRight, null);
+		e.setFinalized();
+		entries.add(e);
+	}
+
 	public void addEntry(String text, boolean onRight, Color c) {
 		entries.add(new Entry(text, onRight, c));
+	}
+
+	public Entry getLatestEntry() {
+		if (entries.size() > 0)
+			return entries.get(entries.size() - 1);
+		return null;
 	}
 
 	@Override
 	public void draw(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
 		g.setColor(this.color);
-		g.fill(this);
+		g.fillRoundRect(x, y, width, height, 3);
+		int totalHeight = 0;
+		if (entries.size() > 0) {
+			g.setColor(Color.black);
+			g.drawString(entries.size() + "", 0, 0);
+			for (int i = entries.size() - 1; i >= 0; i--) {
+				Entry e = entries.get(i);
+				int height = OSSettings.NORMAL_FONT.getHeight(e.getText());
+				totalHeight += height;
+				if (totalHeight > this.getHeight())
+					break;
+				if (e.isOnRight()) {
+					int width = OSSettings.NORMAL_FONT.getWidth(e.getText());
+					g.drawString(e.getText(), this.getX() + this.getWidth() - width - 8,
+							this.getHeight() - totalHeight);
+				} else {
+					g.drawString(e.getText(), this.getX() + 4, this.getHeight() - totalHeight);
+				}
+			}
+		}
 	}
 
 }
