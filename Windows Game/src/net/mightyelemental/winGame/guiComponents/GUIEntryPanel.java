@@ -58,7 +58,7 @@ public class GUIEntryPanel extends GUIComponent {
 		int totalHeight = 0;
 		if (entries.size() > 0) {
 			g.setColor(Color.black);
-			g.drawString(entries.size() + "", 0, 0);
+			// g.drawString(entries.size() + "", 0, 0);
 			for (int i = entries.size() - 1; i >= 0; i--) {
 				Entry e = entries.get(i);
 				int height = OSSettings.NORMAL_FONT.getHeight(e.getText());
