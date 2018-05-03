@@ -88,7 +88,7 @@ public class GUIComponent extends Rectangle {
 		if (!getUID().startsWith("#")) {
 			return getUID().split("_", 2)[0];
 		} else {
-			return getUID();
+			return getUID().replaceFirst("#", "");
 		}
 	}
 

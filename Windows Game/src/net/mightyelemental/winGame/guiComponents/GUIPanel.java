@@ -33,13 +33,13 @@ public class GUIPanel extends GUIComponent {
 	public void draw(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
 		g.setColor(color);
 		g.fillRoundRect(x, y, width, height, 3);
-		for ( GUIComponent gui : getGuiObjects() ) {
+		for (GUIComponent gui : getGuiObjects()) {
 			gui.draw(gc, sbg, g);
 		}
 	}
 
 	public void addGUIObject(GUIComponent com, float x, float y) {
-		if ( com instanceof GUIPanel ) {
+		if (com instanceof GUIPanel) {
 			System.err.println("Cannot add a panel inside a panel");
 			return;
 		}
@@ -51,10 +51,11 @@ public class GUIPanel extends GUIComponent {
 			break;
 		case GridLayout:
 			int items = guiObjects.size();
-			if ( items > gridCol * gridRow ) return;
+			if (items > gridCol * gridRow)
+				return;
 			int newX = (items % gridCol);
 			int newY = (items) / gridCol;
-			System.out.println(items + "|" + newX + "|" + newY);
+			// System.out.println(items + "|" + newX + "|" + newY);
 			com.setWidth(width / (float) gridCol - 4);
 			com.setHeight(height / (float) gridRow - 4);
 			com.setX(newX * (width / (float) gridCol) + this.getX() + 2);
