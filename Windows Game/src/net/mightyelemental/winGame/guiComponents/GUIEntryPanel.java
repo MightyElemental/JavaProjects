@@ -55,6 +55,7 @@ public class GUIEntryPanel extends GUIComponent {
 	public void draw(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
 		g.setColor(this.color);
 		g.fillRoundRect(x, y, width, height, 3);
+		g.setFont(OSSettings.NORMAL_FONT);
 		int totalHeight = 0;
 		if (entries.size() > 0) {
 			g.setColor(Color.black);
