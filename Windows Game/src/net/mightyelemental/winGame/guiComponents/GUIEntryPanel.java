@@ -15,7 +15,7 @@ public class GUIEntryPanel extends GUIComponent {
 
 	private static final long serialVersionUID = -8339400027648252407L;
 
-	private List<Object[]> entries = new ArrayList<Object[]>();
+	private List<Entry> entries = new ArrayList<Entry>();
 
 	public GUIEntryPanel(float x, float y, float width, float height, String uid) {
 		super(x, y, width, height, uid);
@@ -35,7 +35,7 @@ public class GUIEntryPanel extends GUIComponent {
 	}
 
 	public void addEntry(String text, boolean onRight, Color c) {
-		entries.add(new Object[] { text, onRight, c });
+		entries.add(new Entry(text, onRight, c));
 	}
 
 	@Override
