@@ -14,6 +14,7 @@ import net.mightyelemental.winGame.guiComponents.dekstopObjects.AppWindow;
 import net.mightyelemental.winGame.programs.AppCalculator;
 import net.mightyelemental.winGame.programs.AppSquareRotator;
 import net.mightyelemental.winGame.programs.AppTest;
+import net.mightyelemental.winGame.programs.AppWebBrowser;
 import net.mightyelemental.winGame.states.StateDesktop;
 import net.mightyelemental.winGame.states.StateLoading;
 import net.mightyelemental.winGame.states.StateLogin;
@@ -48,6 +49,7 @@ public class XendosMain extends StateBasedGame {
 	}
 
 	private void loadPrograms() {
+		programs.add(AppWebBrowser.class);
 		programs.add(AppTest.class);
 		programs.add(AppSquareRotator.class);
 		programs.add(AppCalculator.class);

@@ -51,6 +51,7 @@ public class GUIButton extends GUIComponent {
 	}
 
 	public void onMousePressed(int button) {
+		Thread.dumpStack();
 		this.setSelected(true);
 	}
 

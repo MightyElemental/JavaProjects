@@ -92,10 +92,10 @@ public abstract class AppWindow extends RoundedRectangle implements Runnable {
 		g.draw(this);
 		g.setColor(new Color(30, 79, 178));
 		g.fillRoundRect(x, y, super.getWidth() - 2, 25, 3);
-		
-		//g.setColor(Color.black);//draw border
-		//g.drawRoundRect(x - 1, y, super.getWidth() - 0.5f, 20, 3);
-		
+
+		// g.setColor(Color.black);//draw border
+		// g.drawRoundRect(x - 1, y, super.getWidth() - 0.5f, 20, 3);
+
 		g.setColor(new Color(30, 79, 178));
 		g.fillRect(x, y + 10, super.getWidth() - 2, 15);
 		windowButtons.draw(x + super.getWidth() - 85, y + 2);
@@ -265,6 +265,11 @@ public abstract class AppWindow extends RoundedRectangle implements Runnable {
 	}
 
 	public final void keyPressed(int key, char c) {
+		for (GUIComponent g : guiObjects) {
+			if (g.isSelected()) {
+				g.onKeyPressed(key, c);
+			}
+		}
 		if (key == Input.KEY_ESCAPE) {
 			closeWindow();
 		}
@@ -294,12 +299,14 @@ public abstract class AppWindow extends RoundedRectangle implements Runnable {
 	}
 
 	public void addGUIObject(GUIComponent g) {
+		g.setLinkedWindow(this);
 		guiObjects.add(g);
 	}
 
 	public void addGUIObject(GUIComponent g, float x, float y) {
 		g.setX(x);
 		g.setY(y);
+		g.setLinkedWindow(this);
 		guiObjects.add(g);
 	}
 

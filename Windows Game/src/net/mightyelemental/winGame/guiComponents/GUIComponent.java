@@ -113,7 +113,7 @@ public class GUIComponent extends Rectangle {
 		return linkedWindow;
 	}
 
-	protected void setLinkedWindow(AppWindow aw) {
+	public void setLinkedWindow(AppWindow aw) {
 		this.linkedWindow = aw;
 	}
 

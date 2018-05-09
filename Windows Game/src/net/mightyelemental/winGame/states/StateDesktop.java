@@ -251,14 +251,14 @@ public class StateDesktop extends BasicGameState {
 		if (c.getLinkedWindow() != null) {
 			c.getLinkedWindow().onComponentPressed(button, c);
 			c.onMousePressed(button);
-			//c.setSelected(true);
+			// c.setSelected(true);
 		}
 	}
 
 	public void onComponentReleased(int button, GUIComponent c) {
 		if (c.getLinkedWindow() != null) {
 			c.onMouseReleased(button);
-			//c.setSelected(false);
+			// c.setSelected(false);
 		}
 	}
 
@@ -289,7 +289,7 @@ public class StateDesktop extends BasicGameState {
 	public void keyPressed(int key, char c) {
 		for (GUIComponent g : guiComponents) {
 			if (g.getUID().equals(selectedUID)) {
-				System.out.println(selectedUID);
+				// System.out.println(selectedUID);
 				g.onKeyPressed(key, c);
 				break;
 			}
