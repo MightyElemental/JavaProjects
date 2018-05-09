@@ -1,6 +1,5 @@
 package net.mightyelemental.winGame.guiComponents;
 
-import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
@@ -17,11 +16,13 @@ public class GUIButton extends GUIComponent {
 	public GUIButton(float x, float y, float width, float height, String uid) {
 		super(x, y, width, height, uid);
 		this.setTransparent(false);
+		this.setAllowInvertedColor(true);
 	}
 
 	public GUIButton(float width, float height, String uid, AppWindow aw) {
 		this(0, 0, width, height, uid);
 		this.setLinkedWindow(aw);
+		this.setAllowInvertedColor(true);
 	}
 
 	@Override
@@ -31,16 +32,13 @@ public class GUIButton extends GUIComponent {
 		while (g.getFont().getWidth(tempText) >= width) {
 			tempText = tempText.substring(0, tempText.length() - 1);
 		}
-		g.setColor(getInvertColor(color));
+		if ( isSelected() ) {
+			g.setColor(color);
+		} else {
+			g.setColor(getInvertColor(color));
+		}
 		g.drawString(tempText, x + (width / 2) - g.getFont().getWidth(tempText) / 2,
 				y + (height / 2) - g.getFont().getHeight(tempText) / 2);
-	}
-
-	public Color getInvertColor(Color c) {
-		int r = c.getRed();
-		int g = c.getGreen();
-		int b = c.getBlue();
-		return new Color(255 - r, 255 - g, 255 - b);
 	}
 
 	public String getText() {
@@ -53,11 +51,11 @@ public class GUIButton extends GUIComponent {
 	}
 
 	public void onMousePressed(int button) {
-		color = getInvertColor(color);
+		this.setSelected(true);
 	}
 
 	public void onMouseReleased(int button) {
-		color = getInvertColor(color);
+		this.setSelected(false);
 	}
 
 }

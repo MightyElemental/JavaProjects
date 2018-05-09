@@ -251,14 +251,14 @@ public class StateDesktop extends BasicGameState {
 		if (c.getLinkedWindow() != null) {
 			c.getLinkedWindow().onComponentPressed(button, c);
 			c.onMousePressed(button);
-			c.setSelected(true);
+			//c.setSelected(true);
 		}
 	}
 
 	public void onComponentReleased(int button, GUIComponent c) {
 		if (c.getLinkedWindow() != null) {
 			c.onMouseReleased(button);
-			c.setSelected(false);
+			//c.setSelected(false);
 		}
 	}
 

@@ -46,8 +46,7 @@ public class GUIEntryPanel extends GUIComponent {
 	}
 
 	public Entry getLatestEntry() {
-		if (entries.size() > 0)
-			return entries.get(entries.size() - 1);
+		if ( entries.size() > 0 ) return entries.get(entries.size() - 1);
 		return null;
 	}
 
@@ -57,24 +56,26 @@ public class GUIEntryPanel extends GUIComponent {
 		g.fillRoundRect(x, y, width, height, 3);
 		g.setFont(OSSettings.NORMAL_FONT);
 		int totalHeight = 0;
-		if (entries.size() > 0) {
+		if ( entries.size() > 0 ) {
 			g.setColor(Color.black);
 			// g.drawString(entries.size() + "", 0, 0);
-			for (int i = entries.size() - 1; i >= 0; i--) {
+			for ( int i = entries.size() - 1; i >= 0; i-- ) {
 				Entry e = entries.get(i);
 				int height = OSSettings.NORMAL_FONT.getHeight(e.getText());
 				totalHeight += height;
-				if (totalHeight > this.getHeight())
-					break;
-				if (e.isOnRight()) {
+				if ( totalHeight > this.getHeight() ) break;
+				if ( e.isOnRight() ) {
 					int width = OSSettings.NORMAL_FONT.getWidth(e.getText());
-					g.drawString(e.getText(), this.getX() + this.getWidth() - width - 8,
-							this.getHeight() - totalHeight);
+					g.drawString(e.getText(), this.getX() + this.getWidth() - width - 8, this.getHeight() - totalHeight);
 				} else {
 					g.drawString(e.getText(), this.getX() + 4, this.getHeight() - totalHeight);
 				}
 			}
 		}
+	}
+
+	public void clearEntries() {
+		entries.clear();
 	}
 
 }
