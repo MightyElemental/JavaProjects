@@ -14,10 +14,10 @@ public class GUIComponent extends Rectangle {
 
 	private static final long serialVersionUID = 5967548527327574045L;
 
-	public Color	color	= Color.white;
-	private String	UID;
+	public Color color = Color.white;
+	private String UID;
 
-	private boolean selected, transparent = true, allowInvertColor = false;
+	private boolean selected, transparent = false, allowInvertColor = false;
 
 	private AppWindow linkedWindow;
 
@@ -37,7 +37,7 @@ public class GUIComponent extends Rectangle {
 
 	public GUIComponent(float x, float y, float width, float height, String uid) {
 		super(x, y, width, height);
-		if ( uid.startsWith("#") ) {
+		if (uid.startsWith("#")) {
 			UID = uid.toUpperCase();
 		} else {
 			UID = (System.currentTimeMillis() % 15937) + "_" + uid.toUpperCase();
@@ -50,21 +50,24 @@ public class GUIComponent extends Rectangle {
 	}
 
 	public void draw(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
-		if ( !transparent ) {
-			if ( this.isSelected() && allowInvertColor ) {
-				g.setColor(getInvertColor(color));
-			} else {
-				g.setColor(color);
-			}
-			g.fillRoundRect(x, y, width, height, 3);
-		}
-		if ( this.isSelected() ) {
-			g.setColor(color.darker());
-		}
-		if ( selectedShape == null ) {
-			g.drawRoundRect(x, y, width, height, 3);
+
+		if (this.isSelected() && allowInvertColor) {
+			g.setColor(getInvertColor(color));
 		} else {
-			g.draw(selectedShape);
+			g.setColor(color);
+		}
+		if (!transparent) {
+			g.fillRoundRect(x, y, width, height, 3);
+
+			if (this.isSelected()) {
+				g.setColor(color.darker());
+			}
+
+			if (selectedShape == null) {
+				g.drawRoundRect(x, y, width, height, 3);
+			} else {
+				g.draw(selectedShape);
+			}
 		}
 	}
 
@@ -89,7 +92,7 @@ public class GUIComponent extends Rectangle {
 	}
 
 	public String getNID() {
-		if ( !getUID().startsWith("#") ) {
+		if (!getUID().startsWith("#")) {
 			return getUID().split("_", 2)[0];
 		} else {
 			return getUID().replaceFirst("#", "");

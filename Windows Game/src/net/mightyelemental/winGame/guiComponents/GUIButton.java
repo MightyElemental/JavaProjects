@@ -5,6 +5,7 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.StateBasedGame;
 
+import net.mightyelemental.winGame.OSSettings;
 import net.mightyelemental.winGame.guiComponents.dekstopObjects.AppWindow;
 
 public class GUIButton extends GUIComponent {
@@ -28,17 +29,18 @@ public class GUIButton extends GUIComponent {
 	@Override
 	public void draw(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
 		super.draw(gc, sbg, g);
+		g.setFont(OSSettings.NORMAL_FONT);
 		String tempText = text;
-		while (g.getFont().getWidth(tempText) >= width) {
+		while (OSSettings.NORMAL_FONT.getWidth(tempText) >= width) {
 			tempText = tempText.substring(0, tempText.length() - 1);
 		}
-		if ( isSelected() ) {
+		if (isSelected()) {
 			g.setColor(color);
 		} else {
 			g.setColor(getInvertColor(color));
 		}
-		g.drawString(tempText, x + (width / 2) - g.getFont().getWidth(tempText) / 2,
-				y + (height / 2) - g.getFont().getHeight(tempText) / 2);
+		g.drawString(tempText, x + (width / 2f) - OSSettings.NORMAL_FONT.getWidth(tempText) / 2f,
+				y + (height / 2f) - OSSettings.NORMAL_FONT.getHeight(tempText) / 2f);
 	}
 
 	public String getText() {

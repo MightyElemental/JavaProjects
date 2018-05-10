@@ -17,7 +17,6 @@ import org.newdawn.slick.state.StateBasedGame;
 import net.mightyelemental.winGame.OSSettings;
 import net.mightyelemental.winGame.ResourceLoader;
 import net.mightyelemental.winGame.XendosMain;
-import net.mightyelemental.winGame.guiComponents.GUIButton;
 import net.mightyelemental.winGame.guiComponents.GUIComponent;
 import net.mightyelemental.winGame.guiComponents.GUIPanel;
 import net.mightyelemental.winGame.guiComponents.dekstopObjects.AppWindow;
@@ -46,7 +45,7 @@ public class StateDesktop extends BasicGameState {
 		taskbar = ResourceLoader.loadImage("desktop.taskbar");
 
 		startWin = new StartWindow();
-		guiComponents.add(new GUIButton(0, gc.getHeight() - 43, 105, 43, "#START").setTransparent(true));
+		guiComponents.add(new GUIComponent(0, gc.getHeight() - 43, 105, 43, "#START").setTransparent(true));
 
 		int i = 0;
 		for (Class<? extends AppWindow> c : XendosMain.programs) {
