@@ -48,8 +48,9 @@ public class StateDesktop extends BasicGameState {
 		guiComponents.add(new GUIComponent(0, gc.getHeight() - 43, 105, 43, "#START").setTransparent(true));
 
 		int i = 0;
-		for (Class<? extends AppWindow> c : XendosMain.programs) {
-			String title = c.getSimpleName().replaceFirst("App", "");
+		for (Class<? extends AppWindow> c : XendosMain.programs.keySet()) {
+			// String title = c.getSimpleName().replaceFirst("App", "");
+			String title = XendosMain.programs.get(c);
 			guiComponents.add(new FileObject(15, 15 + (OSSettings.FILE_DISPLAY_SIZE + 25) * i, "File_" + title, title)
 					.setLinkedClass(c).setColor(Color.magenta));
 			i++;

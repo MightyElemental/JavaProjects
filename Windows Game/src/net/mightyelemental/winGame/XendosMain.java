@@ -1,8 +1,8 @@
 package net.mightyelemental.winGame;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.GameContainer;
@@ -22,7 +22,7 @@ import net.mightyelemental.winGame.util.ProgramLoader;
 
 public class XendosMain extends StateBasedGame {
 
-	public static List<Class<? extends AppWindow>> programs = new ArrayList<Class<? extends AppWindow>>();
+	public static Map<Class<? extends AppWindow>, String> programs = new HashMap<Class<? extends AppWindow>, String>();
 
 	public XendosMain() {
 		super("XendosXD");
@@ -49,10 +49,10 @@ public class XendosMain extends StateBasedGame {
 	}
 
 	private void loadPrograms() {
-		programs.add(AppWebBrowser.class);
-		programs.add(AppTest.class);
-		programs.add(AppSquareRotator.class);
-		programs.add(AppCalculator.class);
+		registerProgram(AppWebBrowser.class, "Corner");
+		registerProgram(AppTest.class, "Test");
+		registerProgram(AppSquareRotator.class, "Cube Game");
+		registerProgram(AppCalculator.class, "Calculator");
 
 		File dir = new File("assets/programs");
 		System.out.println(dir.getAbsolutePath().replaceFirst("[A-Z]{1}:", ""));
@@ -102,8 +102,8 @@ public class XendosMain extends StateBasedGame {
 		this.enterState(STATE_DESKTOP);
 	}
 
-	public static void registerProgram(Class<? extends AppWindow> c) {
-		programs.add(c);
+	public static void registerProgram(Class<? extends AppWindow> c, String name) {
+		programs.put(c, name);
 	}
 
 }
