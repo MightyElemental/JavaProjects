@@ -49,7 +49,7 @@ public class XendosMain extends StateBasedGame {
 	}
 
 	private void loadPrograms() {
-		//registerProgram(AppWebBrowser.class, "Corner");
+		registerProgram(AppWebBrowser.class, "Corner");
 		registerProgram(AppTest.class, "Test");
 		registerProgram(AppSquareRotator.class, "Cube Game");
 		registerProgram(AppCalculator.class, "Calculator");
