@@ -14,8 +14,8 @@ public class GUITextBox extends GUIComponent {
 
 	private static final long serialVersionUID = 7295479133012661247L;
 
-	private StringBuilder text = new StringBuilder("");
-	private char passwordSym = ' ';
+	private StringBuilder	text		= new StringBuilder("");
+	private char			passwordSym	= ' ';
 
 	public GUITextBox(float x, float y, float width, float height, String uid) {
 		super(x, y, width, height, uid);
@@ -27,16 +27,16 @@ public class GUITextBox extends GUIComponent {
 
 	@Override
 	public void onKeyPressed(int key, char c) {
-		if (OSSettings.NORMAL_FONT.getWidth(text.toString()) < width * 0.95f) {
+		if ( OSSettings.NORMAL_FONT.getWidth(text.toString()) < width * 0.95f ) {
 			text.append((c + "").replaceAll("[^A-Za-z0-9 -_+=./|\\;:\"'`~!@#$%^&*(){}]", ""));
 		}
-		if (key == 14 && text.length() > 0) {
+		if ( key == 14 && text.length() > 0 ) {
 			text.deleteCharAt(text.length() - 1);
 		}
-		if (key == 211 && text.length() > 0) {
+		if ( key == 211 && text.length() > 0 ) {
 			text.delete(0, text.length());
 		}
-		System.out.println(text.toString());
+		// System.out.println(text.toString());
 	}
 
 	@Override
@@ -46,7 +46,7 @@ public class GUITextBox extends GUIComponent {
 
 		g.setColor(Color.black);
 		String textToDraw = text.toString();
-		if (passwordSym != ' ') {
+		if ( passwordSym != ' ' ) {
 			char[] count = new char[text.length()];
 			Arrays.fill(count, passwordSym);
 			textToDraw = new String(count);
@@ -71,5 +71,9 @@ public class GUITextBox extends GUIComponent {
 
 	public void onMousePressed(int button) {
 		this.setSelected(true);
+	}
+
+	public void clearText() {
+		text.delete(0, text.length());
 	}
 }
