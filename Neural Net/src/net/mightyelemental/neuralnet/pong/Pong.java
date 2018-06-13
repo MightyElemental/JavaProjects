@@ -31,6 +31,8 @@ public class Pong extends JPanel implements Runnable {
 
 	public boolean slow = false;
 
+	public int ballActiveTime = 0;
+
 	private enum ballTrend {
 		left, right;
 	}
@@ -41,40 +43,52 @@ public class Pong extends JPanel implements Runnable {
 	public Pong(Instance i) {
 		inst = i;
 		resetField();
-		player1 = new Rectangle(20, dim.height / 2, 10, 80);
-		player2 = new Rectangle(dim.width - 45, dim.height / 2, 10, 80);
+		player1 = new Rectangle(20, 535 / 2, 10, 45);
+		player2 = new Rectangle(dim.width - 45, 535 / 2, 10, 45);
 		thisThread.start();
 	}
 
 	private void resetField() {
-		ball = new Ball(dim.width / 2.0, dim.height / 2.0, 10.0, 10.0);
-		ballDirection = (rand.nextBoolean() ? 1 : 0) * 180;
+		ball = new Ball(dim.width / 2.0, 535 / 2.0, 10.0, 10.0);
+		int round = player1wins + player2wins;
+		ballDirection = (round % 2) * 180;
+		if ( round % 2 == 0 ) {
+			trend = ballTrend.right;
+		} else {
+			trend = ballTrend.left;
+		}
+		ballDirection += ((round + 1) % 3 - 1) * directionStep;
+		ballActiveTime = totalTime + 40;
 	}
 
 	@Override
 	public void run() {
-		while (!endGame) {
+		while (!endGame && totalTime < 3000) {
 			logic();
-			this.repaint();
-			if ( Main.genNumber >= 750) {// subTime % 10 == 0
+			if ( Main.genNumber >= 2000 ) {// totalTime % 10 == 0
 				try {
-					Thread.sleep(8);
+					Thread.sleep(10);
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+				this.repaint();
+			} else if ( totalTime % 100 == 0 ) {
+				this.repaint();
 			}
 		}
+		endGame = true;
+		// System.out.println(totalTime);
 		this.repaint();
 		// System.out.println(player1wins + " | " + player2wins + " | " + getFitness());
 	}
 
 	private void moveBall() {
+		if ( totalTime < ballActiveTime ) return;
 		double x = ball.xDouble;
 		double y = ball.yDouble;
 
-		x += Math.cos(Math.toRadians(ballDirection)) * 7.825;
-		y += Math.sin(Math.toRadians(ballDirection)) * 7.825;
+		x += Math.cos(Math.toRadians(ballDirection)) * 8.1;
+		y += Math.sin(Math.toRadians(ballDirection)) * 8.1;
 
 		ball.setLoc(x, y);
 	}
@@ -82,53 +96,65 @@ public class Pong extends JPanel implements Runnable {
 	BetterRandom rand = new BetterRandom();
 
 	private int	player1wins;
-	private int	player2wins;
+	private int	player2wins, p1Hits;
 
-	private int totalTimeWins, subTime;
+	private int totalTime;
 
 	private void logic() {
-		subTime++;
+		totalTime++;
 		moveBall();
 		if ( inst.moveUp(getNodeVars()) ) {
 			player2.y -= 5;
 		} else {
 			player2.y += 5;
 		}
-		// if ( player1.getCenterY() < ball.yDouble ) {
-		// player1.y += 5;
-		// } else if ( player1.getCenterY() > ball.yDouble ) {
-		// player1.y -= 5;
-		// }
+		if ( player1.getCenterY() < ball.yDouble ) {
+			player1.y += 5;
+		} else if ( player1.getCenterY() > ball.yDouble ) {
+			player1.y -= 5;
+		}
 		if ( player1.y < 0 ) player1.y = 0;
 		if ( player2.y < 0 ) player2.y = 0;
 		if ( player1.y + player1.getHeight() > 535 ) player1.y = (int) (535 - player1.getHeight());
 		if ( player2.y + player2.height > 535 ) player2.y = (int) (535 - player2.getHeight());
 
 		if ( ball.intersects(player1) ) {
+			boolean flag = ball.contains(player1.getCenterX(), player1.getCenterY());
 			ball.setLoc(player1.x + player1.width + 1, ball.yDouble);
-			ballDirection += rand.nextInt(3, 5) * directionStep;
+			if ( flag ) {
+				ballDirection = 0;
+			} else if ( ball.yDouble < player1.getCenterY() ) {
+				ballDirection = 7 * directionStep;
+			} else {
+				ballDirection = 1 * directionStep;
+			}
+
 			trend = ballTrend.right;
 		}
 		if ( ball.intersects(player2) ) {
+			p1Hits++;
+			boolean flag = ball.contains(player2.getCenterX(), player2.getCenterY());
 			ball.setLoc(player2.x - 1 - ball.width, ball.yDouble);
-			ballDirection += rand.nextInt(3, 5) * directionStep;
+			if ( flag ) {
+				ballDirection = 180;
+			} else if ( ball.yDouble < player2.getCenterY() ) {
+				ballDirection = 5 * directionStep;
+			} else {
+				ballDirection = 3 * directionStep;
+			}
 			trend = ballTrend.left;
 		}
 		if ( ball.xDouble > 800 ) {
 			// ballDirection += (rand.nextInt(2) + 3) * directionStep;
 			// trend = ballTrend.left;
 			player1wins++;
-			totalTimeWins += subTime / 10.0;
-			subTime = 0;
 			resetField();
 		}
 		if ( ball.xDouble < 0 ) {
 			// ballDirection += (rand.nextInt(2) + 3) * directionStep;
 			// trend = ballTrend.left;
 			player2wins++;
-			// System.out.println("amazing");
-			totalTimeWins += subTime / 10.0;
-			subTime = 0;
+			//System.out.println("amazing");
 			resetField();
 		}
 		if ( ball.intersectsLine(0, 0, 800, 0) ) {
@@ -151,6 +177,7 @@ public class Pong extends JPanel implements Runnable {
 		while (ballDirection < 0)
 			ballDirection += 360;
 		if ( ballDirection == 90 || ballDirection == 270 ) {
+			System.out.println("yse");
 			switch (trend) {
 			case left:
 				ballDirection = (rand.nextInt(2) + 3) * directionStep;
@@ -181,15 +208,16 @@ public class Pong extends JPanel implements Runnable {
 		g.drawLine(400, 40, 400, 500);
 		g.drawString(player1wins + ":" + player2wins, 390, 10);
 		g.drawString("Generation " + Main.genNumber + " | Best Fitness (LG) " + Main.bestFitnessLastGen, 10, 10);
-		g.drawString("Val " + inst.getNodes()[inst.shapeTotal() - 1].getValue(), 10, 25);
+		g.drawString("OutNode: " + inst.getNodes()[inst.shapeTotal() - 1].getValue(), 10, 25);
+		g.drawString("Fitness: " + getFitness(), 10, 40);
 	}
 
-	public int getFitness() {
-		return player2wins * 10 + totalTimeWins;
+	public double getFitness() {
+		return player2wins * 10 - player1wins * 10 + p1Hits;
 	}
 
 	public double[] getNodeVars() {
-		return new double[] { ball.xDouble, ball.yDouble, ballDirection, player2.y };
+		return new double[] { ball.xDouble, ball.yDouble, ballDirection, player2.y, player1.y };
 	}
 
 }

@@ -2,7 +2,7 @@ package net.mightyelemental.neuralnet;
 
 public class Generation {
 
-	public Instance[] instances = new Instance[50];
+	public Instance[] instances = new Instance[45];
 
 	public Generation() {
 		for ( int i = 0; i < instances.length; i++ ) {

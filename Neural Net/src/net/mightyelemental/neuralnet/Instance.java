@@ -15,7 +15,7 @@ public class Instance implements Serializable {
 
 	private Pong pongGame;
 
-	private int[] shape = { 4, 4, 1 };
+	private int[] shape = { 5, 4, 3, 1 };
 
 	BetterRandom rand = new BetterRandom();
 
@@ -99,10 +99,10 @@ public class Instance implements Serializable {
 		Node n = rand.randFromArray(nodes);
 		if ( n.nextLayer.size() > 0 ) {
 			int newN = rand.randKeyFromMap(n.nextLayer);
-			n.setWeight(newN, rand.nextBoolInt(n.getWeight(newN), rand.nextDouble() / 3.0));
+			n.setWeight(newN, rand.nextBoolInt(n.getWeight(newN), rand.nextDouble() / 6.0));
 		} else {
 			int newN = rand.randKeyFromMap(n.previousLayer);
-			n.setWeight(newN, rand.nextBoolInt(n.getWeight(newN), rand.nextDouble() / 3.0));
+			n.setWeight(newN, rand.nextBoolInt(n.getWeight(newN), rand.nextDouble() / 6.0));
 		}
 		return this;
 	}
@@ -120,27 +120,16 @@ public class Instance implements Serializable {
 	}
 
 	public void updateValues(double[] vals) {
-		// if ( nodes == null ) {
-		// System.err.println("Error");
-		// return;
-		// }
-		double[] vars = { vals[0] / 810.0, vals[1] / 535.0, vals[2] / 360.0, vals[3] / 535.0 };
+		double[] vars = { vals[0] / 808.0, vals[1] / 535.0, vals[2] / 360.0, vals[3] / 535.0, vals[4] / 535.0 };//
 		for ( int i = 0; i < vars.length; i++ ) {
 			if ( nodes[i].layer != 0 ) {
 				System.err.println("asd " + nodes[i].layer);
 			}
-			// System.out.println("before ("+i+"): " + nodes[i].getValue());
 			nodes[i].setValue(vars[i]);
-			// System.out.println(nodes[i].getValue());
 		}
 		for ( int lay = 1; lay < shape.length; lay++ ) {
 			for ( Node n : getNodeLayer(lay) ) {
-				// System.out.println(n.layer);
-				// if ( n.layer > 0 ) {
-				// System.out.println("before: " + n.getValue());
 				n.updateValue();
-				// System.out.println(n.getValue());
-				// }
 			}
 		}
 	}

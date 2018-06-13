@@ -9,7 +9,8 @@ import javax.swing.JFrame;
 public class Main implements Runnable {
 
 	public static final int	MUTATION	= 10;
-	public static int		genNumber, bestFitnessLastGen;
+	public static int		genNumber;
+	public static double	bestFitnessLastGen;
 	private JFrame			frame;
 
 	Dimension d = new Dimension(800, 600);
@@ -44,16 +45,16 @@ public class Main implements Runnable {
 
 			}
 		});
-		
-		 new Thread(this).start();
+
+		new Thread(this).start();
 	}
 
 	public static Generation g = new Generation();
 
 	public static void main(String[] args) {
-//		Instance i = new Instance();
-//		i.updateValues(new double[] { 300, 300, 180, 101 });
-//		i.printNodes();
+		// Instance i = new Instance();
+		// i.updateValues(new double[] { 300, 300, 180, 101 });
+		// i.printNodes();
 		new Main();
 	}
 
@@ -67,6 +68,7 @@ public class Main implements Runnable {
 				frame.add(g.instances[0].getPongGame());
 				frame.revalidate();
 				genNumber++;
+				System.out.println(genNumber);
 			}
 			try {
 				Thread.sleep(100);

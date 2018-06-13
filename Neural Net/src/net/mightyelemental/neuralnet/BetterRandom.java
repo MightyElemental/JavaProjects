@@ -22,6 +22,6 @@ public class BetterRandom extends Random {
 	}
 
 	public double nextBoolInt(double base, double diff) {
-		return (nextBoolean() ? 1 : -1) * diff + base;
+		return (nextDouble() > 0.5 ? 1 : -1) * diff + base;
 	}
 }
