@@ -19,6 +19,8 @@ public class AppCalculator extends AppWindow {
 
 	GUIEntryPanel entryPan = new GUIEntryPanel(390 - 2, 200, "#display", this);
 
+	private double previousAnswer;
+
 	public static ScriptEngineManager manager = new ScriptEngineManager();
 	public static ScriptEngine engine = manager.getEngineByName("js");
 
@@ -61,6 +63,7 @@ public class AppCalculator extends AppWindow {
 
 	}
 
+	/** Handle what each button does */
 	@Override
 	public void onComponentPressed(int button, GUIComponent c) {
 		String nid = c.getNID();
@@ -76,10 +79,13 @@ public class AppCalculator extends AppWindow {
 			}
 		} else if (nid.equals("EXE")) {
 			try {
-				Object o = engine.eval(entryPan.getLatestEntry().getText());
+				String evalText = entryPan.getLatestEntry().getText();
+				evalText = evalText.replaceAll("ANS", previousAnswer + "");
+				Object o = engine.eval(evalText);
 				if (o != null) {
 					entryPan.getLatestEntry().setFinalized();
 					entryPan.addEntry(o.toString(), true, true);
+					previousAnswer = Double.parseDouble(o.toString());
 				}
 			} catch (ScriptException e) {
 				entryPan.getLatestEntry().setFinalized();
@@ -94,6 +100,9 @@ public class AppCalculator extends AppWindow {
 		} else if (nid.equals("CLEAR")) {
 			entryPan.clearEntries();
 		} else {
+			if (entryPan.getLatestEntry().getText().isEmpty()) {
+				entryPan.getLatestEntry().getBuilder().append("ANS");
+			}
 			entryPan.getLatestEntry().getBuilder().append(nid);
 		}
 	}
