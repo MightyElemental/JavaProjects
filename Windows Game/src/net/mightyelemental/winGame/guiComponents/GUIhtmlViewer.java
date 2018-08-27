@@ -29,11 +29,16 @@ public class GUIhtmlViewer extends GUIComponent {
 	public void draw(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
 		super.draw(gc, sbg, g);
 		int line = 0;
-		for ( Object o : values ) {
-			if ( o.equals(commands.newLine) ) {
+		int xOff = 0;
+		for (Object o : values) {
+			if (o.equals(commands.para)) {
+				xOff += 20;
+			} else if (o.equals(commands.endPara)) {
+				xOff -= 20;
+			} else if (o.equals(commands.newLine)) {
 				line += 20;
 			} else {
-				g.drawString(o.toString(), 5, line);
+				g.drawString(o.toString(), 5 + xOff + this.getX(), line + this.getY());
 			}
 		}
 	}
@@ -44,46 +49,59 @@ public class GUIhtmlViewer extends GUIComponent {
 		return this;
 	}
 
-	public void parse() {//TODO: FIX THIS
+	public void parse() {// TODO: FIX THIS
 		values.clear();
 		char[] chars = html.toString().toCharArray();
-		// boolean tag = false;
+		boolean tag = false;
 		StringBuffer buff = new StringBuffer();
-		for ( char c : chars ) {
-			if ( c == '<' ) {
-				//if ( buff.length() > 0 ) buff.delete(0, buff.length() - 1);
-				// tag = true;
+		StringBuffer tagBuff = new StringBuffer();
+		for (char c : chars) {
+			if (c == '<') {
+				if (buff.length() > 0)
+					values.add(buff.toString());
+				if (buff.length() > 0)
+					buff.delete(0, buff.length());
+				if (tagBuff.length() > 0)
+					tagBuff.delete(0, tagBuff.length());
+				System.out.println(buff.toString());
+				tag = true;
 			}
-			if ( c == '>' ) {
-				if ( buff.length() > 0 ) buff.delete(0, buff.length() - 1);
-				// tag = false;
+			if (tag) {
+				tagBuff.append(c);
+			} else {
+				buff.append(c);
 			}
-			buff.append(c);
-			switch (buff.toString()) {
-			case "<a>":
-			case "<a ":
-				values.add(commands.link);
-				break;
-			case "<p>":
-			case "<p ":
-				values.add(commands.para);
-				break;
-			case "</p>":
-				values.add(commands.endPara);
-				break;
-			case "</a>":
-				values.add(commands.endLink);
-				break;
-			case "<br>":
-			case "<br/>":
-			case "</br>":
-				values.add(commands.newLine);
-				break;
-			default:
-				values.add(buff.toString());
-				break;
+			if (c == '>') {
+				// if (buff.length() > 0)buff.delete(0, buff.length() - 1);
+				tag = false;
+
+				switch (tagBuff.toString()) {
+				case "<a>":
+				case "<a ":
+					values.add(commands.link);
+					break;
+				case "<p>":
+				case "<div>":
+				case "<p ":
+					values.add(commands.para);
+					break;
+				case "</div>":
+				case "</p>":
+					values.add(commands.endPara);
+					break;
+				case "</a>":
+					values.add(commands.endLink);
+					break;
+				case "<br>":
+				case "<br/>":
+				case "</br>":
+					values.add(commands.newLine);
+					break;
+				}
 			}
 		}
+		values.add(buff.toString());
+		System.out.println(values);
 	}
 
 }

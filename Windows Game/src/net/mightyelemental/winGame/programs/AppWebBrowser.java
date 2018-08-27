@@ -19,8 +19,8 @@ public class AppWebBrowser extends AppWindow {
 
 	private static final long serialVersionUID = 7935648659277287522L;
 
-	GUIhtmlViewer	panel;
-	GUITextBox		text;
+	GUIhtmlViewer panel;
+	GUITextBox text;
 
 	public AppWebBrowser(float x, float y, float width, float height) {
 		super(x, y, 1000, 1000 / 16f * 9f, "Corner");
@@ -51,7 +51,7 @@ public class AppWebBrowser extends AppWindow {
 
 	@Override
 	public void onComponentPressed(int button, GUIComponent c) {
-		if ( c.getUID().equals("#GO") ) {
+		if (c.getUID().equals("#GO")) {
 			try {
 				downloadPage(text.getText());
 			} catch (IOException e) {
@@ -62,20 +62,26 @@ public class AppWebBrowser extends AppWindow {
 	}
 
 	public void downloadPage(String url) throws IOException {
-		System.out.println("|" + url + "|");
-		URL link = new URL(url);
-		HttpURLConnection con = (HttpURLConnection) link.openConnection();
-		con.setRequestMethod("GET");
+		if (url.equals("test")) {
+			StringBuffer content = new StringBuffer();
+			content.append("<p>what is going on here</p><br>Amazing");
+			panel.setHTML(content);
+		} else {
+			System.out.println("|" + url + "|");
+			URL link = new URL(url);
+			HttpURLConnection con = (HttpURLConnection) link.openConnection();
+			con.setRequestMethod("GET");
 
-		BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-		String inputLine;
-		StringBuffer content = new StringBuffer();
-		while ((inputLine = in.readLine()) != null) {
-			content.append(inputLine);
+			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+			String inputLine;
+			StringBuffer content = new StringBuffer();
+			while ((inputLine = in.readLine()) != null) {
+				content.append(inputLine);
 
+			}
+			panel.setHTML(content);
+			in.close();
 		}
-		panel.setHTML(content);
-		in.close();
 	}
 
 }
