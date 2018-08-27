@@ -93,13 +93,13 @@ public class XendosMain extends StateBasedGame {
 
 	public static void main(String[] args) {
 		resetLib();
-		// ProgramLoader.loadJar("/test.jar");
+	//ProgramLoader.loadJar("/test.jar");
 		new XendosMain();
 	}
 
 	@Override
 	public void initStatesList(GameContainer gc) throws SlickException {
-		this.enterState(STATE_LOADING);
+		this.enterState(STATE_DESKTOP);
 	}
 
 	public static void registerProgram(Class<? extends AppWindow> c, String name) {
