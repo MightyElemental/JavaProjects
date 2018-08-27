@@ -24,4 +24,10 @@ public class BetterRandom extends Random {
 	public double nextBoolInt(double base, double diff) {
 		return (nextDouble() > 0.5 ? 1 : -1) * diff + base;
 	}
+
+	public int nextIntTendToward(int min, int max) {
+		double result = Math.abs(this.nextDouble() - this.nextDouble()) * (max - min) + min;
+		return (int) Math.floor(result);
+	}
+
 }

@@ -29,7 +29,7 @@ public class Main implements Runnable {
 			@Override
 			public void keyPressed(KeyEvent e) {
 				if ( e.getKeyCode() == KeyEvent.VK_SPACE ) {
-					g.instances[0].printWeightedConnections();
+					g.instances[0].printConnections();
 				}
 			}
 
@@ -63,12 +63,18 @@ public class Main implements Runnable {
 		while (true) {
 			if ( g.isComplete() ) {
 				frame.remove(g.instances[0].getPongGame());
-				bestFitnessLastGen = g.getBestOfGen().getPongGame().getFitness();
-				g = new Generation(g.getBestOfGen());
+				Instance[] temp = g.getSeeds();
+				bestFitnessLastGen = Integer.MIN_VALUE;
+				for ( Instance i : temp ) {
+					if ( i.getFitness() > bestFitnessLastGen ) {
+						bestFitnessLastGen = i.getFitness();
+					}
+				}
+				g = new Generation(g.getSeeds());
 				frame.add(g.instances[0].getPongGame());
 				frame.revalidate();
 				genNumber++;
-				System.out.println(genNumber);
+				// System.out.println(genNumber);
 			}
 			try {
 				Thread.sleep(100);
