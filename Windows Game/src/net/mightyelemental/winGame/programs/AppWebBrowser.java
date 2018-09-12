@@ -48,13 +48,7 @@ public class AppWebBrowser extends AppWindow {
 	@Override
 	public void onComponentPressed(int button, GUIComponent c) {
 		if ( c.getUID().equals("#GO") ) {
-			try {
-				panel.displayWebsite(text.getText());
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
+			panel.displayWebsite(text.getText());
 			text.clearText();
 		}
 	}
