@@ -9,6 +9,7 @@ import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.StateBasedGame;
+import org.newdawn.slick.util.Log;
 
 import net.mightyelemental.winGame.guiComponents.dekstopObjects.AppWindow;
 import net.mightyelemental.winGame.programs.AppCalculator;
@@ -80,17 +81,21 @@ public class XendosMain extends StateBasedGame {
 	public StateDesktop	desktopState	= new StateDesktop();
 
 	private static void resetLib() {
-		System.setProperty("java.library.path", "lib");
 		String os = System.getProperty("os.name").toLowerCase();
+		Log.info("OS: " + System.getProperty("os.name") + " (" + System.getProperty("os.arch") + ")");
+		Log.info("Java Version: " + System.getProperty("java.version"));
 		String path = "windows";
 		if ( os.contains("mac") ) {
 			path = "macosx";
 		} else if ( os.contains("nix") || os.contains("nux") || os.contains("aix") ) {
 			path = "linux";
-		} else if ( os.contains("sunos") ) {
-			path = "solaris";
 		}
-		System.setProperty("org.lwjgl.librarypath", new File("lib/natives/" + path).getAbsolutePath());
+		String fullPath = new File("lib/natives/" + path).getAbsolutePath();
+		System.setProperty("java.library.path", fullPath);
+		System.setProperty("net.java.games.input.librarypath", fullPath);
+		System.setProperty("org.lwjgl.librarypath", fullPath);
+		System.setProperty("net.java.games.input.DirectAndRawInputEnvironmentPlugin", fullPath);
+		// System.out.println(System.getProperty("org.lwjgl.librarypath"));
 	}
 
 	public static void main(String[] args) {
