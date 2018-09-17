@@ -1,7 +1,5 @@
 package net.mightyelemental.winGame.programs;
 
-import java.io.IOException;
-
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 
