@@ -15,10 +15,13 @@ import org.newdawn.slick.SlickException;
 import org.newdawn.slick.Sound;
 import org.newdawn.slick.UnicodeFont;
 import org.newdawn.slick.font.effects.ColorEffect;
+import org.newdawn.slick.util.Log;
 
 /**
+ * @updated 12/09/2018
  * @author MightyElemental
  * @since 28/10/2014
+ * @version Slick2D edition
  */
 public class ResourceLoader {
 
@@ -57,10 +60,10 @@ public class ResourceLoader {
 					loadedImage = new Image(location);
 					System.out.println("Added texture\t'" + location + "'");
 				} else {
-					throw new Exception("Missing texture\t'" + location + "'");
+					Log.warn("Missing texture\t'" + location + "'");
 				}
-			} catch (Exception e) {
-				System.err.println("Missing texture\t'" + location + "'");
+			} catch (SlickException e) {
+				e.printStackTrace();
 			}
 			imageLoads.put(location, loadedImage);
 		}

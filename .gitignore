@@ -22,3 +22,7 @@ Thumbs.db
 *.sql
 *.sqlite
 /bin/
+
+# cache images #
+################
+/assets/textures/webcache/
