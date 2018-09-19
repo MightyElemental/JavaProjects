@@ -5,10 +5,10 @@ import java.util.Comparator;
 
 public class Generation {
 
-	public Instance[] instances = new Instance[45];
+	public Instance[] instances = new Instance[50];
 
 	public Generation() {
-		for (int i = 0; i < instances.length; i++) {
+		for ( int i = 0; i < instances.length; i++ ) {
 			instances[i] = new Instance().mutate();
 			// instances[i].word = rand.randKeyFromMap(WordManager.words);
 		}
@@ -17,19 +17,19 @@ public class Generation {
 	BetterRandom rand = new BetterRandom();
 
 	public Generation(Instance[] seeds) {
-		int count = (int) Math.ceil(instances.length / 10.0);
-		for (int i = 0; i < instances.length; i++) {
+		int count = (int) Math.ceil(instances.length / 20.0);
+		for ( int i = 0; i < instances.length; i++ ) {
 			instances[i] = new Instance(seeds[i % count].getNodes()).mutate();
 			// instances[i].word = rand.randKeyFromMap(WordManager.words);
 		}
 	}
 
 	public Instance[] getSeeds() {
-		Arrays.sort(instances, Comparator.comparing((Instance a) -> a.getFitness()));
-		int count = (int) Math.ceil(instances.length / 10.0);
+		Arrays.sort(instances, Comparator.comparing((Instance a) -> a.getFitness()).reversed());
+		int count = (int) Math.ceil(instances.length / 20.0);
 		Instance[] result = new Instance[count];
-		for (int i = 0; i < count; i++) {
-			int val = rand.nextIntTendToward(0, (int) (instances.length / 2.5f));
+		for ( int i = 0; i < count; i++ ) {
+			int val = rand.nextIntTendToward(0, (int) (instances.length / 6f));
 			result[i] = instances[val];
 		}
 		return result;

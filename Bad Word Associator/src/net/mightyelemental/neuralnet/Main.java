@@ -2,11 +2,13 @@ package net.mightyelemental.neuralnet;
 
 import java.awt.Dimension;
 
+import javax.swing.JOptionPane;
+
 public class Main implements Runnable {
 
-	public static final int MUTATION = 10;
-	public static int genNumber;
-	public static double bestFitnessLastGen;
+	public static final int	MUTATION	= 10;
+	public static int		genNumber;
+	public static double	bestFitnessLastGen;
 	// private JFrame frame;
 
 	Dimension d = new Dimension(800, 600);
@@ -49,25 +51,31 @@ public class Main implements Runnable {
 
 	@Override
 	public void run() {
-		while (true) {
+		while (genNumber < 250) {
 			Instance[] temp = g.getSeeds();
 			bestFitnessLastGen = Integer.MIN_VALUE;
-			for (Instance i : temp) {
-				if (i.getFitness() > bestFitnessLastGen) {
+			for ( Instance i : temp ) {
+				if ( i.getFitness() > bestFitnessLastGen ) {
 					bestFitnessLastGen = i.getFitness();
 				}
 			}
 			g = new Generation(g.getSeeds());
 			genNumber++;
-			String val = rand.randKeyFromMap(WordManager.words);
 			// System.out.println(genNumber);
-			System.out.println(genNumber + ">> " + val + " | " + WordManager.getGood(val) + " | "
-					+ g.instances[0].result(val));
-			try {
-				Thread.sleep(1);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
+			System.out.println(genNumber + ">> " + g.instances[0].getFitness());
+			// try {
+			// if ( genNumber > 300 ) Thread.sleep(50);
+			// } catch (InterruptedException e) {
+			// e.printStackTrace();
+			// }
+		}
+		for ( int i = 0; i < 10; i++ ) {
+			String word = JOptionPane.showInputDialog("Give me word now");
+			double val = g.instances[0].result(word);
+			boolean res = val > 0.5;
+			int mod = (int) (200 * (res ? val - 0.5 : 0.5 - val));
+			JOptionPane.showMessageDialog(null,
+					"'" + word + "' is " + (res ? "good" : "not good") + "!\n" + (mod / 10.0) + "% sure");
 		}
 	}
 

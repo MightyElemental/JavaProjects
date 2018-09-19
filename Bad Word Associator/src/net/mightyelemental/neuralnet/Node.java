@@ -46,11 +46,12 @@ public class Node implements Serializable {
 			totalWeight += previousLayer.get(nodeID);
 		}
 		this.value = total / totalWeight;/// (double) previousLayer.keySet().size();
+		if ( value < 0 || value > 1 ) { throw new IndexOutOfBoundsException(toString()); }
 	}
 
 	public void addConnection(int nodeID, boolean nextl) {
 		if ( nextl ) {
-			nextLayer.put(nodeID, 0.0);//Math.random() / 1.5
+			nextLayer.put(nodeID, 0.5);// Math.random() / 1.5
 		} else {
 			previousLayer.put(nodeID, i.getNodeByID(nodeID).nextLayer.get(this.ID));
 		}
