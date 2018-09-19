@@ -51,7 +51,7 @@ public class Main implements Runnable {
 
 	@Override
 	public void run() {
-		while (genNumber < 250) {
+		while (genNumber < 500) {
 			Instance[] temp = g.getSeeds();
 			bestFitnessLastGen = Integer.MIN_VALUE;
 			for ( Instance i : temp ) {
@@ -73,7 +73,7 @@ public class Main implements Runnable {
 			String word = JOptionPane.showInputDialog("Give me word now");
 			double val = g.instances[0].result(word);
 			boolean res = val > 0.5;
-			int mod = (int) (200 * (res ? val - 0.5 : 0.5 - val));
+			int mod = (int) (2000 * (res ? val - 0.5 : 0.5 - val));
 			JOptionPane.showMessageDialog(null,
 					"'" + word + "' is " + (res ? "good" : "not good") + "!\n" + (mod / 10.0) + "% sure");
 		}
