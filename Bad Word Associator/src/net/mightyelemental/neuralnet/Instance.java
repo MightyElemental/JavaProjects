@@ -13,7 +13,7 @@ public class Instance implements Serializable {// TODO: training data. Strength 
 
 	private Node[] nodes;
 
-	private int[] shape = { 5, 9, 9, 11, 9, 9, 1 };
+	private int[] shape = { 5, 15, 12, 7, 5, 1 };
 
 	String word;
 
