@@ -37,20 +37,25 @@ public class Node implements Serializable {
 		this.value = value;
 	}
 
+	public static double sigmoid(double x) {
+		return (1.0 / (1.0 + Math.pow(Math.E, (-1.0 * x))));
+	}
+
 	public void updateValue() {
 		double total = 0;
 		double totalWeight = 0;
-		// System.out.println("previous: "+previousLayer);
+
 		for ( int nodeID : previousLayer.keySet() ) {
 			total += i.getNodeByID(nodeID).getValue() * previousLayer.get(nodeID);
 			totalWeight += previousLayer.get(nodeID);
 		}
 		this.value = total / totalWeight;/// (double) previousLayer.keySet().size();
+		if ( this.value < 0 ) { throw new IndexOutOfBoundsException(); }
 	}
 
 	public void addConnection(int nodeID, boolean nextl) {
 		if ( nextl ) {
-			nextLayer.put(nodeID, 0.0);//Math.random() / 1.5
+			nextLayer.put(nodeID, Math.random());// Math.random()
 		} else {
 			previousLayer.put(nodeID, i.getNodeByID(nodeID).nextLayer.get(this.ID));
 		}

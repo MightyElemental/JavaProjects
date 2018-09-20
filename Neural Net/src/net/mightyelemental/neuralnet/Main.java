@@ -6,6 +6,8 @@ import java.awt.event.KeyListener;
 
 import javax.swing.JFrame;
 
+import net.mightyelemental.neuralnet.pong.Pong;
+
 public class Main implements Runnable {
 
 	public static final int	MUTATION	= 10;
@@ -14,6 +16,8 @@ public class Main implements Runnable {
 	private JFrame			frame;
 
 	Dimension d = new Dimension(800, 600);
+
+	public static final int FAST_GEN_LIMIT = 2000;
 
 	public Main() {
 		frame = new JFrame();
@@ -49,7 +53,8 @@ public class Main implements Runnable {
 		new Thread(this).start();
 	}
 
-	public static Generation g = new Generation();
+	private static Pong			bestPongLast;
+	public static Generation	g	= new Generation();
 
 	public static void main(String[] args) {
 		// Instance i = new Instance();
@@ -62,7 +67,7 @@ public class Main implements Runnable {
 	public void run() {
 		while (true) {
 			if ( g.isComplete() ) {
-				frame.remove(g.instances[0].getPongGame());
+				if ( bestPongLast != null ) frame.remove(bestPongLast);
 				Instance[] temp = g.getSeeds();
 				bestFitnessLastGen = Integer.MIN_VALUE;
 				for ( Instance i : temp ) {
@@ -70,8 +75,9 @@ public class Main implements Runnable {
 						bestFitnessLastGen = i.getFitness();
 					}
 				}
+				bestPongLast = new Pong(g.instances[0]);
 				g = new Generation(g.getSeeds());
-				frame.add(g.instances[0].getPongGame());
+				frame.add(bestPongLast);
 				frame.revalidate();
 				genNumber++;
 				// System.out.println(genNumber);

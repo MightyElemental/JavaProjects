@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import net.mightyelemental.neuralnet.pong.Move;
 import net.mightyelemental.neuralnet.pong.Pong;
 
 public class Instance implements Serializable {// TODO: training data. Strength of response and compared to the rest of the
@@ -16,7 +17,7 @@ public class Instance implements Serializable {// TODO: training data. Strength 
 
 	private Pong pongGame;
 
-	private int[] shape = { 5, 2, 2, 1 };
+	private int[] shape = { 4, 3, 3, 1 };
 
 	BetterRandom rand = new BetterRandom();
 
@@ -100,10 +101,10 @@ public class Instance implements Serializable {// TODO: training data. Strength 
 		Node n = rand.randFromArray(nodes);
 		if ( n.nextLayer.size() > 0 ) {
 			int newN = rand.randKeyFromMap(n.nextLayer);
-			n.setWeight(newN, rand.nextBoolInt(n.getWeight(newN), 0.05));//rand.nextDouble() / 4.5
+			n.setWeight(newN, rand.nextBoolInt(n.getWeight(newN), rand.nextDouble() / 5.0));// rand.nextDouble() / 4.5
 		} else {
 			int newN = rand.randKeyFromMap(n.previousLayer);
-			n.setWeight(newN, rand.nextBoolInt(n.getWeight(newN), 0.05));
+			n.setWeight(newN, rand.nextBoolInt(n.getWeight(newN), rand.nextDouble() / 5.0));
 		}
 		return this;
 	}
@@ -121,7 +122,7 @@ public class Instance implements Serializable {// TODO: training data. Strength 
 	}
 
 	public void updateValues(double[] vals) {
-		double[] vars = { vals[0] / 808.0, vals[1] / 535.0, vals[2] / 360.0, vals[3] / 490.0, vals[4] / 490.0 };//
+		double[] vars = { vals[0] / 808.0, vals[1] / 535.0, vals[2] / 360.0, vals[3] / 490.0 };// , vals[4] / 490.0
 		for ( int i = 0; i < vars.length; i++ ) {
 			if ( nodes[i].layer != 0 ) {
 				System.err.println("asd " + nodes[i].layer);
@@ -135,7 +136,7 @@ public class Instance implements Serializable {// TODO: training data. Strength 
 		}
 	}
 
-	public boolean moveUp(double[] vals) {
+	public Move result(double[] vals) {
 		updateValues(vals);
 		double x = nodes[nodes.length - 1].getValue();
 		// System.out.println(pongGame == null);
@@ -145,10 +146,15 @@ public class Instance implements Serializable {// TODO: training data. Strength 
 		// }
 		// double val = rand.nextDouble() * (x1 + x2);
 		// if ( val <= x1 ) { return true; }
-		if ( x < 0.5 ) { return true; }
-		return false;
+		if ( x < 1.0 / 3.0 ) {
+			return Move.Up;
+		} else if ( x < 2.0 / 3.0 ) {
+			return Move.Not;
+		} else {
+			return Move.Down;
+		}
 	}
-	
+
 	public double getFitness() {
 		return pongGame.getFitness();
 	}
@@ -161,10 +167,21 @@ public class Instance implements Serializable {// TODO: training data. Strength 
 		System.out.println("Non Zero Connections");
 		for ( Node n : nodes ) {
 			// System.out.println(n);
+			StringBuilder cons = new StringBuilder("{");
 			if ( n.nextLayer.isEmpty() ) {
-				System.out.println(n.ID + "->" + n.previousLayer);
+				for ( int x : n.previousLayer.keySet() ) {
+					cons.append(x + "=" + ((int) (n.previousLayer.get(x) * 1000)) / 1000.0 + ", ");
+				}
+				cons.setLength(cons.length() - 2);
+				cons.append("}");
+				System.out.println(n.ID + "<-" + cons.toString());
 			} else {
-				System.out.println(n.ID + "->" + n.nextLayer);
+				for ( int x : n.nextLayer.keySet() ) {
+					cons.append(x + "=" + ((int) (n.nextLayer.get(x) * 1000)) / 1000.0 + ", ");
+				}
+				cons.setLength(cons.length() - 2);
+				cons.append("}");
+				System.out.println(n.ID + "->" + cons.toString());
 			}
 		}
 	}

@@ -17,6 +17,8 @@ public class Pong extends JPanel implements Runnable {
 	private static final long serialVersionUID = -8886292068713122951L;
 
 	public boolean endGame;
+	
+	private static final int maxPoints = 10;
 
 	private Thread thisThread = new Thread(this);
 
@@ -29,7 +31,7 @@ public class Pong extends JPanel implements Runnable {
 	private Rectangle	player1;
 	private Rectangle	player2;
 
-	public double ballSpeed = 7.4;
+	public double ballSpeed = 7.4;//7.4
 
 	public boolean slow = false;
 
@@ -67,7 +69,7 @@ public class Pong extends JPanel implements Runnable {
 	public void run() {
 		while (!endGame && totalTime < 3000) {
 			logic();
-			if ( Main.genNumber >= 4000 ) {// totalTime % 10 == 0
+			if ( Main.genNumber >= Main.FAST_GEN_LIMIT ) {// totalTime % 10 == 0
 				try {
 					Thread.sleep(9);
 				} catch (InterruptedException e) {
@@ -95,17 +97,17 @@ public class Pong extends JPanel implements Runnable {
 
 	BetterRandom rand = new BetterRandom();
 
-	private int	player1wins;
-	private int	player2wins, p2Hits, p1Hits;
+	private int player1wins, player2wins, p2Hits, p1Hits;
 
 	private int totalTime;
 
 	private void logic() {
 		totalTime++;
 		moveBall();
-		if ( inst.moveUp(getNodeVars()) ) {
+		Move result = inst.result(getNodeVars());
+		if ( result.equals(Move.Up) ) {
 			player2.y -= 5;
-		} else {
+		} else if ( result.equals(Move.Down) ) {
 			player2.y += 5;
 		}
 		if ( player1.getCenterY() < ball.yDouble ) {
@@ -192,7 +194,7 @@ public class Pong extends JPanel implements Runnable {
 			}
 		}
 		ballDirection = ballDirection % 360;
-		if ( player1wins >= 10 || player2wins >= 10 ) {
+		if ( player1wins >= maxPoints || player2wins >= maxPoints ) {
 			endGame = true;
 		}
 	}
@@ -218,12 +220,11 @@ public class Pong extends JPanel implements Runnable {
 	}
 
 	public double getFitness() {
-		return player2wins * 10 - player1wins * 8 + p2Hits*2 - p1Hits;
+		return player2wins * 10 - player1wins * 8 + p2Hits * 2 - p1Hits;// + (player1wins >= maxPoints && player2wins < maxPoints ? 10 : 0)
 	}
 
 	public double[] getNodeVars() {
-		double[] result = new double[] { ball.xDouble < 0 ? 0 : ball.xDouble, ball.yDouble < 0 ? 0 : ball.yDouble, ballDirection,
-				player2.y, player1.y };
+		double[] result = new double[] { ball.xDouble < 0 ? 0 : ball.xDouble, ball.yDouble < 0 ? 0 : ball.yDouble, ballDirection, player2.y };
 		for ( double r : result )
 			if ( r < 0 ) System.out.println(r);
 		return result;

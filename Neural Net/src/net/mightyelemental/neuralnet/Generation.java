@@ -32,7 +32,7 @@ public class Generation {
 	}
 
 	public Instance[] getSeeds() {
-		Arrays.sort(instances, Comparator.comparing((Instance a) -> a.getFitness()));
+		Arrays.sort(instances, Comparator.comparing((Instance a) -> a.getFitness()).reversed());
 		int count = (int) Math.ceil(instances.length / 10.0);
 		Instance[] result = new Instance[count];
 		for ( int i = 0; i < count; i++ ) {
