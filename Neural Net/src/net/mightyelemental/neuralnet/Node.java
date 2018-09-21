@@ -49,8 +49,8 @@ public class Node implements Serializable {
 			total += i.getNodeByID(nodeID).getValue() * previousLayer.get(nodeID);
 			totalWeight += previousLayer.get(nodeID);
 		}
-		this.value = total / totalWeight;/// (double) previousLayer.keySet().size();
-		if ( this.value < 0 ) { throw new IndexOutOfBoundsException(); }
+		this.value = total / totalWeight;
+		// if ( this.value < 0 ) { throw new IndexOutOfBoundsException(); }
 	}
 
 	public void addConnection(int nodeID, boolean nextl) {
