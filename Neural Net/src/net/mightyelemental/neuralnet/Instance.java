@@ -160,7 +160,7 @@ public class Instance implements Serializable {// TODO: training data. Strength 
 	}
 
 	public void printLastNodeData() {
-		System.out.println(nodes[nodes.length - 2].previousLayer);
+		System.out.println(nodes[nodes.length - 1].previousLayer);
 	}
 
 	public void printConnections() {
@@ -174,14 +174,14 @@ public class Instance implements Serializable {// TODO: training data. Strength 
 				}
 				cons.setLength(cons.length() - 2);
 				cons.append("}");
-				System.out.println(n.ID + "<-" + cons.toString());
+				System.out.println(n.ID + "(" + (int) (n.getValue() * 1000) / 1000.0 + ")<-" + cons.toString());
 			} else {
 				for ( int x : n.nextLayer.keySet() ) {
 					cons.append(x + "=" + ((int) (n.nextLayer.get(x) * 1000)) / 1000.0 + ", ");
 				}
 				cons.setLength(cons.length() - 2);
 				cons.append("}");
-				System.out.println(n.ID + "->" + cons.toString());
+				System.out.println(n.ID + "(" + (int) (n.getValue() * 1000) / 1000.0 + ")->" + cons.toString());
 			}
 		}
 	}
