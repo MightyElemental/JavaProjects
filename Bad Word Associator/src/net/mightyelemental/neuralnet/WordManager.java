@@ -28,9 +28,10 @@ public class WordManager {
 		words.put("bin", false);
 		words.put("guy", true);
 		words.put("pet", true);
+		words.put("egg", true);
 		words.put("age", true);
 		words.put("ape", true);
-		words.put("bad", true);
+		words.put("bad", false);
 		words.put("bed", false);
 		words.put("oof", true);
 		words.put("pun", true);
@@ -43,9 +44,12 @@ public class WordManager {
 		words.put("trees", true);
 		words.put("apple", true);
 		words.put("steak", true);
+		words.put("nice", true);
 		words.put("fries", true);
+		words.put("intro", false);
 		words.put("phone", true);
 		words.put("gopro", true);
+		words.put("james", true);
 		words.put("steam", true);
 		words.put("lick", false);
 		words.put("anime", true);
@@ -57,6 +61,7 @@ public class WordManager {
 		words.put("cute", true);
 		words.put("atom", true);
 		words.put("maths", true);
+		words.put("queen", true);
 		words.put("maths", true);
 		words.put("xeon", true);
 		words.put("intel", true);
@@ -65,11 +70,10 @@ public class WordManager {
 		words.put("blade", true);
 		words.put("bacon", true);
 		words.put("burke", false);
-		words.put("trump", false);
-		words.put("blast", false);
-		words.put("birth", false);
-		words.put("blond", false);
-		words.put("bland", false);
+		words.put("blast", true);
+		words.put("birth", true);
+		words.put("blond", true);
+		words.put("bland", true);
 		words.put("beard", true);
 		words.put("brass", true);
 		words.put("gold", true);
@@ -93,6 +97,7 @@ public class WordManager {
 		words.put("emily", true);
 		words.put("thick", true);
 		words.put("think", true);
+		words.put("trump", true);
 		words.put("tenth", true);
 		words.put("taste", true);
 		words.put("terry", false);
@@ -106,6 +111,11 @@ public class WordManager {
 		words.put("torso", false);
 		words.put("towel", false);
 		words.put("torch", true);
+		words.put("rust", false);
+		words.put("ugly", false);
+		words.put("view", true);
+		words.put("wing", true);
+		words.put("zuck", false);
 		System.out.println(words.size());
 	}
 
