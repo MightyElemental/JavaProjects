@@ -51,7 +51,7 @@ public class Node implements Serializable {
 
 	public void addConnection(int nodeID, boolean nextl) {
 		if ( nextl ) {
-			nextLayer.put(nodeID, 0.5);// Math.random() / 1.5
+			nextLayer.put(nodeID, Math.random());// Math.random() / 1.5
 		} else {
 			previousLayer.put(nodeID, i.getNodeByID(nodeID).nextLayer.get(this.ID));
 		}
