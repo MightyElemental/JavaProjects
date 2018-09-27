@@ -6,9 +6,9 @@ import javax.swing.JOptionPane;
 
 public class Main implements Runnable {
 
-	public static final int	MUTATION	= 10;
-	public static int		genNumber;
-	public static double	bestFitnessLastGen;
+	public static final int MUTATION = 10;
+	public static int genNumber;
+	public static double bestFitnessLastGen;
 	// private JFrame frame;
 
 	Dimension d = new Dimension(800, 600);
@@ -51,31 +51,29 @@ public class Main implements Runnable {
 
 	@Override
 	public void run() {
-		while (genNumber < 500) {
+		while (genNumber < 2400) {
 			Instance[] temp = g.getSeeds();
 			bestFitnessLastGen = Integer.MIN_VALUE;
-			for ( Instance i : temp ) {
-				if ( i.getFitness() > bestFitnessLastGen ) {
+			for (Instance i : temp) {
+				if (i.getFitness() > bestFitnessLastGen) {
 					bestFitnessLastGen = i.getFitness();
 				}
 			}
+			System.out.println(genNumber + ">> " + g.instances[0].fitnessAllWords());
 			g = new Generation(g.getSeeds());
 			genNumber++;
 			// System.out.println(genNumber);
-			System.out.println(genNumber + ">> " + g.instances[0].getFitness());
 			// try {
 			// if ( genNumber > 300 ) Thread.sleep(50);
 			// } catch (InterruptedException e) {
 			// e.printStackTrace();
 			// }
 		}
-		for ( int i = 0; i < 10; i++ ) {
+		while (true) {
 			String word = JOptionPane.showInputDialog("Give me word now");
 			double val = g.instances[0].result(word);
-			boolean res = val > 0.5;
-			int mod = (int) (2000 * (res ? val - 0.5 : 0.5 - val));
-			JOptionPane.showMessageDialog(null,
-					"'" + word + "' is " + (res ? "good" : "not good") + "!\n" + (mod / 10.0) + "% sure");
+			WordManager.types t = WordManager.getType((int) Math.floor(val * 5));
+			JOptionPane.showMessageDialog(null, "'" + word + "' is " + t.toString() + "!");
 		}
 	}
 
