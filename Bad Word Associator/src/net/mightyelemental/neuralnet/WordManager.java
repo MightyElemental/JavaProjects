@@ -12,44 +12,77 @@ public class WordManager {
 	public static Map<String, types> words = new HashMap<String, types>();
 
 	static {
-		words.put("bread", types.NOUN);
-		words.put("chess", types.NOUN);
-		words.put("grape", types.NOUN);
-		words.put("tread", types.VERB);
-		words.put("stand", types.VERB);
-		words.put("knead", types.VERB);
-		words.put("young", types.ADJECTIVE);
-		words.put("brown", types.ADJECTIVE);
-		words.put("older", types.ADJECTIVE);
-		words.put("fwifo", types.FAKE);
-		words.put("louis", types.FAKE);
-		words.put("henry", types.FAKE);
-		// again
-		words.put("chair", types.NOUN);
-		words.put("plank", types.NOUN);
-		words.put("field", types.NOUN);
-		words.put("taped", types.VERB);
-		words.put("shift", types.VERB);
-		words.put("flown", types.VERB);
-		words.put("black", types.ADJECTIVE);
-		words.put("white", types.ADJECTIVE);
-		words.put("swift", types.ADJECTIVE);
-		words.put("jerry", types.FAKE);
-		words.put("memes", types.FAKE);
-		words.put("europ", types.FAKE);
-		// again
-		words.put("two", types.NOUN);
-		words.put("three", types.NOUN);
-		words.put("five", types.NOUN);
-		words.put("run", types.VERB);
-		words.put("look", types.VERB);
-		words.put("tuck", types.VERB);
-		words.put("hairy", types.ADJECTIVE);
-		words.put("long", types.ADJECTIVE);
-		words.put("short", types.ADJECTIVE);
-		words.put("truth", types.FAKE);
-		words.put("keean", types.FAKE);
-		words.put("food", types.FAKE);
+		words.put("bread", types.ENGLISH);
+		words.put("beard", types.ENGLISH);
+		words.put("apple", types.ENGLISH);
+		words.put("funny", types.ENGLISH);
+		words.put("amaze", types.ENGLISH);
+		words.put("trees", types.ENGLISH);
+		words.put("toast", types.ENGLISH);
+		words.put("piano", types.ENGLISH);
+		words.put("oily", types.ENGLISH);
+		words.put("fish", types.ENGLISH);
+		words.put("steak", types.ENGLISH);
+		words.put("grape", types.ENGLISH);
+		words.put("grate", types.ENGLISH);
+		words.put("lick", types.ENGLISH);
+		words.put("cute", types.ENGLISH);
+		words.put("face", types.ENGLISH);
+		words.put("fear", types.ENGLISH);
+
+		words.put("obtenir", types.FRENCH);
+		words.put("reposer", types.FRENCH);
+		words.put("italien", types.FRENCH);
+		words.put("docteur", types.FRENCH);
+		words.put("barrage", types.FRENCH);
+		words.put("globe", types.FRENCH);
+		words.put("milice", types.FRENCH);
+		words.put("barreau", types.FRENCH);
+		words.put("montee", types.FRENCH);
+		words.put("contrer", types.FRENCH);
+		words.put("alcool", types.FRENCH);
+		words.put("figurer", types.FRENCH);
+		words.put("chinois", types.FRENCH);
+		words.put("huit", types.FRENCH);
+		words.put("neuf", types.FRENCH);
+		words.put("deceler", types.FRENCH);
+		words.put("sortant", types.FRENCH);
+
+		words.put("kleiner", types.GERMAN);
+		words.put("fruh", types.GERMAN);
+		words.put("susser", types.GERMAN);
+		words.put("mantel", types.GERMAN);
+		words.put("schutz", types.GERMAN);
+		words.put("wozu", types.GERMAN);
+		words.put("wirken", types.GERMAN);
+		words.put("anderer", types.GERMAN);
+		words.put("gewiss", types.GERMAN);
+		words.put("nazi", types.GERMAN);
+		words.put("gekauft", types.GERMAN);
+		words.put("deiner", types.GERMAN);
+		words.put("durfen", types.GERMAN);
+		words.put("gelernt", types.GERMAN);
+		words.put("raten", types.GERMAN);
+		words.put("staat", types.GERMAN);
+		words.put("tot", types.GERMAN);
+		
+		words.put("yuki", types.JAPANESE);
+		words.put("chigau", types.JAPANESE);
+		words.put("wakaru", types.JAPANESE);
+		words.put("itoko", types.JAPANESE);
+		words.put("itai", types.JAPANESE);
+		words.put("utau", types.JAPANESE);
+		words.put("tsugi", types.JAPANESE);
+		words.put("yomu", types.JAPANESE);
+		words.put("otto", types.JAPANESE);
+		words.put("shaberu", types.JAPANESE);
+		words.put("haru", types.JAPANESE);
+		words.put("seiseki", types.JAPANESE);
+		words.put("kami", types.JAPANESE);
+		words.put("gasu", types.JAPANESE);
+		words.put("otoko", types.JAPANESE);
+		words.put("gyuniku", types.JAPANESE);
+		words.put("sansu", types.JAPANESE);
 		System.out.println(words.size());
 	}
 
@@ -59,7 +92,7 @@ public class WordManager {
 	 */
 
 	public static enum types {
-		NOUN, VERB, ADJECTIVE, FAKE;
+		ENGLISH, GERMAN, JAPANESE, FRENCH;
 	}
 
 	public static types getType(int i) {
@@ -67,8 +100,6 @@ public class WordManager {
 	}
 
 	public static types getWord(String word) {
-		if (word == null)
-			return types.FAKE;
 		return words.get(word);
 	}
 
