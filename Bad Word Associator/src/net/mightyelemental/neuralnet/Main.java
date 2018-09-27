@@ -59,7 +59,7 @@ public class Main implements Runnable {
 					bestFitnessLastGen = i.getFitness();
 				}
 			}
-			System.out.println(genNumber + ">> " + g.instances[0].fitnessAllWords());
+			g.instances[0].printFitnessAllWords();
 			g = new Generation(g.getSeeds());
 			genNumber++;
 			// System.out.println(genNumber);
