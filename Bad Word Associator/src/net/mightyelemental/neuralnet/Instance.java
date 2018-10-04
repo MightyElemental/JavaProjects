@@ -12,7 +12,7 @@ public class Instance implements Serializable {// TODO: training data. Strength 
 
 	private Node[] nodes;
 
-	private int[] shape = { 8, 11, 11, 11, 2 };
+	private int[] shape = { 8, 26, 20, 2 };
 
 	String word;
 
@@ -210,7 +210,7 @@ public class Instance implements Serializable {// TODO: training data. Strength 
 		for ( String word : WordManager.words.keySet() ) {
 			this.word = word;
 			double fit = getFitness();
-			if ( fit > 0 ) correct++;
+			if ( fit > 4000 ) correct++;
 			total += getFitness();
 		}
 		System.out.println(Main.genNumber + ">> " + correct + " >> " + total);
