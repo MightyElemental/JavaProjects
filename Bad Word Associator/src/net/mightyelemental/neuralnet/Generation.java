@@ -22,6 +22,7 @@ public class Generation {
 
 	public Generation(Instance[] seeds) {
 		word = (String) WordManager.words.keySet().toArray()[Main.genNumber % WordManager.words.size()];
+		System.out.println(WordManager.getType(word));
 		int count = (int) Math.ceil(instances.length / 20.0);
 		for (int i = 0; i < instances.length; i++) {
 			instances[i] = new Instance(seeds[i % count].getNodes(), word).mutate();

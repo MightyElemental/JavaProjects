@@ -51,7 +51,7 @@ public class Main implements Runnable {
 
 	@Override
 	public void run() {
-		while (genNumber < 2400) {
+		while (genNumber < 600) {
 			Instance[] temp = g.getSeeds();
 			bestFitnessLastGen = Integer.MIN_VALUE;
 			for (Instance i : temp) {
@@ -69,11 +69,13 @@ public class Main implements Runnable {
 			// e.printStackTrace();
 			// }
 		}
+		g.instances[0].printConnections();
 		while (true) {
 			String word = JOptionPane.showInputDialog("Give me word now");
-			double val = g.instances[0].result(word);
-			WordManager.types t = WordManager.getType((int) Math.floor(val * 5));
-			JOptionPane.showMessageDialog(null, "'" + word + "' is " + t.toString() + "!");
+			double[] val = g.instances[0].result(word);
+			WordManager.types t = WordManager.getType(val[0] > val[1] ? 0 : 1);
+			JOptionPane.showMessageDialog(null,
+					"'" + word + "' is " + t.toString() + "!\n" + val[0] * 100 + "\n" + val[1] * 100);
 		}
 	}
 
