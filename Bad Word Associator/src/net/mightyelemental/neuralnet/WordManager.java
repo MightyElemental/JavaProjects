@@ -1,5 +1,9 @@
 package net.mightyelemental.neuralnet;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,36 +16,11 @@ public class WordManager {
 	public static Map<String, types> words = new HashMap<String, types>();
 
 	static {
-		words.put("james", types.MALE);
-//		words.put("louis", types.MALE);
-//		words.put("aaron", types.MALE);
-//		words.put("evan", types.MALE);
-//		words.put("jacob", types.MALE);
-//		words.put("keean", types.MALE);
-//		words.put("lewis", types.MALE);
-//		words.put("oliver", types.MALE);
-//		words.put("jake", types.MALE);
-//		words.put("jack", types.MALE);
-//		words.put("john", types.MALE);
-//		words.put("fred", types.MALE);
-//		words.put("jeff", types.MALE);
-//		words.put("frank", types.MALE);
-//		words.put("paul", types.MALE);
-		
-		words.put("yuki", types.FEMALE);
-//		words.put("emma", types.FEMALE);
-//		words.put("emily", types.FEMALE);
-//		words.put("morgan", types.FEMALE);
-//		words.put("lucy", types.FEMALE);
-//		words.put("susan", types.FEMALE);
-//		words.put("hannah", types.FEMALE);
-//		words.put("sabrina", types.FEMALE);
-//		words.put("sophie", types.FEMALE);
-//		words.put("ellie", types.FEMALE);
-//		words.put("gacie", types.FEMALE);
-//		words.put("megan", types.FEMALE);
-//		words.put("evie", types.FEMALE);
-//		words.put("anna", types.FEMALE);
+		try {
+			loadWords();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		System.out.println(words.size());
 	}
 
@@ -56,6 +35,27 @@ public class WordManager {
 
 	public static types getType(int i) {
 		return types.values()[i];
+	}
+
+	private static void loadWords() throws IOException {
+		File maleNames = new File("names_male.txt");
+
+		String readLine = "";
+
+		BufferedReader b = new BufferedReader(new FileReader(maleNames));
+		while ((readLine = b.readLine()) != null) {
+			words.put(readLine.toLowerCase().replaceAll("[^a-z]", ""), types.MALE);
+		}
+		b.close();
+		File femaleNames = new File("names_female.txt");
+
+		readLine = "";
+
+		b = new BufferedReader(new FileReader(femaleNames));
+		while ((readLine = b.readLine()) != null) {
+			words.put(readLine.toLowerCase().replaceAll("[^a-z]", ""), types.FEMALE);
+		}
+		b.close();
 	}
 
 	public static types getType(String word) {
