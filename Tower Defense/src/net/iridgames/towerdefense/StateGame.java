@@ -19,15 +19,15 @@ import net.iridgames.towerdefense.world.World;
 
 public class StateGame extends BasicGameState {
 
-	public char[]	charList		= { '-', 'x', 'u', 's', 'g' };
-	public int		selectedChar	= 0;
+	public char[] charList = { '-', 'x', 'u', 's', 'g' };
+	public int selectedChar = 0;
 
 	public StateGame(World wobj) {
 		worldObj = wobj;
 	}
 
-	public Image		levelImg;
-	private Graphics	gLevelImg;
+	public Image levelImg;
+	private Graphics gLevelImg;
 
 	public World worldObj;
 
@@ -49,7 +49,10 @@ public class StateGame extends BasicGameState {
 
 	@Override
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
-		levelImg.getScaledCopy(Camera.scale).draw(Camera.xOffset, Camera.yOffset);
+		g.scale(Camera.scale, Camera.scale);
+		g.translate(Camera.xOffset, Camera.yOffset);
+		// levelImg.getScaledCopy(Camera.scale).draw(Camera.xOffset, Camera.yOffset);
+		levelImg.draw();
 		changeColor(g, charList[selectedChar]);
 		g.fillRect(gc.getWidth() - 50, 100, 25, 25);
 		g.setColor(Color.black);
@@ -62,7 +65,7 @@ public class StateGame extends BasicGameState {
 	}
 
 	private void renderTowers(GameContainer gc, StateBasedGame sbg, Graphics g) {
-		for ( Object[] obj : worldObj.getTowerList() ) {
+		for (Object[] obj : worldObj.getTowerList()) {
 			// TODO create renderer
 			// worldObj.getTowerList().get(i).draw(gc, sbg, g,
 			// startingPointX,startingPointY);
@@ -71,25 +74,25 @@ public class StateGame extends BasicGameState {
 	}
 
 	private void renderBulletTrails(GameContainer gc, StateBasedGame sbg, Graphics g) {
-		for ( int i = 0; i < worldObj.getBulletTrailList().size(); i++ ) {
-			BulletTrail.render(g, worldObj.getBulletTrailList().get(i), Camera.xOffset, Camera.yOffset);
+		for (int i = 0; i < worldObj.getBulletTrailList().size(); i++) {
+			BulletTrail.render(g, worldObj.getBulletTrailList().get(i));
 		}
 	}
 
 	private void renderProjectiles(GameContainer gc, StateBasedGame sbg, Graphics g) {
 		Circle c = new Circle(0, 0, 5);
-		for ( int i = 0; i < worldObj.getProjectileList().size(); i++ ) {
+		for (int i = 0; i < worldObj.getProjectileList().size(); i++) {
 			float x = (float) worldObj.getProjectileList().get(i)[0];
 			float y = (float) worldObj.getProjectileList().get(i)[1];
-			c.setCenterX(x * Camera.scale + Camera.xOffset);
-			c.setCenterY(y * Camera.scale + Camera.yOffset);
+			c.setCenterX(x);
+			c.setCenterY(y);
 			g.fill(c);
 		}
 	}
 
 	private void renderMonsters(GameContainer gc, StateBasedGame sbg, Graphics g) {
 		// g.setColor(Color.red.darker());
-		for ( int i = 0; i < worldObj.monsterList.size(); i++ ) {
+		for (int i = 0; i < worldObj.monsterList.size(); i++) {
 			// Monster m = worldObj.monsterList.get(i);
 			// List<Point> n = m.route;
 			// g.fillRect(startingPointX + m.getX(), startingPointY + m.getY(), 36, 42);
@@ -110,8 +113,8 @@ public class StateGame extends BasicGameState {
 
 	private void renderTiles(GameContainer gc, Graphics g) {
 		g.setLineWidth(1);
-		for ( int y = 0; y < worldObj.loadedLevel.levelLayout.size(); y++ ) {
-			for ( int x = 0; x < worldObj.loadedLevel.levelLayout.get(y).size(); x++ ) {
+		for (int y = 0; y < worldObj.loadedLevel.levelLayout.size(); y++) {
+			for (int x = 0; x < worldObj.loadedLevel.levelLayout.get(y).size(); x++) {
 				changeColor(g, x, y);
 				g.fillRect(x * 48, y * 48, 48, 48);
 				g.setColor(new Color(0f, 0f, 0f, 0.5f));
@@ -189,7 +192,8 @@ public class StateGame extends BasicGameState {
 	public void mouseWheelMoved(int newValue) {
 		super.mouseWheelMoved(newValue);
 		selectedChar += Math.signum(newValue);
-		if ( selectedChar < 0 ) selectedChar += charList.length;
+		if (selectedChar < 0)
+			selectedChar += charList.length;
 		selectedChar = selectedChar % (charList.length);
 	}
 
@@ -207,13 +211,13 @@ public class StateGame extends BasicGameState {
 		int newy = (int) ((y - Camera.yOffset) / Camera.tileSize);
 		// worldObj.loadedLevel.setTile(newx, newy, charList[selectedChar]);
 		char c = worldObj.loadedLevel.getTile(newx, newy);
-		if ( c == 'u' ) {
+		if (c == 'u') {
 			// worldObj.addTower(new TowerCannon(worldObj, (x - startingPointX) / tileSize,
 			// (y - startingPointY) / tileSize));
 			// {x, y, angle, charge, level, removeFlag, targetType, type, ID}
 			// int newx = (int) ((x - Camera.xOffset) / Camera.tileSize);
 			// int newy = (int) ((y - Camera.yOffset) / Camera.tileSize);
-			if ( button == 0 ) {
+			if (button == 0) {
 				worldObj.addTower(newx * 48, newy * 48, 0, 0, 0, TowerV2.TARGET_MOST_HEALTH, TowerV2.TYPE_SNIPER);
 			} else {
 				worldObj.addTower(newx * 48, newy * 48, 0, 0, 0, TowerV2.TARGET_CLOSEST, TowerV2.TYPE_GATLING);
@@ -225,20 +229,20 @@ public class StateGame extends BasicGameState {
 
 	@Override
 	public void keyPressed(int key, char c) {
-		if ( key == Input.KEY_S ) {
+		if (key == Input.KEY_S) {
 			try {
 				worldObj.loadedLevel.saveLevelToFile();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
-		if ( key == Input.KEY_R ) {
+		if (key == Input.KEY_R) {
 			worldObj.loadedLevel.clear();
 		}
-		if ( key == Input.KEY_SPACE ) {
+		if (key == Input.KEY_SPACE) {
 			worldObj.spawn();
 		}
-		if ( key == Input.KEY_LCONTROL || key == Input.KEY_RCONTROL ) {
+		if (key == Input.KEY_LCONTROL || key == Input.KEY_RCONTROL) {
 			TowerDefense.isCtrlDown = true;
 		}
 		super.keyPressed(key, c);
@@ -246,7 +250,7 @@ public class StateGame extends BasicGameState {
 
 	@Override
 	public void keyReleased(int key, char c) {
-		if ( key == Input.KEY_LCONTROL || key == Input.KEY_RCONTROL ) {
+		if (key == Input.KEY_LCONTROL || key == Input.KEY_RCONTROL) {
 			TowerDefense.isCtrlDown = false;
 		}
 	}

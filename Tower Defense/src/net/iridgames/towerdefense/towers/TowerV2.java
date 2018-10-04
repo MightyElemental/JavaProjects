@@ -17,20 +17,20 @@ import net.iridgames.towerdefense.world.World;
 
 public class TowerV2 {
 
-	public static final int	TYPE_SNIPER		= 0;
-	public static final int	TYPE_GATLING	= 1;
+	public static final int TYPE_SNIPER = 0;
+	public static final int TYPE_GATLING = 1;
 
-	public static final int	TARGET_CLOSEST_TO_TURRET	= 0;	// Closest to turret
-	public static final int	TARGET_CLOSEST				= 1;	// Closest to goal
-	public static final int	TARGET_MOST_HEALTH			= 2;
-	public static final int	TARGET_LEAST_HEALTH			= 3;
+	public static final int TARGET_CLOSEST_TO_TURRET = 0; // Closest to turret
+	public static final int TARGET_CLOSEST = 1; // Closest to goal
+	public static final int TARGET_MOST_HEALTH = 2;
+	public static final int TARGET_LEAST_HEALTH = 3;
 
 	// {{radius, radiusMultiplier, coolDown, damage, cost}}
 	private static float[][] turretTypeInfo = { { 7.5f, 1f, 1200, 40, 400 }, { 4f, 1.1f, 200, 5, 200 } };
 
-	private static float	x, y, angle, charge, level;
-	private static int		targetType, turretType;
-	private static boolean	remove;
+	private static float x, y, angle, charge, level;
+	private static int targetType, turretType;
+	private static boolean remove;
 
 	private static Circle area = new Circle(0f, 0f, 5f);
 
@@ -41,7 +41,7 @@ public class TowerV2 {
 		List<Monster> mList = getMonstersInRadius(worldObj);
 		boolean flag = !mList.isEmpty();
 		Monster target = null;
-		if ( flag ) {
+		if (flag) {
 			switch (targetType) {
 			case TARGET_LEAST_HEALTH:
 				target = getLeastHealth(mList);
@@ -59,9 +59,10 @@ public class TowerV2 {
 				target = mList.get(0);
 				break;
 			}
-			angle = MathHelper.getAngle(new Point(x + 24, y + 24), new Point(target.getCenterX(), target.getCenterY())) - 180;
+			angle = MathHelper.getAngle(new Point(x + 24, y + 24), new Point(target.getCenterX(), target.getCenterY()))
+					- 180;
 		}
-		if ( flag ) {
+		if (flag) {
 			switch (turretType) {
 			case TYPE_SNIPER:
 				fireProjectiles(worldObj);
@@ -74,11 +75,11 @@ public class TowerV2 {
 	}
 
 	private static void fireProjectiles(World worldObj) {
-		if ( charge >= turretTypeInfo[turretType][2] ) {
+		if (charge >= turretTypeInfo[turretType][2]) {
 			float sX = (float) ((x + 24) + Math.cos(Math.toRadians(angle)) * 48);
 			float sY = (float) ((y + 24) + Math.sin(Math.toRadians(angle)) * 48);
 			boolean success = worldObj.addProjectile(sX, sY, angle, 5, turretTypeInfo[turretType][3]);
-			if ( success ) {
+			if (success) {
 				charge = 0;
 				worldObj.addSmoke(sX, sY);
 			}
@@ -87,14 +88,14 @@ public class TowerV2 {
 
 	// {startX, startY, endX, endY, fade, fadeRate, colour}
 	private static void fireBullet(World worldObj, Monster target) {
-		if ( charge >= turretTypeInfo[turretType][2] ) {
+		if (charge >= turretTypeInfo[turretType][2]) {
 
 			float sX = (float) ((x + 24) + Math.cos(Math.toRadians(angle)) * 48);
 			float sY = (float) ((y + 24) + Math.sin(Math.toRadians(angle)) * 48);
 
 			boolean success = worldObj.addBulletTrail(sX, sY, target.getCenterX(), target.getCenterY(), 1);
 			target.health -= turretTypeInfo[turretType][3];
-			if ( success ) {
+			if (success) {
 				charge = 0;
 				worldObj.addSmoke(sX, sY);
 			}
@@ -106,9 +107,9 @@ public class TowerV2 {
 	 */
 	private static List<Monster> getMonstersInRadius(World worldObj) {
 		List<Monster> lm = new ArrayList<Monster>();
-		for ( int i = 0; i < worldObj.monsterList.size(); i++ ) {
+		for (int i = 0; i < worldObj.monsterList.size(); i++) {
 			Monster m = worldObj.monsterList.get(i);
-			if ( m.intersects(area) ) {
+			if (m.intersects(area)) {
 				lm.add(m);
 			}
 		}
@@ -118,8 +119,8 @@ public class TowerV2 {
 	private static Monster getLeastHealth(List<Monster> mList) {
 		Monster least = null;
 		float lHealth = Float.MAX_VALUE;
-		for ( Monster m : mList ) {
-			if ( m.health < lHealth ) {
+		for (Monster m : mList) {
+			if (m.health < lHealth) {
 				lHealth = m.health;
 				least = m;
 			}
@@ -130,8 +131,8 @@ public class TowerV2 {
 	private static Monster getMostHealth(List<Monster> mList) {
 		Monster most = null;
 		float mHealth = Integer.MIN_VALUE;
-		for ( Monster m : mList ) {
-			if ( m.health > mHealth ) {
+		for (Monster m : mList) {
+			if (m.health > mHealth) {
 				mHealth = m.health;
 				most = m;
 			}
@@ -142,9 +143,9 @@ public class TowerV2 {
 	private static Monster getClosestToTurret(List<Monster> mList) {
 		Monster closest = null;
 		float distance = Integer.MAX_VALUE;
-		for ( Monster m : mList ) {
+		for (Monster m : mList) {
 			float mDist = MathHelper.getDistance(new Point(x + 24, y + 24), new Point(m.getCenterX(), m.getCenterY()));
-			if ( mDist < distance ) {
+			if (mDist < distance) {
 				distance = mDist;
 				closest = m;
 			}
@@ -155,8 +156,8 @@ public class TowerV2 {
 	private static Monster getClosestToGoal(List<Monster> mList) {
 		Monster closest = null;
 		float dist = Integer.MAX_VALUE;
-		for ( Monster m : mList ) {
-			if ( m.getPathSize() < dist ) {
+		for (Monster m : mList) {
+			if (m.getPathSize() < dist) {
 				dist = m.getPathSize();
 				closest = m;
 			}
@@ -187,8 +188,7 @@ public class TowerV2 {
 	public static void render(Graphics g, Object[] obj) {
 		setTempVars(obj);
 		getIcon(turretType).setRotation(angle);
-		g.drawImage(getIcon(turretType), x * Camera.scale + Camera.xOffset - Camera.tileSize / 2,
-				y * Camera.scale + Camera.yOffset - Camera.tileSize / 2);
+		g.drawImage(getIcon(turretType), x - Camera.tileSize / 2, y - Camera.tileSize / 2);
 		getIcon(turretType).setRotation(0);
 
 		// g.setColor(new Color(0f, 0f, 0f, 1f));// TODO Only render when mouse hovers
@@ -199,8 +199,7 @@ public class TowerV2 {
 
 		g.setColor(Color.cyan.darker());
 		float temp = (Camera.tileSize / turretTypeInfo[turretType][2] * charge);
-		g.fillRect(Camera.xOffset + x * Camera.scale, Camera.yOffset + y * Camera.scale, 4,
-				temp > Camera.tileSize ? Camera.tileSize : temp);
+		g.fillRect(x, y, 4, temp > Camera.tileSize ? Camera.tileSize : temp);
 	}
 
 	/*

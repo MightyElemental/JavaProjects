@@ -10,7 +10,6 @@ import org.newdawn.slick.geom.Point;
 import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.state.StateBasedGame;
 
-import net.iridgames.towerdefense.Camera;
 import net.iridgames.towerdefense.MathHelper;
 import net.iridgames.towerdefense.world.World;
 
@@ -20,8 +19,8 @@ public class Monster extends Rectangle {
 
 	private float angle;
 
-	private float	maxHealth	= 70;
-	public float	health		= maxHealth;
+	private float maxHealth = 70;
+	public float health = maxHealth;
 
 	private float speed = 0.8f;
 
@@ -48,10 +47,12 @@ public class Monster extends Rectangle {
 	public boolean touchedTile(float f, float g) {
 		f = (float) Math.floor(f / 48);
 		g = (float) Math.floor(g / 48);
-		for ( int i = 0; i < touchedPath.size(); i++ ) {
+		for (int i = 0; i < touchedPath.size(); i++) {
 			float tx = touchedPath.get(i).getX();
 			float ty = touchedPath.get(i).getY();
-			if ( f == tx && ty == g ) { return true; }
+			if (f == tx && ty == g) {
+				return true;
+			}
 		}
 		return false;
 	}
@@ -84,29 +85,32 @@ public class Monster extends Rectangle {
 		y = (int) worldObj.loadedLevel.getGoal().getY();
 		findRoute(mark, x, y, Integer.MAX_VALUE, lp);
 
-		for ( int i = 0; i < lp.size(); i++ ) {
+		for (int i = 0; i < lp.size(); i++) {
 			lp.set(i, new Point(48 * (lp.get(i).getX() + 0.5f), 48 * (lp.get(i).getY() + 0.5f)));
 		}
 
 		return lp;
 	}
 
-	private int[][] flood(int[][] mark, int x, int y, int currentNum) {//TODO FIX THE BROKEN PATH FINDER
+	private int[][] flood(int[][] mark, int x, int y, int currentNum) {// TODO FIX THE BROKEN PATH FINDER
 		// make sure row and col are inside the image
-		if ( !isPointInWorld(x, y) ) return null;
+		if (!isPointInWorld(x, y))
+			return null;
 
 		// make sure this pixel hasn't been visited yet
-		if ( mark[x][y] > 0 ) return null;
+		if (mark[x][y] > 0)
+			return null;
 
 		// make sure this tile is walkable
-		if ( !isTileWalkable(x, y) ) return null;
+		if (!isTileWalkable(x, y))
+			return null;
 
 		// fill pixel with target color and mark it as visited
 		mark[x][y] = currentNum;
 		currentNum++;
 		// if ( testForAdjacentWalkableTiles(x, y) > 2 ) {}
 
-		for ( int a = 0; a < 360; a += 90 ) {
+		for (int a = 0; a < 360; a += 90) {
 			int x1 = (int) (Math.cos(Math.toRadians(a)));
 			int y1 = (int) (Math.sin(Math.toRadians(a)));
 			flood(mark, x + x1, y + y1, currentNum);
@@ -118,12 +122,13 @@ public class Monster extends Rectangle {
 		return worldObj.loadedLevel.getTile(x, y);
 	}
 
-	private int testForAdjacentWalkableTiles(int x, int y) {
+	@Deprecated
+	int testForAdjacentWalkableTiles(int x, int y) {
 		int total = 0;
-		for ( int a = 0; a < 360; a += 90 ) {
+		for (int a = 0; a < 360; a += 90) {
 			int x1 = (int) (Math.cos(Math.toRadians(a)));
 			int y1 = (int) (Math.sin(Math.toRadians(a)));
-			if ( isPointInWorld(x + x1, y + y1) && isTileWalkable(x + x1, y + y1) ) {
+			if (isPointInWorld(x + x1, y + y1) && isTileWalkable(x + x1, y + y1)) {
 				total++;
 			}
 		}
@@ -135,10 +140,14 @@ public class Monster extends Rectangle {
 	}
 
 	private boolean isPointInWorld(int x, int y) {
-		if ( x < 0 ) return false;
-		if ( y < 0 ) return false;
-		if ( x > worldObj.loadedLevel.width - 1 ) return false;
-		if ( y > worldObj.loadedLevel.height - 1 ) return false;
+		if (x < 0)
+			return false;
+		if (y < 0)
+			return false;
+		if (x > worldObj.loadedLevel.width - 1)
+			return false;
+		if (y > worldObj.loadedLevel.height - 1)
+			return false;
 		return true;
 	}
 
@@ -147,32 +156,34 @@ public class Monster extends Rectangle {
 		// System.out.println(mark[x][y] + "|" + x + "|" + y + "|" + lowestNum);
 		int newLowest = lowestNum;
 
-		if ( x < worldObj.loadedLevel.width - 1 ) {
-			if ( mark[x + 1][y] < lowestNum && mark[x + 1][y] != 0 ) {
+		if (x < worldObj.loadedLevel.width - 1) {
+			if (mark[x + 1][y] < lowestNum && mark[x + 1][y] != 0) {
 				newLowest = mark[x + 1][y];
 				potentialPoints.add(new Point(x + 1, y));
 			}
 		}
-		if ( x > 0 ) {
-			if ( mark[x - 1][y] < lowestNum && mark[x - 1][y] != 0 ) {
+		if (x > 0) {
+			if (mark[x - 1][y] < lowestNum && mark[x - 1][y] != 0) {
 				newLowest = mark[x - 1][y];
 				potentialPoints.add(new Point(x - 1, y));
 			}
 		}
-		if ( y < worldObj.loadedLevel.height - 1 ) {
-			if ( mark[x][y + 1] < lowestNum && mark[x][y + 1] != 0 ) {
+		if (y < worldObj.loadedLevel.height - 1) {
+			if (mark[x][y + 1] < lowestNum && mark[x][y + 1] != 0) {
 				newLowest = mark[x][y + 1];
 				potentialPoints.add(new Point(x, y + 1));
 			}
 		}
-		if ( y > 0 ) {
-			if ( mark[x][y - 1] < lowestNum && mark[x][y - 1] != 0 ) {
+		if (y > 0) {
+			if (mark[x][y - 1] < lowestNum && mark[x][y - 1] != 0) {
 				newLowest = mark[x][y - 1];
 				potentialPoints.add(new Point(x, y - 1));
 			}
 		}
 
-		if ( potentialPoints.isEmpty() ) { return lp; }
+		if (potentialPoints.isEmpty()) {
+			return lp;
+		}
 		lowestNum = newLowest;
 		Point lowestPoint = potentialPoints.get(worldObj.rand.nextInt(potentialPoints.size()));
 
@@ -189,18 +200,19 @@ public class Monster extends Rectangle {
 		float pathDistance = Integer.MAX_VALUE;
 		Point closestPath = null;
 
-		for ( int y = 0; y < worldObj.loadedLevel.height; y++ ) {
-			for ( int x = 0; x < worldObj.loadedLevel.width; x++ ) {
-				if ( worldObj.loadedLevel.getTile(x, y) == '-' ) {
+		for (int y = 0; y < worldObj.loadedLevel.height; y++) {
+			for (int x = 0; x < worldObj.loadedLevel.width; x++) {
+				if (worldObj.loadedLevel.getTile(x, y) == '-') {
 					// pathLocations.add(new Point((x + 0.5f) * StateGame.tileSize, (y + 0.5f) *
 					// StateGame.tileSize)); // uncomment - this is an error
 				}
 			}
 		}
 
-		for ( int i = 0; i < pathLocations.size(); i++ ) {
-			if ( touchedTile(pathLocations.get(i).getX(), pathLocations.get(i).getY()) ) continue;
-			if ( MathHelper.getDistance(this.getCenterX(), this.getCenterY(), pathLocations.get(i)) < pathDistance ) {
+		for (int i = 0; i < pathLocations.size(); i++) {
+			if (touchedTile(pathLocations.get(i).getX(), pathLocations.get(i).getY()))
+				continue;
+			if (MathHelper.getDistance(this.getCenterX(), this.getCenterY(), pathLocations.get(i)) < pathDistance) {
 				pathDistance = MathHelper.getDistance(this.getCenterX(), this.getCenterY(), pathLocations.get(i));
 				closestPath = pathLocations.get(i);
 			}
@@ -227,20 +239,20 @@ public class Monster extends Rectangle {
 		// }
 		// }
 
-		if ( route.size() > 0 ) {
+		if (route.size() > 0) {
 			Point p = route.get(0);
 			float distance = MathHelper.getDistance(this.getCenterX(), this.getCenterY(), p);
 			angle = MathHelper.getAngle(new Point(this.getCenterX(), this.getCenterY()), p) - 180;
-			if ( distance < 5 ) {
+			if (distance < 5) {
 				route.remove(0);
 			}
 		}
 
-		if ( worldObj.loadedLevel.getGoal().getX() == getCurrentTile().getX()
-				&& worldObj.loadedLevel.getGoal().getY() == getCurrentTile().getY() ) {
+		if (worldObj.loadedLevel.getGoal().getX() == getCurrentTile().getX()
+				&& worldObj.loadedLevel.getGoal().getY() == getCurrentTile().getY()) {
 			this.dead = true;
 		}
-		if ( health <= 0 ) {
+		if (health <= 0) {
 			this.dead = true;
 		}
 
@@ -250,8 +262,7 @@ public class Monster extends Rectangle {
 
 	public void draw(GameContainer gc, StateBasedGame sbg, Graphics g) {
 		g.setColor(new Color(health / maxHealth, 0f, 0f, 1f));
-		g.fillRect(Camera.xOffset + getX() * Camera.scale, Camera.yOffset + getY() * Camera.scale, width * Camera.scale,
-				height * Camera.scale);
+		g.fillRect(getX(), getY(), width, height);
 		// for ( int j = 0; j < route.size(); j++ ) {
 		// if ( route.get(j) != null ) {
 		// g.fillOval(Camera.xOffset + route.get(j).getX() - 5, Camera.yOffset +
@@ -264,10 +275,10 @@ public class Monster extends Rectangle {
 	}
 
 	public void drawFlood(Graphics g) {
-		for ( int x = 0; x < mark.length; x++ ) {
-			for ( int y = 0; y < mark[x].length; y++ ) {
-				if ( mark[x][y] != 0 ) {
-					g.drawString("c" + mark[x][y], Camera.xOffset + x * Camera.tileSize, Camera.yOffset + y * Camera.tileSize);
+		for (int x = 0; x < mark.length; x++) {
+			for (int y = 0; y < mark[x].length; y++) {
+				if (mark[x][y] != 0) {
+					g.drawString("c" + mark[x][y], x, y);
 				}
 			}
 		}

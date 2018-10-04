@@ -23,16 +23,16 @@ import net.iridgames.towerdefense.towers.TowerV2;
 
 public class World {
 
-	public List<Level>		levelList	= new ArrayList<Level>();
-	public List<Monster>	monsterList	= new ArrayList<Monster>();
+	public List<Level> levelList = new ArrayList<Level>();
+	public List<Monster> monsterList = new ArrayList<Monster>();
 
 	// {posx, posy, angle, charge, level, removeFlag, targetType, type, ID}
 	// public List<Tower> towerList = new ArrayList<Tower>();
 	private List<Object[]> towerList = new ArrayList<Object[]>();
 
 	// {posX, posY, angle, speed, damage, removeFlag}
-	private List<Object[]>	projectileList		= new ArrayList<Object[]>();
-	private List<Object[]>	projectilesToAdd	= new ArrayList<Object[]>();
+	private List<Object[]> projectileList = new ArrayList<Object[]>();
+	private List<Object[]> projectilesToAdd = new ArrayList<Object[]>();
 
 	private List<Object[]> bulletTrailList = new ArrayList<Object[]>();
 
@@ -53,7 +53,7 @@ public class World {
 	}
 
 	public void loadLevels() {
-		for ( int i = 0; i <= 7; i++ ) {
+		for (int i = 0; i <= 7; i++) {
 			levelList.add(new Level("level", i));
 		}
 	}
@@ -71,32 +71,32 @@ public class World {
 		// {
 		// spawn();
 		// }
-		for ( int i = 0; i < monsterList.size(); i++ ) {
+		for (int i = 0; i < monsterList.size(); i++) {
 			monsterList.get(i).update(gc, sbg, delta);
-			if ( monsterList.get(i).dead ) {
+			if (monsterList.get(i).dead) {
 				monsterList.remove(i);
 				TowerDefense.money += 50 * (time / 2000f + 1);
 			}
 		}
-		for ( int i = 0; i < towerList.size(); i++ ) {
+		for (int i = 0; i < towerList.size(); i++) {
 			TowerV2.update(towerList.get(i), this, delta);
-			if ( (boolean) towerList.get(i)[5] ) {
+			if ((boolean) towerList.get(i)[5]) {
 				towerList.remove(i);
 			}
 		}
 		while (projectileList.size() < 210 && !projectilesToAdd.isEmpty()) {
 			projectileList.add(projectilesToAdd.remove(0));
 		}
-		for ( int i = 0; i < projectileList.size(); i++ ) {
+		for (int i = 0; i < projectileList.size(); i++) {
 			ProjectileV2.update(projectileList.get(i), this, delta);
-			if ( (boolean) projectileList.get(i)[5] ) {
+			if ((boolean) projectileList.get(i)[5]) {
 				projectileList.remove(i);
 			}
 		}
-		for ( int i = 0; i < bulletTrailList.size(); i++ ) {
+		for (int i = 0; i < bulletTrailList.size(); i++) {
 			BulletTrail.update(bulletTrailList.get(i), this, delta);
 			float fade = Float.parseFloat(bulletTrailList.get(i)[4].toString());
-			if ( fade >= 1 ) {
+			if (fade >= 1) {
 				bulletTrailList.remove(i);
 			}
 		}
@@ -131,7 +131,7 @@ public class World {
 	public boolean addProjectile(float x, float y, float angle, float speed, float damage) {
 		projectilesToAdd.add(new Object[] { x, y, angle, speed, damage, false });
 		// System.out.println(projectilesToAdd);
-		if ( projectileList.size() < 210 ) {
+		if (projectileList.size() < 210) {
 			return true;
 		} else {
 			System.err.println("Too many objects");
@@ -143,7 +143,7 @@ public class World {
 
 	// {x, y, angle, charge, level, removeFlag, targetType, type, ID}
 	public void addTower(float x, float y, float angle, float charge, float level, int targetType, int turretType) {
-		if ( !doesTowerExist(x, y) && TowerDefense.money >= TowerV2.getCost(turretType) ) {
+		if (!doesTowerExist(x, y) && TowerDefense.money >= TowerV2.getCost(turretType)) {
 			towerList.add(new Object[] { x, y, angle, charge, level, false, targetType, turretType, lastTurret });
 			lastTurret++;
 			TowerDefense.money -= TowerV2.getCost(turretType);
@@ -152,7 +152,7 @@ public class World {
 
 	// {startX, startY, endX, endY, fade, fadeRate, colour}
 	public boolean addBulletTrail(float sx, float sy, float ex, float ey, float fr) {
-		if ( bulletTrailList.size() < 400 ) {
+		if (bulletTrailList.size() < 400) {
 			bulletTrailList.add(new Object[] { sx, sy, ex, ey, 0.05f, fr });
 			return true;
 		} else {
@@ -164,11 +164,13 @@ public class World {
 	private boolean doesTowerExist(float x, float y) {
 		int smallx = (int) (x / 48);
 		int smally = (int) (y / 48);
-		for ( Object[] obj : towerList ) {
+		for (Object[] obj : towerList) {
 			int sx2 = (int) ((float) obj[0]) / 48;
-			if ( smallx != sx2 ) continue;
+			if (smallx != sx2)
+				continue;
 			int sy2 = (int) ((float) obj[1]) / 48;
-			if ( smally == sy2 ) return true;
+			if (smally == sy2)
+				return true;
 		}
 		return false;
 	}
@@ -178,7 +180,7 @@ public class World {
 	public void addSmoke(float x, float y) {// TODO: Pin to world
 		try {
 			ConfigurableEmitter emitter = ParticleIO.loadEmitter(smokeConfig);
-			emitter.setPosition(x + Camera.xOffset, y + Camera.yOffset, false);
+			emitter.setPosition(x, y, false);
 			ps.addEmitter(emitter);
 		} catch (Exception e) {
 			e.printStackTrace();
