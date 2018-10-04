@@ -13,7 +13,6 @@ import org.newdawn.slick.particles.ParticleIO;
 import org.newdawn.slick.particles.ParticleSystem;
 import org.newdawn.slick.state.StateBasedGame;
 
-import net.iridgames.towerdefense.Camera;
 import net.iridgames.towerdefense.ResourceLoader;
 import net.iridgames.towerdefense.TowerDefense;
 import net.iridgames.towerdefense.monsters.Monster;
