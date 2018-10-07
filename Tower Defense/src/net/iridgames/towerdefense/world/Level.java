@@ -12,20 +12,22 @@ import java.util.List;
 
 import org.newdawn.slick.geom.Point;
 
+import jdk.internal.jline.internal.Log;
+
 public class Level {
 
-	public List<List<Character>>	levelLayout		= new ArrayList<List<Character>>();	// y, x
-	public List<Point>				spawningPoints	= new ArrayList<Point>();
+	public List<List<Character>> levelLayout = new ArrayList<List<Character>>(); // y, x
+	public List<Point> spawningPoints = new ArrayList<Point>();
 
-	private String	levelFile	= "";
-	private int		levelNum	= 0;
+	private String levelFile = "";
+	private int levelNum = 0;
 
 	public int width, height;
 
 	public Level(String level, int num) {
 		levelFile = level;
 		levelNum = num;
-		// generateBlankLevel(35, 19);
+		// generateBlankLevel(25, 15);
 		try {
 			loadLevelFromFile();
 		} catch (IOException | URISyntaxException e) {
@@ -35,12 +37,14 @@ public class Level {
 	}
 
 	public void saveLevelToFile() throws IOException {
-		FileWriter fw = new FileWriter("assets/levels/" + levelFile + "_" + findNextAvaliabeMapNumber("") + ".map");
+		String loc = "assets/levels/" + levelFile + "_" + findNextAvaliabeMapNumber("") + ".map";
+		FileWriter fw = new FileWriter(loc);
+		Log.info("Saving map to " + loc);
 		BufferedWriter bw = new BufferedWriter(fw);
 		bw.write(levelLayout.get(0).size() + "\n");// x
 		bw.write(levelLayout.size() + "\n");// y
-		for ( int y = 0; y < levelLayout.size(); y++ ) {
-			for ( int x = 0; x < levelLayout.get(y).size(); x++ ) {
+		for (int y = 0; y < levelLayout.size(); y++) {
+			for (int x = 0; x < levelLayout.get(y).size(); x++) {
 				bw.write(levelLayout.get(y).get(x));
 			}
 			bw.write("\n");
@@ -49,8 +53,8 @@ public class Level {
 	}
 
 	public void clear() {
-		for ( int y = 0; y < levelLayout.size(); y++ ) {
-			for ( int x = 0; x < levelLayout.get(y).size(); x++ ) {
+		for (int y = 0; y < levelLayout.size(); y++) {
+			for (int x = 0; x < levelLayout.get(y).size(); x++) {
 				setTile(x, y, 'x');
 			}
 		}
@@ -59,9 +63,9 @@ public class Level {
 	/** Returns a list of all path tiles in the map */
 	public List<Point> getPathTiles() {
 		List<Point> lp = new ArrayList<Point>();
-		for ( int y = 0; y < height; y++ ) {
-			for ( int x = 0; x < width; x++ ) {
-				if ( getTile(x, y) == '-' ) {
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x++) {
+				if (getTile(x, y) == '-') {
 					lp.add(new Point(x, y));
 				}
 			}
@@ -81,9 +85,9 @@ public class Level {
 		levelLayout.clear();
 		this.width = width;
 		this.height = height;
-		for ( int y = 0; y < height; y++ ) {
+		for (int y = 0; y < height; y++) {
 			List<Character> cl = new ArrayList<Character>();
-			for ( int x = 0; x < width; x++ ) {
+			for (int x = 0; x < width; x++) {
 				cl.add('x');
 			}
 			levelLayout.add(cl);
@@ -91,10 +95,11 @@ public class Level {
 	}
 
 	private boolean loadLevelFromFile() throws IOException, URISyntaxException {// TODO Add custom sizes
-		if ( !(new File("assets/levels/" + levelFile + "_" + levelNum + ".map").exists()) ) return false;
+		if (!(new File("assets/levels/" + levelFile + "_" + levelNum + ".map").exists()))
+			return false;
 
 		FileReader fr = new FileReader("assets/levels/" + levelFile + "_" + levelNum + ".map");
-		if ( !fr.ready() ) {
+		if (!fr.ready()) {
 			fr.close();
 			return false;
 		}
@@ -107,7 +112,7 @@ public class Level {
 			line = line.substring(0, width);
 			List<Character> l = new ArrayList<Character>();
 			char[] c = line.toCharArray();
-			for ( int i = 0; i < line.length(); i++ ) {
+			for (int i = 0; i < line.length(); i++) {
 				l.add(c[i]);
 			}
 			levelLayout.add(l);
@@ -117,15 +122,19 @@ public class Level {
 	}
 
 	public char getTile(int x, int y) {
-		if ( y > levelLayout.size() ) return '-';
-		if ( x > levelLayout.get(y).size() ) return '-';
+		if (y > levelLayout.size())
+			return '-';
+		if (x > levelLayout.get(y).size())
+			return '-';
 		return levelLayout.get(y).get(x);
 	}
 
 	public Point getGoal() {
-		for ( int y = 0; y < levelLayout.size(); y++ ) {
-			for ( int x = 0; x < levelLayout.get(y).size(); x++ ) {
-				if ( getTile(x, y) == 'g' ) { return new Point(x, y); }
+		for (int y = 0; y < levelLayout.size(); y++) {
+			for (int x = 0; x < levelLayout.get(y).size(); x++) {
+				if (getTile(x, y) == 'g') {
+					return new Point(x, y);
+				}
 			}
 		}
 		return null;
@@ -140,9 +149,9 @@ public class Level {
 	}
 
 	public void setSpawnPoints() {
-		for ( int y = 0; y < levelLayout.size(); y++ ) {
-			for ( int x = 0; x < levelLayout.get(y).size(); x++ ) {
-				if ( getTile(x, y) == 's' ) {
+		for (int y = 0; y < levelLayout.size(); y++) {
+			for (int x = 0; x < levelLayout.get(y).size(); x++) {
+				if (getTile(x, y) == 's') {
 					spawningPoints.add(new Point(x, y));
 				}
 			}

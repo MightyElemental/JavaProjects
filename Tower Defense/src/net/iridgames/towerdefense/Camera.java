@@ -7,7 +7,7 @@ import net.iridgames.towerdefense.world.World;
 
 public class Camera {
 
-	public static float xOffset, yOffset, scale = 48f / 48f;
+	public static float xOffset=-100, yOffset, scale = 48f / 48f;
 
 	public static float tileSize = 48;
 

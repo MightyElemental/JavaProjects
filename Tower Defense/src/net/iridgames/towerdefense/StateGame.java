@@ -52,16 +52,21 @@ public class StateGame extends BasicGameState {
 		g.scale(Camera.scale, Camera.scale);
 		g.translate(Camera.xOffset, Camera.yOffset);
 		// levelImg.getScaledCopy(Camera.scale).draw(Camera.xOffset, Camera.yOffset);
-		levelImg.draw();
-		changeColor(g, charList[selectedChar]);
-		g.fillRect(gc.getWidth() - 50, 100, 25, 25);
-		g.setColor(Color.black);
-		g.drawString("" + charList[selectedChar], gc.getWidth() - 45, 105);
+		renderTiles(gc, g);
+		// levelImg.draw();
 		renderMonsters(gc, sbg, g);
 		renderTowers(gc, sbg, g);
 		renderProjectiles(gc, sbg, g);
 		renderBulletTrails(gc, sbg, g);
 		worldObj.renderSmoke(gc, sbg, g);
+		renderWorldEditSym(gc, sbg, g);
+	}
+
+	private void renderWorldEditSym(GameContainer gc, StateBasedGame sbg, Graphics g) {
+		changeColor(g, charList[selectedChar]);
+		g.fillRect(gc.getWidth() - 50, 100, 25, 25);
+		g.setColor(Color.black);
+		g.drawString("" + charList[selectedChar], gc.getWidth() - 45, 105);
 	}
 
 	private void renderTowers(GameContainer gc, StateBasedGame sbg, Graphics g) {
@@ -116,9 +121,9 @@ public class StateGame extends BasicGameState {
 		for (int y = 0; y < worldObj.loadedLevel.levelLayout.size(); y++) {
 			for (int x = 0; x < worldObj.loadedLevel.levelLayout.get(y).size(); x++) {
 				changeColor(g, x, y);
-				g.fillRect(x * 48, y * 48, 48, 48);
+				g.fillRect(x * Camera.tileSize, y * Camera.tileSize, Camera.tileSize, Camera.tileSize);
 				g.setColor(new Color(0f, 0f, 0f, 0.5f));
-				g.drawRect(x * 48, y * 48, 48, 48);
+				g.drawRect(x * Camera.tileSize, y * Camera.tileSize, Camera.tileSize, Camera.tileSize);
 			}
 		}
 	}
@@ -209,20 +214,21 @@ public class StateGame extends BasicGameState {
 	public void mousePressed(int button, int x, int y) {
 		int newx = (int) ((x - Camera.xOffset) / Camera.tileSize);
 		int newy = (int) ((y - Camera.yOffset) / Camera.tileSize);
-		// worldObj.loadedLevel.setTile(newx, newy, charList[selectedChar]);
-		char c = worldObj.loadedLevel.getTile(newx, newy);
-		if (c == 'u') {
-			// worldObj.addTower(new TowerCannon(worldObj, (x - startingPointX) / tileSize,
-			// (y - startingPointY) / tileSize));
-			// {x, y, angle, charge, level, removeFlag, targetType, type, ID}
-			// int newx = (int) ((x - Camera.xOffset) / Camera.tileSize);
-			// int newy = (int) ((y - Camera.yOffset) / Camera.tileSize);
-			if (button == 0) {
-				worldObj.addTower(newx * 48, newy * 48, 0, 0, 0, TowerV2.TARGET_MOST_HEALTH, TowerV2.TYPE_SNIPER);
-			} else {
-				worldObj.addTower(newx * 48, newy * 48, 0, 0, 0, TowerV2.TARGET_CLOSEST, TowerV2.TYPE_GATLING);
-			}
-		}
+//		if (!TowerDefense.isCtrlDown) {
+//			worldObj.loadedLevel.setTile(newx, newy, charList[selectedChar]);
+//		}
+//		System.out.println(newx + "|" + newy);
+
+		 char c = worldObj.loadedLevel.getTile(newx, newy);
+		 if (c == 'u') {
+		 if (button == 0) {
+		 worldObj.addTower(newx * 48, newy * 48, 0, 0, 0, TowerV2.TARGET_MOST_HEALTH,
+		 TowerV2.TYPE_SNIPER);
+		 } else {
+		 worldObj.addTower(newx * 48, newy * 48, 0, 0, 0, TowerV2.TARGET_CLOSEST,
+		 TowerV2.TYPE_GATLING);
+		 }
+		 }
 	}
 
 	Random rand = new Random(System.nanoTime());
@@ -240,7 +246,7 @@ public class StateGame extends BasicGameState {
 			worldObj.loadedLevel.clear();
 		}
 		if (key == Input.KEY_SPACE) {
-			worldObj.spawn();
+		 worldObj.spawn();
 		}
 		if (key == Input.KEY_LCONTROL || key == Input.KEY_RCONTROL) {
 			TowerDefense.isCtrlDown = true;
