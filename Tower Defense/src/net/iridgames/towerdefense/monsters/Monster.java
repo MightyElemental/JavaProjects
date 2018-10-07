@@ -10,6 +10,7 @@ import org.newdawn.slick.geom.Point;
 import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.state.StateBasedGame;
 
+import net.iridgames.towerdefense.Camera;
 import net.iridgames.towerdefense.MathHelper;
 import net.iridgames.towerdefense.world.World;
 
@@ -278,7 +279,7 @@ public class Monster extends Rectangle {
 		for (int x = 0; x < mark.length; x++) {
 			for (int y = 0; y < mark[x].length; y++) {
 				if (mark[x][y] != 0) {
-					g.drawString("c" + mark[x][y], x, y);
+					g.drawString("c" + mark[x][y], x*Camera.tileSize, y*Camera.tileSize);
 				}
 			}
 		}
