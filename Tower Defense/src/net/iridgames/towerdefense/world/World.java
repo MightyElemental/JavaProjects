@@ -41,7 +41,7 @@ public class World {
 
 	public World() {
 		loadLevels();
-		loadedLevel = levelList.get(8);
+		loadedLevel = levelList.get(6);
 		smokeConfig = new File("assets/particles/smoke_emitter.xml");
 	}
 
