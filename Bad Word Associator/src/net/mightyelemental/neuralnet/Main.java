@@ -51,7 +51,7 @@ public class Main implements Runnable {
 
 	@Override
 	public void run() {
-		while (genNumber < 600) {
+		while (genNumber < 4440) {
 			Instance[] temp = g.getSeeds();
 			bestFitnessLastGen = Integer.MIN_VALUE;
 			for (Instance i : temp) {
