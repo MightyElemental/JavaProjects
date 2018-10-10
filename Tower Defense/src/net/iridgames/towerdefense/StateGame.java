@@ -60,6 +60,18 @@ public class StateGame extends BasicGameState {
 		renderBulletTrails(gc, sbg, g);
 		worldObj.renderSmoke(gc, sbg, g);
 		renderWorldEditSym(gc, sbg, g);
+		System.out.println(Camera.yOffset + 100 * Camera.scale);
+		g.resetTransform();
+		g.drawString("Money: $" + TowerDefense.money, 70 * Camera.scale, 290 * Camera.scale);
+		if (TowerDefense.money < 0) {
+			g.setColor(new Color(0, 0, 0, 0.9f));
+			g.fillRect(0, 0, gc.getWidth(), gc.getHeight());
+			g.setColor(Color.white);
+			String words = "YOU DIED";
+			String words2 = "YOU SURVIVED " + worldObj.time / 1000 + " SECONDS";
+			g.drawString(words, gc.getWidth() / 2 - g.getFont().getWidth(words) - 200, gc.getHeight() / 2 + 100);
+			g.drawString(words2, gc.getWidth() / 2 - g.getFont().getWidth(words2) / 2 - 200, gc.getHeight() / 2 + 130);
+		}
 	}
 
 	private void renderWorldEditSym(GameContainer gc, StateBasedGame sbg, Graphics g) {
@@ -181,11 +193,13 @@ public class StateGame extends BasicGameState {
 
 	@Override
 	public void update(GameContainer gc, StateBasedGame sbg, int delta) throws SlickException {
-		// worldObj.loadedLevel = worldObj.levelList.get(selectedChar % 4);
-		ticks++;
-		// if ( ticks % 2 == 0 ) {
-		worldObj.update(gc, sbg, delta);
-		// }
+		if (TowerDefense.money >= 0) {
+			// worldObj.loadedLevel = worldObj.levelList.get(selectedChar % 4);
+			ticks++;
+			// if ( ticks % 2 == 0 ) {
+			worldObj.update(gc, sbg, delta);
+			// }
+		}
 	}
 
 	@Override
@@ -214,21 +228,19 @@ public class StateGame extends BasicGameState {
 	public void mousePressed(int button, int x, int y) {
 		int newx = (int) ((x - Camera.xOffset) / Camera.tileSize);
 		int newy = (int) ((y - Camera.yOffset) / Camera.tileSize);
-//		if (!TowerDefense.isCtrlDown) {
-//			worldObj.loadedLevel.setTile(newx, newy, charList[selectedChar]);
-//		}
-//		System.out.println(newx + "|" + newy);
+		// if (!TowerDefense.isCtrlDown) {
+		// worldObj.loadedLevel.setTile(newx, newy, charList[selectedChar]);
+		// }
+		// System.out.println(newx + "|" + newy);
 
-		 char c = worldObj.loadedLevel.getTile(newx, newy);
-		 if (c == 'u') {
-		 if (button == 0) {
-		 worldObj.addTower(newx * 48, newy * 48, 0, 0, 0, TowerV2.TARGET_MOST_HEALTH,
-		 TowerV2.TYPE_SNIPER);
-		 } else {
-		 worldObj.addTower(newx * 48, newy * 48, 0, 0, 0, TowerV2.TARGET_CLOSEST,
-		 TowerV2.TYPE_GATLING);
-		 }
-		 }
+		char c = worldObj.loadedLevel.getTile(newx, newy);
+		if (c == 'u') {
+			if (button == 0) {
+				worldObj.addTower(newx * 48, newy * 48, 0, 0, 0, TowerV2.TARGET_MOST_HEALTH, TowerV2.TYPE_SNIPER);
+			} else {
+				worldObj.addTower(newx * 48, newy * 48, 0, 0, 0, TowerV2.TARGET_CLOSEST, TowerV2.TYPE_GATLING);
+			}
+		}
 	}
 
 	Random rand = new Random(System.nanoTime());
@@ -246,7 +258,7 @@ public class StateGame extends BasicGameState {
 			worldObj.loadedLevel.clear();
 		}
 		if (key == Input.KEY_SPACE) {
-		 worldObj.spawn();
+			worldObj.spawn();
 		}
 		if (key == Input.KEY_LCONTROL || key == Input.KEY_RCONTROL) {
 			TowerDefense.isCtrlDown = true;
