@@ -26,7 +26,7 @@ public class TowerV2 {
 	public static final int TARGET_LEAST_HEALTH = 3;
 
 	// {{radius, radiusMultiplier, coolDown, damage, cost}}
-	private static float[][] turretTypeInfo = { { 7.5f, 1f, 1200, 40, 400 }, { 4f, 1.1f, 200, 5, 200 } };
+	private static float[][] turretTypeInfo = { { 6f, 1f, 1200, 50, 200 }, { 4f, 1f, 200, 5, 150 } };
 
 	private static float x, y, angle, charge, level;
 	private static int targetType, turretType;
