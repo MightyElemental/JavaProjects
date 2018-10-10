@@ -20,10 +20,10 @@ public class Monster extends Rectangle {
 
 	private float angle;
 
-	private float maxHealth = 70;
+	public float maxHealth = 55;
 	public float health = maxHealth;
 
-	private float speed = 0.8f;
+	private float speed = 1f;
 
 	public Monster(World worldObj, float x, float y) {
 		super(x, y, 36, 42);
@@ -61,6 +61,8 @@ public class Monster extends Rectangle {
 	protected World worldObj;
 
 	public boolean dead = false;
+
+	public boolean won = false;
 
 	/** Uses floodfill to work */
 	public List<Point> getShortestRoute() {
@@ -251,7 +253,7 @@ public class Monster extends Rectangle {
 
 		if (worldObj.loadedLevel.getGoal().getX() == getCurrentTile().getX()
 				&& worldObj.loadedLevel.getGoal().getY() == getCurrentTile().getY()) {
-			this.dead = true;
+			this.won  = true;
 		}
 		if (health <= 0) {
 			this.dead = true;
@@ -272,7 +274,7 @@ public class Monster extends Rectangle {
 		// route.get(j).getY());
 		// }
 		// }
-		drawFlood(g);
+		//drawFlood(g);
 	}
 
 	public void drawFlood(Graphics g) {
