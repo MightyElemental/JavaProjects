@@ -41,7 +41,7 @@ public class World {
 
 	public World() {
 		loadLevels();
-		loadedLevel = levelList.get(6);
+		loadedLevel = levelList.get(5);
 		smokeConfig = new File("assets/particles/smoke_emitter.xml");
 	}
 
@@ -61,20 +61,22 @@ public class World {
 		ps.render();
 	}
 
-	int time = 0;
+	public int time = 0;
 
 	public void update(GameContainer gc, StateBasedGame sbg, int delta) {
 		ps.update(delta);
 		time += delta;
-		// if ( monsterList.size() < 1 * (time / 1000f + 1) && monsterList.size() < 40 )
-		// {
-		// spawn();
-		// }
+		if (monsterList.size() < 1 * (time / 5000f + 1) && monsterList.size() < 40) {
+			spawn();
+		}
 		for (int i = 0; i < monsterList.size(); i++) {
 			monsterList.get(i).update(gc, sbg, delta);
 			if (monsterList.get(i).dead) {
 				monsterList.remove(i);
-				TowerDefense.money += 50 * (time / 2000f + 1);
+				TowerDefense.money += 10 * (-(1200 / (time / 1000f + 300)) + 5);
+			} else if (monsterList.get(i).won) {
+				TowerDefense.money -= 30;
+				monsterList.remove(i);
 			}
 		}
 		for (int i = 0; i < towerList.size(); i++) {
@@ -116,13 +118,13 @@ public class World {
 	}
 
 	public void spawn() {
-		int r = rand.nextInt(loadedLevel.spawningPoints.size());
-		// for ( int r = 0; r < loadedLevel.spawningPoints.size(); r++ ) {
-		float x = loadedLevel.spawningPoints.get(r).getCenterX() * 48;
-		float y = loadedLevel.spawningPoints.get(r).getCenterY() * 48;
-		Monster m = new Monster(this, x, y, 70 * (time / 10000f + 1));
-		monsterList.add(m);
-		// }
+		// int r = rand.nextInt(loadedLevel.spawningPoints.size());
+		for (int r = 0; r < loadedLevel.spawningPoints.size(); r++) {
+			float x = loadedLevel.spawningPoints.get(r).getCenterX() * 48;
+			float y = loadedLevel.spawningPoints.get(r).getCenterY() * 48;
+			Monster m = new Monster(this, x, y, 50 * (time / 100000f + 1));
+			monsterList.add(m);
+		}
 
 	}
 
