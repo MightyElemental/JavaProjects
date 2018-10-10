@@ -122,6 +122,7 @@ public class Level {
 	public char getTile(int x, int y) {
 		if ( y > levelLayout.size() ) return '-';
 		if ( x > levelLayout.get(y).size() ) return '-';
+		if( x < 0 || y < 0) return '-';
 		return levelLayout.get(y).get(x);
 	}
 
