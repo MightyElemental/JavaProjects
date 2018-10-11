@@ -23,8 +23,8 @@ public class TowerV2 {
 	public static final int TARGET_LEAST_HEALTH = 3;
 
 	// {{radius, radiusMultiplier, coolDown, damage, cost}}
-	private static float[][] turretTypeInfo = { { 6f, 1f, 1300, 100, 200 }, { 4f, 1f, 200, 7, 165 },
-			{ 5f, 1f, 500, 150, 30 } };
+	private static float[][] turretTypeInfo = { { 6f, 1f, 1300, 100, 200 }, { 4f, 1f, 200, 5, 165 },
+			{ 5f, 1f, 1500, 150, 200 } };
 
 	private static float x, y, angle, charge, level;
 	private static int targetType;
@@ -194,9 +194,10 @@ public class TowerV2 {
 
 	public static void render(Graphics g, Object[] obj) {
 		setTempVars(obj);
-		getIcon(turretType).setRotation(angle);
-		g.drawImage(getIcon(turretType), x - Camera.tileSize / 2, y - Camera.tileSize / 2);
-		getIcon(turretType).setRotation(0);
+		Image img = getIcon(turretType);
+		img.setRotation(angle);
+		g.drawImage(img, x - Camera.tileSize / 2-(img.getWidth()-96)/2, y - Camera.tileSize / 2-(img.getHeight()-96)/2);
+		img.setRotation(0);
 
 		// g.setColor(new Color(0f, 0f, 0f, 1f));// TODO Only render when mouse hovers
 		// over
