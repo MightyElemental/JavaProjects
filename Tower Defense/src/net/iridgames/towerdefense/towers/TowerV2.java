@@ -17,19 +17,18 @@ import net.iridgames.towerdefense.world.World;
 
 public class TowerV2 {
 
-	public static final int TYPE_SNIPER = 0;
-	public static final int TYPE_GATLING = 1;
-
 	public static final int TARGET_CLOSEST_TO_TURRET = 0; // Closest to turret
 	public static final int TARGET_CLOSEST = 1; // Closest to goal
 	public static final int TARGET_MOST_HEALTH = 2;
 	public static final int TARGET_LEAST_HEALTH = 3;
 
 	// {{radius, radiusMultiplier, coolDown, damage, cost}}
-	private static float[][] turretTypeInfo = { { 6f, 1f, 1200, 50, 200 }, { 4f, 1f, 200, 5, 150 } };
+	private static float[][] turretTypeInfo = { { 6f, 1f, 1300, 100, 200 }, { 4f, 1f, 200, 7, 165 },
+			{ 5f, 1f, 500, 150, 30 } };
 
 	private static float x, y, angle, charge, level;
-	private static int targetType, turretType;
+	private static int targetType;
+	private static TowerType turretType;
 	private static boolean remove;
 
 	private static Circle area = new Circle(0f, 0f, 5f);
@@ -64,21 +63,26 @@ public class TowerV2 {
 		}
 		if (flag) {
 			switch (turretType) {
-			case TYPE_SNIPER:
+			case SNIPER:
 				fireProjectiles(worldObj);
 				break;
-			case TYPE_GATLING:
+			case GATLING:
 				fireBullet(worldObj, target);
+			case LOUIS:
+				fireProjectiles(worldObj);
+				break;
+			default:
+				break;
 			}
 		}
 		saveVarsToArray(data);
 	}
 
 	private static void fireProjectiles(World worldObj) {
-		if (charge >= turretTypeInfo[turretType][2]) {
+		if (charge >= turretTypeInfo[turretType.ordinal()][2]) {
 			float sX = (float) ((x + 24) + Math.cos(Math.toRadians(angle)) * 48);
 			float sY = (float) ((y + 24) + Math.sin(Math.toRadians(angle)) * 48);
-			boolean success = worldObj.addProjectile(sX, sY, angle, 5, turretTypeInfo[turretType][3]);
+			boolean success = worldObj.addProjectile(sX, sY, angle, 5, turretTypeInfo[turretType.ordinal()][3]);
 			if (success) {
 				charge = 0;
 				worldObj.addSmoke(sX, sY);
@@ -88,13 +92,13 @@ public class TowerV2 {
 
 	// {startX, startY, endX, endY, fade, fadeRate, colour}
 	private static void fireBullet(World worldObj, Monster target) {
-		if (charge >= turretTypeInfo[turretType][2]) {
+		if (charge >= turretTypeInfo[turretType.ordinal()][2]) {
 
 			float sX = (float) ((x + 24) + Math.cos(Math.toRadians(angle)) * 48);
 			float sY = (float) ((y + 24) + Math.sin(Math.toRadians(angle)) * 48);
 
 			boolean success = worldObj.addBulletTrail(sX, sY, target.getCenterX(), target.getCenterY(), 1);
-			target.health -= turretTypeInfo[turretType][3];
+			target.health -= turretTypeInfo[turretType.ordinal()][3];
 			if (success) {
 				charge = 0;
 				worldObj.addSmoke(sX, sY);
@@ -165,8 +169,8 @@ public class TowerV2 {
 		return closest;
 	}
 
-	public static int getCost(int turretType) {
-		return (int) turretTypeInfo[turretType][4];
+	public static int getCost(TowerType towerType) {
+		return (int) turretTypeInfo[towerType.ordinal()][4];
 	}
 
 	/*
@@ -175,14 +179,17 @@ public class TowerV2 {
 	 * 
 	 */
 
-	public static Image getIcon(int turretType) {
+	public static Image getIcon(TowerType turretType) {
 		switch (turretType) {
-		case TYPE_SNIPER:
+		case SNIPER:
 			return ResourceLoader.loadImage("sniper");
-		case TYPE_GATLING:
+		case GATLING:
 			return ResourceLoader.loadImage("gatling");
+		case LOUIS:
+			return ResourceLoader.loadImage("louis");
+		default:
+			return ResourceLoader.loadImage("null");
 		}
-		return ResourceLoader.loadImage("null");
 	}
 
 	public static void render(Graphics g, Object[] obj) {
@@ -198,7 +205,7 @@ public class TowerV2 {
 		// area.radius);
 
 		g.setColor(Color.cyan.darker());
-		float temp = (Camera.tileSize / turretTypeInfo[turretType][2] * charge);
+		float temp = (Camera.tileSize / turretTypeInfo[turretType.ordinal()][2] * charge);
 		g.fillRect(x, y, 4, temp > Camera.tileSize ? Camera.tileSize : temp);
 	}
 
@@ -216,13 +223,13 @@ public class TowerV2 {
 		level = Float.parseFloat(data[4].toString());
 		remove = (boolean) data[5];
 		targetType = Integer.parseInt(data[6].toString());
-		turretType = Integer.parseInt(data[7].toString());
+		turretType = TowerType.valueOf(data[7].toString());
 		setArea();
 	}
 
 	public static void setArea() {
-		float rad = turretTypeInfo[turretType][0] * 48;
-		float mul = (float) Math.pow(turretTypeInfo[turretType][1], level);
+		float rad = turretTypeInfo[turretType.ordinal()][0] * 48;
+		float mul = (float) Math.pow(turretTypeInfo[turretType.ordinal()][1], level);
 		area.setRadius(rad * mul);
 		area.setCenterX(x);
 		area.setCenterY(y);

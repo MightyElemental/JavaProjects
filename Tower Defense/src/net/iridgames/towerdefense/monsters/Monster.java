@@ -20,10 +20,10 @@ public class Monster extends Rectangle {
 
 	private float angle;
 
-	public float maxHealth = 55;
+	public float maxHealth = 70;
 	public float health = maxHealth;
 
-	private float speed = 1f;
+	private float speed = 0.5f;
 
 	public Monster(World worldObj, float x, float y) {
 		super(x, y, 36, 42);
@@ -253,7 +253,7 @@ public class Monster extends Rectangle {
 
 		if (worldObj.loadedLevel.getGoal().getX() == getCurrentTile().getX()
 				&& worldObj.loadedLevel.getGoal().getY() == getCurrentTile().getY()) {
-			this.won  = true;
+			this.won = true;
 		}
 		if (health <= 0) {
 			this.dead = true;
@@ -274,14 +274,14 @@ public class Monster extends Rectangle {
 		// route.get(j).getY());
 		// }
 		// }
-		//drawFlood(g);
+		// drawFlood(g);
 	}
 
 	public void drawFlood(Graphics g) {
 		for (int x = 0; x < mark.length; x++) {
 			for (int y = 0; y < mark[x].length; y++) {
 				if (mark[x][y] != 0) {
-					g.drawString("c" + mark[x][y], x*Camera.tileSize, y*Camera.tileSize);
+					g.drawString("c" + mark[x][y], x * Camera.tileSize, y * Camera.tileSize);
 				}
 			}
 		}
@@ -305,4 +305,12 @@ public class Monster extends Rectangle {
 		return new Point((float) Math.floor(getCenterX() / 48), (float) Math.floor(getCenterY() / 48));
 	}
 
+	public Monster setSpeed(float newSpeed) {
+		this.speed = newSpeed;
+		return this;
+	}
+
+	public float getSpeed() {
+		return speed;
+	}
 }

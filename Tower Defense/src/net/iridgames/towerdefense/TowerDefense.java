@@ -16,7 +16,7 @@ public class TowerDefense extends StateBasedGame {
 
 	public static boolean isCtrlDown;
 
-	public static int money = 600;
+	public static int money = 350;
 
 	public TowerDefense(String title) {
 		super(title);

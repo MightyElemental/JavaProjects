@@ -18,18 +18,18 @@ import org.newdawn.slick.Sound;
  */
 public class ResourceLoader {
 
-	private static Map<String, Image>	imageLoads	= new HashMap<String, Image>();
-	private static Map<String, Sound>	soundLoads	= new HashMap<String, Sound>();
-	private static Map<String, Music>	musicLoads	= new HashMap<String, Music>();
+	private static Map<String, Image> imageLoads = new HashMap<String, Image>();
+	private static Map<String, Sound> soundLoads = new HashMap<String, Sound>();
+	private static Map<String, Music> musicLoads = new HashMap<String, Music>();
 
 	public static void loadImageBatch(String[] imgs) {
-		for ( String img : imgs ) {
+		for (String img : imgs) {
 			loadImage(img);
 		}
 	}
 
 	public static void loadScaledImageBatch(String[] imgs, int width, int height) {
-		for ( String img : imgs ) {
+		for (String img : imgs) {
 			Image i = loadImage(img);
 			imageLoads.put(i.getName(), i.getScaledCopy(width, height));
 			System.out.println("Rescaled \t" + width + "w " + height + "h");
@@ -37,7 +37,7 @@ public class ResourceLoader {
 	}
 
 	public static void loadScaledImageBatch(String[] imgs, float scale) {
-		for ( String img : imgs ) {
+		for (String img : imgs) {
 			Image i = loadImage(img);
 			imageLoads.put(i.getName(), i.getScaledCopy(scale));
 			System.out.println("Rescaled \t" + scale + "x");
@@ -54,24 +54,26 @@ public class ResourceLoader {
 	 */
 	public static Image loadImage(String imagePath) {
 
-		// if (!imageLoads.containsKey("null")) {
-		// loadNullImage();
-		// }
+		if (!imageLoads.containsKey("null")) {
+			loadNullImage();
+		}
 
 		Image loadedImage = imageLoads.get("null");
 
-		if ( imagePath.equals("null") ) { return loadedImage; }
+		if (imagePath.equals("null")) {
+			return loadedImage;
+		}
 
 		String location = imagePath.replaceAll("[.]", "/");
 		location += ".png";
 		location = "./assets/textures/" + location;
-		if ( imageLoads.get(location) != null ) {
+		if (imageLoads.get(location) != null) {
 			return imageLoads.get(location);
 		} else {
 			try {
 				// loadedImage = new Image(location);
 				File temp = new File(location);
-				if ( temp.exists() ) {
+				if (temp.exists()) {
 					loadedImage = new Image(location);
 					System.out.println("Added texture\t'" + location + "'");
 				} else {
@@ -104,7 +106,7 @@ public class ResourceLoader {
 		g.drawRect(0, 1, 0, 0);
 		g.drawRect(1, 0, 0, 0);
 		g.destroy();
-		return nul;
+		return nul.getScaledCopy(24f);
 	}
 
 	/**
@@ -122,13 +124,13 @@ public class ResourceLoader {
 		String location = musicPath.replaceAll("[.]", "/");
 		location += ".ogg";
 		location = "./assets/sounds/music/" + location;
-		if ( imageLoads.get(location) != null ) {
+		if (imageLoads.get(location) != null) {
 			return musicLoads.get(location);
 		} else {
 			try {
 
 				File temp = new File(this.getClass().getClassLoader().getResource(location).toURI());
-				if ( temp.exists() ) {
+				if (temp.exists()) {
 					loadedMusic = new Music(this.getClass().getClassLoader().getResourceAsStream(location), location);
 					System.out.println("Added music\t'" + location + "'");
 				} else {
@@ -158,12 +160,12 @@ public class ResourceLoader {
 		String location = soundPath.replaceAll("[.]", "/");
 		location += ".ogg";
 		location = "./assets/sounds/" + location;
-		if ( imageLoads.containsKey(location) ) {
+		if (imageLoads.containsKey(location)) {
 			return soundLoads.get(location);
 		} else {
 			try {
 				File temp = new File(location);
-				if ( temp.exists() ) {
+				if (temp.exists()) {
 					loadedSound = new Sound(location);
 					System.out.println("Added sound\t'" + location + "'");
 				} else {

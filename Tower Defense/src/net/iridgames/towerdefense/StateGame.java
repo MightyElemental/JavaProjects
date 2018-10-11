@@ -14,6 +14,7 @@ import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 
 import net.iridgames.towerdefense.towers.BulletTrail;
+import net.iridgames.towerdefense.towers.TowerType;
 import net.iridgames.towerdefense.towers.TowerV2;
 import net.iridgames.towerdefense.world.World;
 
@@ -60,9 +61,14 @@ public class StateGame extends BasicGameState {
 		renderBulletTrails(gc, sbg, g);
 		worldObj.renderSmoke(gc, sbg, g);
 		renderWorldEditSym(gc, sbg, g);
-		System.out.println(Camera.yOffset + 100 * Camera.scale);
+		// System.out.println(Camera.yOffset + 100 * Camera.scale);
 		g.resetTransform();
-		g.drawString("Money: $" + TowerDefense.money, 70 * Camera.scale, 290 * Camera.scale);
+		g.setColor(Color.white);
+		String text = "Money: $" + TowerDefense.money;
+		float length = g.getFont().getWidth(text);
+		g.fillRect(70 * Camera.scale - 5, 290 * Camera.scale - 5, length + 10, 22);
+		g.setColor(Color.black);
+		g.drawString(text, 70 * Camera.scale, 290 * Camera.scale);
 		if (TowerDefense.money < 0) {
 			g.setColor(new Color(0, 0, 0, 0.9f));
 			g.fillRect(0, 0, gc.getWidth(), gc.getHeight());
@@ -236,11 +242,14 @@ public class StateGame extends BasicGameState {
 		char c = worldObj.loadedLevel.getTile(newx, newy);
 		if (c == 'u') {
 			if (button == 0) {
-				worldObj.addTower(newx * 48, newy * 48, 0, 0, 0, TowerV2.TARGET_MOST_HEALTH, TowerV2.TYPE_SNIPER);
-			} else {
-				worldObj.addTower(newx * 48, newy * 48, 0, 0, 0, TowerV2.TARGET_CLOSEST, TowerV2.TYPE_GATLING);
+				worldObj.addTower(newx * 48, newy * 48, 0, 0, 0, TowerV2.TARGET_MOST_HEALTH, TowerType.SNIPER);
+			} else if (button == 1) {
+				worldObj.addTower(newx * 48, newy * 48, 0, 0, 0, TowerV2.TARGET_CLOSEST, TowerType.GATLING);
 			}
+		}else {
+			worldObj.addTower(newx * 48, newy * 48, 0, 0, 0, TowerV2.TARGET_CLOSEST, TowerType.LOUIS);
 		}
+
 	}
 
 	Random rand = new Random(System.nanoTime());

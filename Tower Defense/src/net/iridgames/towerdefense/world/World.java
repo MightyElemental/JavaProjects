@@ -18,6 +18,7 @@ import net.iridgames.towerdefense.TowerDefense;
 import net.iridgames.towerdefense.monsters.Monster;
 import net.iridgames.towerdefense.towers.BulletTrail;
 import net.iridgames.towerdefense.towers.ProjectileV2;
+import net.iridgames.towerdefense.towers.TowerType;
 import net.iridgames.towerdefense.towers.TowerV2;
 
 public class World {
@@ -41,7 +42,7 @@ public class World {
 
 	public World() {
 		loadLevels();
-		loadedLevel = levelList.get(5);
+		loadedLevel = levelList.get(3);
 		smokeConfig = new File("assets/particles/smoke_emitter.xml");
 	}
 
@@ -70,12 +71,13 @@ public class World {
 			spawn();
 		}
 		for (int i = 0; i < monsterList.size(); i++) {
-			monsterList.get(i).update(gc, sbg, delta);
-			if (monsterList.get(i).dead) {
+			Monster m = monsterList.get(i);
+			m.update(gc, sbg, delta);
+			if (m.dead) {
 				monsterList.remove(i);
-				TowerDefense.money += 10 * (-(1200 / (time / 1000f + 300)) + 5);
-			} else if (monsterList.get(i).won) {
-				TowerDefense.money -= 30;
+				TowerDefense.money += 9 * (-(1200 / (time / 1000f + 1200)) + 2);
+			} else if (m.won) {
+				TowerDefense.money -= (15 + m.health);
 				monsterList.remove(i);
 			}
 		}
@@ -123,6 +125,10 @@ public class World {
 			float x = loadedLevel.spawningPoints.get(r).getCenterX() * 48;
 			float y = loadedLevel.spawningPoints.get(r).getCenterY() * 48;
 			Monster m = new Monster(this, x, y, 50 * (time / 100000f + 1));
+			m.setSpeed(m.getSpeed() * (time / 100000f + 1));
+			if (rand.nextInt(100) < 20 * (-8 / ((time / 1000f) + 8f) + 1)) {
+				m.setSpeed(m.getSpeed() * 1.5f);
+			}
 			monsterList.add(m);
 		}
 
@@ -143,11 +149,12 @@ public class World {
 	int lastTurret = 0;
 
 	// {x, y, angle, charge, level, removeFlag, targetType, type, ID}
-	public void addTower(float x, float y, float angle, float charge, float level, int targetType, int turretType) {
-		if (!doesTowerExist(x, y) && TowerDefense.money >= TowerV2.getCost(turretType)) {
-			towerList.add(new Object[] { x, y, angle, charge, level, false, targetType, turretType, lastTurret });
+	public void addTower(float x, float y, float angle, float charge, float level, int targetType,
+			TowerType towerType) {
+		if (!doesTowerExist(x, y) && TowerDefense.money >= TowerV2.getCost(towerType)) {
+			towerList.add(new Object[] { x, y, angle, charge, level, false, targetType, towerType, lastTurret });
 			lastTurret++;
-			TowerDefense.money -= TowerV2.getCost(turretType);
+			TowerDefense.money -= TowerV2.getCost(towerType);
 		}
 	}
 
