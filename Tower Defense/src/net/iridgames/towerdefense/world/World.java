@@ -13,11 +13,14 @@ import org.newdawn.slick.particles.ParticleIO;
 import org.newdawn.slick.particles.ParticleSystem;
 import org.newdawn.slick.state.StateBasedGame;
 
+import jdk.internal.jline.internal.Log;
+import net.iridgames.towerdefense.Camera;
 import net.iridgames.towerdefense.ResourceLoader;
 import net.iridgames.towerdefense.TowerDefense;
 import net.iridgames.towerdefense.monsters.Monster;
 import net.iridgames.towerdefense.towers.BulletTrail;
 import net.iridgames.towerdefense.towers.ProjectileV2;
+import net.iridgames.towerdefense.towers.Pulse;
 import net.iridgames.towerdefense.towers.TowerType;
 import net.iridgames.towerdefense.towers.TowerV2;
 
@@ -35,6 +38,8 @@ public class World {
 	private List<Object[]> projectilesToAdd = new ArrayList<Object[]>();
 
 	private List<Object[]> bulletTrailList = new ArrayList<Object[]>();
+
+	private List<Object[]> pulseList = new ArrayList<Object[]>();
 
 	public Level loadedLevel;
 
@@ -92,6 +97,7 @@ public class World {
 		}
 		for (int i = 0; i < projectileList.size(); i++) {
 			ProjectileV2.update(projectileList.get(i), this, delta);
+			// If projectile is to be removed, then remove it
 			if ((boolean) projectileList.get(i)[5]) {
 				projectileList.remove(i);
 			}
@@ -101,6 +107,12 @@ public class World {
 			float fade = Float.parseFloat(bulletTrailList.get(i)[4].toString());
 			if (fade >= 1) {
 				bulletTrailList.remove(i);
+			}
+		}
+		for(int i = 0; i < pulseList.size(); i++) {
+			Pulse.update(pulseList.get(i), this, delta);
+			if ((boolean) pulseList.get(i)[5]) {
+				pulseList.remove(i);
 			}
 		}
 	}
@@ -135,13 +147,13 @@ public class World {
 	}
 
 	// {posX, posY, angle, speed, damage, removeFlag}
-	public boolean addProjectile(float x, float y, float angle, float speed, float damage) {
-		projectilesToAdd.add(new Object[] { x, y, angle, speed, damage, false });
+	public boolean addProjectile(float x, float y, float angle, float speed, float damage, int hitCount) {
+		projectilesToAdd.add(new Object[] { x, y, angle, speed, damage, false, hitCount, System.currentTimeMillis() });
 		// System.out.println(projectilesToAdd);
 		if (projectileList.size() < 210) {
 			return true;
 		} else {
-			System.err.println("Too many objects");
+			Log.warn("Too many objects");
 			return false;
 		}
 	}
@@ -164,9 +176,13 @@ public class World {
 			bulletTrailList.add(new Object[] { sx, sy, ex, ey, 0.05f, fr });
 			return true;
 		} else {
-			System.err.println("Too many objects");
+			Log.warn("Too many objects");
 			return false;
 		}
+	}
+
+	public void addPulse(float x, float y, float maxRad, float damage) {
+		pulseList.add(new Object[] { x, y, maxRad, 0, damage, false });
 	}
 
 	private boolean doesTowerExist(float x, float y) {
@@ -193,6 +209,10 @@ public class World {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	public List<Object[]> getPulseList() {
+		return pulseList;
 	}
 
 }

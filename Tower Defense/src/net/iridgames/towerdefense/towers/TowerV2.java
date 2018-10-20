@@ -23,8 +23,8 @@ public class TowerV2 {
 	public static final int TARGET_LEAST_HEALTH = 3;
 
 	// {{radius, radiusMultiplier, coolDown, damage, cost}}
-	private static float[][] turretTypeInfo = { { 6f, 1f, 1300, 100, 200 }, { 4f, 1f, 200, 5, 165 },
-			{ 5f, 1f, 1500, 150, 200 } };
+	private static float[][] turretTypeInfo = { { 5.5f, 1f, 1300, 100, 200 }, { 4f, 1f, 200, 7, 165 },
+			{ 4f, 1f, 1500, 35, 200 }, { 2.1f, 1f, 2000, 30, 225 } };
 
 	private static float x, y, angle, charge, level;
 	private static int targetType;
@@ -71,6 +71,9 @@ public class TowerV2 {
 			case LOUIS:
 				fireProjectiles(worldObj);
 				break;
+			case PULSE:
+				pulseAttack(worldObj);
+				break;
 			default:
 				break;
 			}
@@ -82,7 +85,7 @@ public class TowerV2 {
 		if (charge >= turretTypeInfo[turretType.ordinal()][2]) {
 			float sX = (float) ((x + 24) + Math.cos(Math.toRadians(angle)) * 48);
 			float sY = (float) ((y + 24) + Math.sin(Math.toRadians(angle)) * 48);
-			boolean success = worldObj.addProjectile(sX, sY, angle, 5, turretTypeInfo[turretType.ordinal()][3]);
+			boolean success = worldObj.addProjectile(sX, sY, angle, 5, turretTypeInfo[turretType.ordinal()][3], 2);
 			if (success) {
 				charge = 0;
 				worldObj.addSmoke(sX, sY);
@@ -103,6 +106,13 @@ public class TowerV2 {
 				charge = 0;
 				worldObj.addSmoke(sX, sY);
 			}
+		}
+	}
+
+	private static void pulseAttack(World worldObj) {
+		if (charge >= turretTypeInfo[turretType.ordinal()][2]) {
+			charge = 0;
+			worldObj.addPulse(x+Camera.tileSize/2, y+Camera.tileSize/2, turretTypeInfo[turretType.ordinal()][0], turretTypeInfo[turretType.ordinal()][3]);
 		}
 	}
 
@@ -187,6 +197,8 @@ public class TowerV2 {
 			return ResourceLoader.loadImage("gatling");
 		case LOUIS:
 			return ResourceLoader.loadImage("louis");
+		case PULSE:
+			return ResourceLoader.loadImage("pulse");
 		default:
 			return ResourceLoader.loadImage("null");
 		}
@@ -196,7 +208,8 @@ public class TowerV2 {
 		setTempVars(obj);
 		Image img = getIcon(turretType);
 		img.setRotation(angle);
-		g.drawImage(img, x - Camera.tileSize / 2-(img.getWidth()-96)/2, y - Camera.tileSize / 2-(img.getHeight()-96)/2);
+		g.drawImage(img, x - Camera.tileSize / 2 - (img.getWidth() - 96) / 2,
+				y - Camera.tileSize / 2 - (img.getHeight() - 96) / 2);
 		img.setRotation(0);
 
 		// g.setColor(new Color(0f, 0f, 0f, 1f));// TODO Only render when mouse hovers
