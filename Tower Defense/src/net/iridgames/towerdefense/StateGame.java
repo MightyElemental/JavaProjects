@@ -115,7 +115,7 @@ public class StateGame extends BasicGameState {
 	}
 
 	private void renderPulses(GameContainer gc, StateBasedGame sbg, Graphics g) {
-		g.setColor(new Color(0.5f, 0f, 0.1f, 0.5f));
+		g.setColor(new Color(0.5f, 0.2f, 0.9f, 0.5f));
 		Circle rad = new Circle(0,0,5);
 		for(int i = 0; i < worldObj.getPulseList().size(); i++) {
 			float x = (float)worldObj.getPulseList().get(i)[0];
