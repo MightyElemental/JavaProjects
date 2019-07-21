@@ -12,8 +12,8 @@ import org.newdawn.slick.particles.ConfigurableEmitter;
 import org.newdawn.slick.particles.ParticleIO;
 import org.newdawn.slick.particles.ParticleSystem;
 import org.newdawn.slick.state.StateBasedGame;
+import org.newdawn.slick.util.Log;
 
-import jdk.internal.jline.internal.Log;
 import net.iridgames.towerdefense.Camera;
 import net.iridgames.towerdefense.ResourceLoader;
 import net.iridgames.towerdefense.TowerDefense;

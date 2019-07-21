@@ -22,7 +22,7 @@ public class ResourceLoader {
 	private static Map<String, Sound> soundLoads = new HashMap<String, Sound>();
 	private static Map<String, Music> musicLoads = new HashMap<String, Music>();
 
-	public static void loadImageBatch(String[] imgs) {
+	public static void loadImageBatch(String... imgs) {
 		for (String img : imgs) {
 			loadImage(img);
 		}

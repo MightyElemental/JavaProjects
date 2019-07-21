@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class Instance implements Serializable {// TODO: training data. Strength of response and compared to the rest of
-												// the reponses = fitness
+public class Instance implements Serializable {// TODO: training data. Strength of response and compared to the rest of the
+												// responses = fitness
 
 	private static final long serialVersionUID = 2796869107367636584L;
 
