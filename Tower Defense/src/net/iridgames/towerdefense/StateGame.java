@@ -35,7 +35,7 @@ public class StateGame extends BasicGameState {
 	@Override
 	public void init(GameContainer gc, StateBasedGame sbg) throws SlickException {
 		Camera.init(gc, sbg, worldObj);
-		String[] imgs = { "grass", "path", "base", "turret", "gatling", "sniper", "smoke" };
+		String[] imgs = { "grass", "path", "base", "turret", "gatling", "sniper", "louis" };
 		ResourceLoader.loadImageBatch(imgs);
 		initLevelImg(gc);
 		worldObj.init();
@@ -59,6 +59,7 @@ public class StateGame extends BasicGameState {
 		renderTowers(gc, sbg, g);
 		renderProjectiles(gc, sbg, g);
 		renderBulletTrails(gc, sbg, g);
+		renderPulses(gc, sbg, g);
 		worldObj.renderSmoke(gc, sbg, g);
 		renderWorldEditSym(gc, sbg, g);
 		// System.out.println(Camera.yOffset + 100 * Camera.scale);
@@ -110,6 +111,20 @@ public class StateGame extends BasicGameState {
 			c.setCenterX(x);
 			c.setCenterY(y);
 			g.fill(c);
+		}
+	}
+
+	private void renderPulses(GameContainer gc, StateBasedGame sbg, Graphics g) {
+		g.setColor(new Color(0.5f, 0.2f, 0.9f, 0.5f));
+		Circle rad = new Circle(0,0,5);
+		for(int i = 0; i < worldObj.getPulseList().size(); i++) {
+			float x = (float)worldObj.getPulseList().get(i)[0];
+			float y = (float)worldObj.getPulseList().get(i)[1];
+			float r = Float.parseFloat(worldObj.getPulseList().get(i)[3].toString());
+			rad.setRadius(r*Camera.tileSize);
+			rad.setCenterX(x);
+			rad.setCenterY(y);
+			g.fill(rad);
 		}
 	}
 
@@ -240,14 +255,16 @@ public class StateGame extends BasicGameState {
 		// System.out.println(newx + "|" + newy);
 
 		char c = worldObj.loadedLevel.getTile(newx, newy);
-		if (c == 'u') {
-			if (button == 0) {
-				worldObj.addTower(newx * 48, newy * 48, 0, 0, 0, TowerV2.TARGET_MOST_HEALTH, TowerType.SNIPER);
-			} else if (button == 1) {
-				worldObj.addTower(newx * 48, newy * 48, 0, 0, 0, TowerV2.TARGET_CLOSEST, TowerType.GATLING);
+		if (!TowerDefense.isCtrlDown) {
+			if (c == 'u') {
+				if (button == 0) {
+					worldObj.addTower(newx * 48, newy * 48, 0, 0, 0, TowerV2.TARGET_CLOSEST_TO_TURRET, TowerType.PULSE);
+				} else if (button == 1) {
+					worldObj.addTower(newx * 48, newy * 48, 0, 0, 0, TowerV2.TARGET_CLOSEST, TowerType.GATLING);
+				}
+			} else {
+				worldObj.addTower(newx * 48, newy * 48, 0, 0, 0, TowerV2.TARGET_LEAST_HEALTH, TowerType.LOUIS);
 			}
-		}else {
-			worldObj.addTower(newx * 48, newy * 48, 0, 0, 0, TowerV2.TARGET_LEAST_HEALTH, TowerType.LOUIS);
 		}
 
 	}

@@ -16,18 +16,18 @@ public class TowerDefense extends StateBasedGame {
 
 	public static boolean isCtrlDown;
 
-	public static int money = 350;
+	public static int money = 450;
 
 	public TowerDefense(String title) {
 		super(title);
 		AppGameContainer appGc;
 		try {
 			appGc = new AppGameContainer(this);
-			appGc.setDisplayMode(1920, 1017, false);
+			appGc.setDisplayMode(1366, (int) (1366/16.0f*9.0f), false);
 			appGc.setTargetFrameRate(120);
 			appGc.setShowFPS(false);
 			appGc.setAlwaysRender(true);
-			appGc.setFullscreen(false);
+			appGc.setFullscreen(true);
 			appGc.setShowFPS(false);
 			appGc.start();
 		} catch (SlickException e) {

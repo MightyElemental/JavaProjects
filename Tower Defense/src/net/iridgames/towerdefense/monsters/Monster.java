@@ -60,9 +60,9 @@ public class Monster extends Rectangle {
 
 	protected World worldObj;
 
-	public boolean dead = false;
+	public boolean dead = false, won = false;
 
-	public boolean won = false;
+	public List<Long> ignoreList = new ArrayList<Long>();
 
 	/** Uses floodfill to work */
 	public List<Point> getShortestRoute() {
