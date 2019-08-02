@@ -2,9 +2,9 @@ package net.mightyelemental.maven.RayTraceTest2;
 
 public class Vector3f {
 
-	public float	x;
-	public float	y;
-	public float	z;
+	public float x;
+	public float y;
+	public float z;
 
 	public Vector3f(float x, float y, float z) {
 		this.x = x;
@@ -59,7 +59,7 @@ public class Vector3f {
 
 	public Vector3f normalize() {
 		float l = getLength();
-		if ( l != 0 && l != 1 ) {
+		if (l != 0 && l != 1) {
 			x /= l;
 			y /= l;
 			z /= l;
@@ -91,8 +91,15 @@ public class Vector3f {
 		return new Vector3f(x * s, y * s, z * s);
 	}
 
-	public Vector3f negate() {
+	public Vector3f getNegative() {
 		return new Vector3f(-x, -y, -z);
+	}
+
+	public Vector3f negate() {
+		this.x = -x;
+		this.y = -y;
+		this.z = -z;
+		return this;
 	}
 
 	public Vector3f sum(float s) {
@@ -124,14 +131,21 @@ public class Vector3f {
 		return this.sub(normal.mul(2 * this.dot(normal)));
 	}
 
+	public float getAngle(Vector3f vec) {// TODO: might cause instability
+		float dot = this.dot(vec);
+		float mul = vec.getLength() * this.getLength();
+		return (float) Math.acos(dot / mul);
+	}
+
 	public boolean equals(Object o) {
-		if ( !(o instanceof Vector3f) ) return false;
+		if (!(o instanceof Vector3f))
+			return false;
 		Vector3f v = (Vector3f) o;
-		if ( v.x == x && v.y == y && v.z == z ) return true;
+		if (v.x == x && v.y == y && v.z == z)
+			return true;
 		return false;
 	}
 
-	
 	public Vector3f removeY() {
 		this.y = 0;
 		return this;

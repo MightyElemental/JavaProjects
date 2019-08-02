@@ -12,7 +12,7 @@ public class Sphere implements Renderable {
 	public Vector3f	center;
 	public float	radius;
 	public Vector3f	col;
-	public float	reflectivity;
+	public float	reflectivity, ior = 1, opacity = 1;
 
 	public Sphere(Vector3f center, float radius) {
 		this.center = center;
@@ -69,6 +69,14 @@ public class Sphere implements Renderable {
 	@Override
 	public boolean ignoreRay(int depth) {
 		return false;
+	}
+	
+	public float getOpacity() {
+		return opacity;
+	}
+
+	public float getIOR() {
+		return ior;
 	}
 
 }

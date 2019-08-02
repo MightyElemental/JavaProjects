@@ -69,35 +69,37 @@ public class App implements KeyListener, MouseWheelListener, Runnable {
 		}
 	}
 
-	Sphere		s5		= new Sphere(new Vector3f(7, 4, 2), 1);
-	CameraModel	camS	= new CameraModel(new Vector3f(0, 0, 0));
+	Sphere s5 = new Sphere(new Vector3f(7, 4, 2), 1);
+	CameraModel camS = new CameraModel(new Vector3f(0, 0, 0));
 
 	public void setupScene() {
 		// objects.add(new Sphere(0.1f));
 		Sphere s = new Sphere(new Vector3f(0, 0, 0), 6);
 		s.col = new Vector3f(1, 1, 1);
-		s.reflectivity = 1;
+		s.opacity = 0.2f;
+		s.reflectivity = 0;
+		s.ior = 4f / 3f;
 		objects.add(s);
 
 		Sphere s2 = new Sphere(new Vector3f(0, 5, 12), 4);
 		s2.col = new Vector3f(1, 0, 1);
 		s2.reflectivity = 0.2f;
-		objects.add(s2);
+		// objects.add(s2);
 
 		Sphere s3 = new Sphere(new Vector3f(8, 7.5f, -15), 7);
 		s3.col = new Vector3f(1, 0, 0);
 		// s3.reflectivity = 0f;
-		objects.add(s3);
+		// objects.add(s3);
 
 		Sphere s4 = new Sphere(new Vector3f(-13, 3, -20), 5);
 		s4.col = new Vector3f(0.5f, 0, 1);
 		s4.reflectivity = 0.8f;
-		objects.add(s4);
+		// objects.add(s4);
 
 		Sphere earth = new Sphere(new Vector3f(0, -6371000, 0), 6371000);
 		earth.col = new Vector3f(67, 109, 7).mul(1f / 255f);
 
-		objects.add(earth);
+		//objects.add(earth);
 
 		Plane p = new Plane(new Vector3f(0, 1, 0), new Vector3f(0, -2, 0));
 		p.reflectivity = 0;
@@ -127,32 +129,33 @@ public class App implements KeyListener, MouseWheelListener, Runnable {
 
 	public static int MAX_RAY_DEPTH = 3;
 
-	public JFrame	window	= new JFrame();
-	public JPanel	pan		= new JPanel() {
-								private static final long serialVersionUID = -3107887887785696282L;
+	public JFrame window = new JFrame();
+	public JPanel pan = new JPanel() {
+		private static final long serialVersionUID = -3107887887785696282L;
 
-								public void paint(Graphics g) {
-									// ((Graphics2D) g).setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-									// RenderingHints.VALUE_ANTIALIAS_ON);
-									g.drawImage(screen, 0, 0, 1280, 720, null);
-									String text = "FPS: " + round(getAvgFPS(), 2);
-									g.setColor(Color.WHITE);
-									g.fillRect(0, 0, 72, 50);
-									g.setColor(Color.BLACK);
-									g.drawString(text, 5, 20);
-									if ( gravity ) g.drawString("GRAV ON", 5, 40);
-								}
-							};
+		public void paint(Graphics g) {
+			// ((Graphics2D) g).setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+			// RenderingHints.VALUE_ANTIALIAS_ON);
+			g.drawImage(screen, 0, 0, 1280, 720, null);
+			String text = "FPS: " + round(getAvgFPS(), 2);
+			g.setColor(Color.WHITE);
+			g.fillRect(0, 0, 72, 50);
+			g.setColor(Color.BLACK);
+			g.drawString(text, 5, 20);
+			if (gravity)
+				g.drawString("GRAV ON", 5, 40);
+		}
+	};
 
 	public BufferedImage screen = new BufferedImage(1280, 720, BufferedImage.TYPE_INT_RGB);
 
 	public Camera cam = new Camera(new Vector3f(3, 100, 25), 95, screen.getWidth(), screen.getHeight());
 
-	public List<Renderable>	objects	= new ArrayList<Renderable>();
-	public List<Light>		lights	= new ArrayList<Light>();
+	public List<Renderable> objects = new ArrayList<Renderable>();
+	public List<Light> lights = new ArrayList<Light>();
 
-	public Vector3f	backgroundColor	= new Vector3f(119 / 255f, 181 / 255f, 254 / 255f);
-	public String	skyboxLocation	= "./imgs/skybox/";
+	public Vector3f backgroundColor = new Vector3f(119 / 255f, 181 / 255f, 254 / 255f);
+	public String skyboxLocation = "./imgs/skybox/";
 
 	public static final float ambientCoeff = 0.3f;
 
@@ -180,14 +183,14 @@ public class App implements KeyListener, MouseWheelListener, Runnable {
 	boolean t1Done = false;
 
 	public void render() throws InterruptedException {
-		if ( getAvgFPS() < FPS_TARGET * 2f ) {
+		if (getAvgFPS() < FPS_TARGET * 2f) {
 			dynamicRender();
 		} else {
 			Thread t1 = new Thread("t1") {
 				public void run() {
 					t1Done = false;
-					for ( int x = 1; x < screen.getWidth(); x += 2 ) {
-						for ( int y = 0; y < screen.getHeight(); y++ ) {
+					for (int x = 1; x < screen.getWidth(); x += 2) {
+						for (int y = 0; y < screen.getHeight(); y++) {
 							Ray r = cam.createRay(x, y);
 							int c = getIntFromVector(trace(r, 0));
 							setPixel(x, y, c);
@@ -198,8 +201,8 @@ public class App implements KeyListener, MouseWheelListener, Runnable {
 				}
 			};
 			t1.start();
-			for ( int x = 0; x < screen.getWidth(); x += 2 ) {
-				for ( int y = 0; y < screen.getHeight(); y++ ) {
+			for (int x = 0; x < screen.getWidth(); x += 2) {
+				for (int y = 0; y < screen.getHeight(); y++) {
 					Ray r = cam.createRay(x, y);
 					int c = getIntFromVector(trace(r, 0));
 					setPixel(x, y, c);
@@ -221,24 +224,24 @@ public class App implements KeyListener, MouseWheelListener, Runnable {
 
 	public void fourWayInterlaceRender() {
 		int xs = 0, ys = 0;
-		if ( toggle == 0 ) {
+		if (toggle == 0) {
 			xs = 0;
 			ys = 0;
 		}
-		if ( toggle == 1 ) {
+		if (toggle == 1) {
 			xs = 1;
 			ys = 0;
 		}
-		if ( toggle == 2 ) {
+		if (toggle == 2) {
 			xs = 1;
 			ys = 1;
 		}
-		if ( toggle == 3 ) {
+		if (toggle == 3) {
 			xs = 0;
 			ys = 1;
 		}
-		for ( int x = xs; x < screen.getWidth(); x += 2 ) {
-			for ( int y = ys; y < screen.getHeight(); y += 2 ) {
+		for (int x = xs; x < screen.getWidth(); x += 2) {
+			for (int y = ys; y < screen.getHeight(); y += 2) {
 				Ray r = cam.createRay(x, y);
 				int c = getIntFromVector(trace(r, 0));
 				setPixel(x, y, c);
@@ -258,12 +261,12 @@ public class App implements KeyListener, MouseWheelListener, Runnable {
 		Thread t1 = new Thread("t1") {
 			public void run() {
 				t1Done = false;
-				for ( int x = 0; x < width; x += step ) {
-					for ( int y = 0; y < height / 2; y += step ) {
+				for (int x = 0; x < width; x += step) {
+					for (int y = 0; y < height / 2; y += step) {
 						Ray r = cam.createRay(x, y);
 						int c = getIntFromVector(trace(r, 0));
-						for ( int i = 0; i < step; i++ ) {
-							for ( int j = 0; j < step; j++ ) {
+						for (int i = 0; i < step; i++) {
+							for (int j = 0; j < step; j++) {
 								setPixel(x + i, y + j, c);
 							}
 						}
@@ -274,12 +277,12 @@ public class App implements KeyListener, MouseWheelListener, Runnable {
 		};
 		t1.start();
 
-		for ( int x = 0; x < width; x += step ) {
-			for ( int y = height / 2; y < height; y += step ) {
+		for (int x = 0; x < width; x += step) {
+			for (int y = height / 2; y < height; y += step) {
 				Ray r = cam.createRay(x, y);
 				int c = getIntFromVector(trace(r, 0));
-				for ( int i = 0; i < step; i++ ) {
-					for ( int j = 0; j < step; j++ ) {
+				for (int i = 0; i < step; i++) {
+					for (int j = 0; j < step; j++) {
 						setPixel(x + i, y + j, c);
 					}
 				}
@@ -297,7 +300,8 @@ public class App implements KeyListener, MouseWheelListener, Runnable {
 	}
 
 	public void updateScreenSize(int width, int height) {
-		if ( width == screen.getWidth() && height == screen.getHeight() ) return;
+		if (width == screen.getWidth() && height == screen.getHeight())
+			return;
 		screen = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 		cam.setDim(width, height);
 		pixelGrid = ((DataBufferInt) screen.getRaster().getDataBuffer()).getData();
@@ -305,22 +309,46 @@ public class App implements KeyListener, MouseWheelListener, Runnable {
 
 	public Vector3f trace(Ray r, int depth) {
 		Renderable rend = r.trace(objects, depth);
-		if ( rend == null ) return getBackground(r.getDirection());
+		if (rend == null)
+			return getBackground(r.getDirection());
 		Vector3f hit = r.getHitPoint();
 		Vector3f color = new Vector3f(0, 0, 0);
-		if ( rend.getReflectivity() > 0 ) {
-			if ( depth < MAX_RAY_DEPTH ) {
-				Vector3f dir = r.getReflectedVector(rend.getNormal(hit)).normalize();
-				Ray refr = new Ray(dir, hit.sum(dir.mul(0.01f)));
-				Vector3f ref = trace(refr, depth + 1);
-				Vector3f base = getDiffuse(rend, hit, depth).mul(0.3f * (1 - rend.getReflectivity()));
-				Vector3f adjustedRef = ref.mul((1 - 0.3f) * rend.getReflectivity());
-				color = base.sum(adjustedRef);
-			}
+		Vector3f base = getDiffuse(rend, hit, depth);
+		if (depth < MAX_RAY_DEPTH && rend.getReflectivity() > 0 && rend.getOpacity() < 1) {
+			Vector3f ref = traceReflection(r, rend, hit, depth);
+			Vector3f adjustedRef = ref.mul(rend.getOpacity() * (1 - ambientCoeff) * rend.getReflectivity());
+			// refraction
+			Vector3f refractionCol = traceRefraction(r, rend, hit, depth);
+			Vector3f adjustedRefrac = refractionCol.mul((1 - rend.getOpacity()) * (1 - ambientCoeff));
+
+			color = base.mul(ambientCoeff * rend.getOpacity() * (1 - rend.getReflectivity())).sum(adjustedRef)
+					.sum(adjustedRefrac);
+		} else if (depth < MAX_RAY_DEPTH && rend.getReflectivity() > 0) { // reflection
+			Vector3f ref = traceReflection(r, rend, hit, depth);
+			Vector3f adjustedRef = ref.mul((1 - ambientCoeff) * rend.getReflectivity());
+
+			color = base.mul(ambientCoeff * (1 - rend.getReflectivity())).sum(adjustedRef);
+		} else if (depth < MAX_RAY_DEPTH && rend.getOpacity() < 1) { // refraction
+			Vector3f refractionCol = traceRefraction(r, rend, hit, depth);
+			Vector3f adjustedRefrac = refractionCol.mul((1 - rend.getOpacity()) * (1 - ambientCoeff));
+
+			color = base.mul(ambientCoeff * rend.getOpacity()).sum(adjustedRefrac);
 		} else {
 			color = getDiffuse(rend, hit, depth);
 		}
 		return color;
+	}
+
+	public Vector3f traceReflection(Ray r, Renderable rend, Vector3f hit, int depth) {
+		Vector3f dir = r.getReflectedVector(rend.getNormal(hit)).normalize();
+		Ray refr = new Ray(dir, hit.sum(dir.mul(0.01f)));
+		return trace(refr, depth + 1);
+	}
+
+	public Vector3f traceRefraction(Ray r, Renderable rend, Vector3f hit, int depth) {
+		Vector3f refracDir = r.getRefractionVector(1f / rend.getIOR(), rend.getNormal(hit).normalize()).normalize();
+		Ray refractionRay = new Ray(refracDir, hit.sum(refracDir.mul(0.01f)));
+		return trace(refractionRay, depth + 1);
 	}
 
 	private Vector3f getBackground(Vector3f frag) {
@@ -339,37 +367,37 @@ public class App implements KeyListener, MouseWheelListener, Runnable {
 
 		float maxAxis = 1, uc = 0, vc = 0;
 
-		if ( isXPositive && absX >= absY && absX >= absZ ) {
+		if (isXPositive && absX >= absY && absX >= absZ) {
 			maxAxis = absX;
 			uc = -vec.z;
 			vc = vec.y;
 			td.img = ResourceLoader.loadImage(skyboxLocation + "side_0.png");
 		}
-		if ( !isXPositive && absX >= absY && absX >= absZ ) {
+		if (!isXPositive && absX >= absY && absX >= absZ) {
 			maxAxis = absX;
 			uc = vec.z;
 			vc = vec.y;
 			td.img = ResourceLoader.loadImage(skyboxLocation + "side_1.png");
 		}
-		if ( isYPositive && absY >= absX && absY >= absZ ) {
+		if (isYPositive && absY >= absX && absY >= absZ) {
 			maxAxis = absY;
 			uc = vec.x;
 			vc = -vec.z;
 			td.img = ResourceLoader.loadImage(skyboxLocation + "side_2.png");
 		}
-		if ( !isYPositive && absY >= absX && absY >= absZ ) {
+		if (!isYPositive && absY >= absX && absY >= absZ) {
 			maxAxis = absY;
 			uc = vec.x;
 			vc = vec.z;
 			td.img = ResourceLoader.loadImage(skyboxLocation + "side_3.png");
 		}
-		if ( isZPositive && absZ >= absX && absZ >= absY ) {
+		if (isZPositive && absZ >= absX && absZ >= absY) {
 			maxAxis = absZ;
 			uc = vec.x;
 			vc = vec.y;
 			td.img = ResourceLoader.loadImage(skyboxLocation + "side_4.png");
 		}
-		if ( !isZPositive && absZ >= absX && absZ >= absY ) {
+		if (!isZPositive && absZ >= absX && absZ >= absY) {
 			maxAxis = absZ;
 			uc = -vec.x;
 			vc = vec.y;
@@ -391,13 +419,14 @@ public class App implements KeyListener, MouseWheelListener, Runnable {
 	private Vector3f getDiffuse(Renderable rend, Vector3f hit, int depth) {
 		Vector3f color = rend.getColor().mul(ambientCoeff);
 		Vector3f lightSamples = new Vector3f(0, 0, 0);
-		for ( Light l : lights ) {
+		for (Light l : lights) {
 			Vector3f lvec = hit.vecTo(l.pos).normalize();
 			Ray shadowRay = new Ray(lvec, hit.sum(lvec.mul(0.01f)));
 			Renderable obj = shadowRay.trace(objects, depth);
-			if ( obj == null || (obj instanceof Sphere && ((Sphere) obj).center.equals(l.pos)) ) {// TODO: fix sun shadow
+			if (obj == null || (obj instanceof Sphere && ((Sphere) obj).center.equals(l.pos))) {// TODO: fix sun shadow
 				float dot = rend.getNormal(hit).getUnitVec().dot(lvec);
-				if ( dot > 0 ) lightSamples = lightSamples.sum(l.color.mul(l.brightness * dot));
+				if (dot > 0)
+					lightSamples = lightSamples.sum(l.color.mul(l.brightness * dot));
 				// System.out.println("asd");
 				break;
 			}
@@ -410,7 +439,8 @@ public class App implements KeyListener, MouseWheelListener, Runnable {
 	}
 
 	public void setPixel(int x, int y, int col) {
-		if ( x >= screen.getWidth() || y >= screen.getHeight() ) return;
+		if (x >= screen.getWidth() || y >= screen.getHeight())
+			return;
 		pixelGrid[(int) (x + y * screen.getWidth())] = col;
 	}
 
@@ -428,23 +458,23 @@ public class App implements KeyListener, MouseWheelListener, Runnable {
 	}
 
 	public void antiAllias() {// blurs screen
-		for ( int x = 0; x < screen.getWidth(); x++ ) {
-			for ( int y = 0; y < screen.getHeight(); y++ ) {
+		for (int x = 0; x < screen.getWidth(); x++) {
+			for (int y = 0; y < screen.getHeight(); y++) {
 				int samples = 0;
 				Vector3f colTot = Vector3f.origin();
-				if ( x > 1 ) {
+				if (x > 1) {
 					samples += 1;
 					colTot = colTot.sum(rgbIntToVec(getPixel(x - 1, y)));
 				}
-				if ( y > 1 ) {
+				if (y > 1) {
 					samples += 1;
 					colTot = colTot.sum(rgbIntToVec(getPixel(x, y - 1)));
 				}
-				if ( x < screen.getWidth() - 1 ) {
+				if (x < screen.getWidth() - 1) {
 					samples += 1;
 					colTot = colTot.sum(rgbIntToVec(getPixel(x + 1, y)));
 				}
-				if ( y < screen.getHeight() - 1 ) {
+				if (y < screen.getHeight() - 1) {
 					samples += 1;
 					colTot = colTot.sum(rgbIntToVec(getPixel(x, y + 1)));
 				}
@@ -474,7 +504,7 @@ public class App implements KeyListener, MouseWheelListener, Runnable {
 	@Override
 	public void keyReleased(KeyEvent event) {
 		keys.removeIf(e -> e == event.getKeyCode());
-		if ( event.getKeyCode() == KeyEvent.VK_G ) {
+		if (event.getKeyCode() == KeyEvent.VK_G) {
 			gravity = !gravity;
 		}
 	}
@@ -497,55 +527,57 @@ public class App implements KeyListener, MouseWheelListener, Runnable {
 			while (frametimes.size() > 200) {
 				frametimes.remove(0);
 			}
-			if ( gravity ) {
+			if (gravity) {
 				cam.cameraPos.y -= fallSpeed;
-				if ( cam.cameraPos.y > camHeightTarget ) {
+				if (cam.cameraPos.y > camHeightTarget) {
 					fallSpeed += grav / 20f;
 				}
-				if ( cam.cameraPos.y < camHeightTarget ) {
+				if (cam.cameraPos.y < camHeightTarget) {
 					cam.cameraPos.setY(camHeightTarget);
 					fallSpeed = 0;
 				}
 			}
-			if ( keys.contains(KeyEvent.VK_UP) ) {
+			if (keys.contains(KeyEvent.VK_UP)) {
 				cam.cameraAngle.addX(2.5f);
 			}
-			if ( keys.contains(KeyEvent.VK_DOWN) ) {
+			if (keys.contains(KeyEvent.VK_DOWN)) {
 				cam.cameraAngle.addX(-2.5f);
 			}
-			if ( keys.contains(KeyEvent.VK_RIGHT) ) {
+			if (keys.contains(KeyEvent.VK_RIGHT)) {
 				cam.cameraAngle.addY(-2.5f);
 			}
-			if ( keys.contains(KeyEvent.VK_LEFT) ) {
+			if (keys.contains(KeyEvent.VK_LEFT)) {
 				cam.cameraAngle.addY(2.5f);
 			}
-			if ( keys.contains(KeyEvent.VK_W) ) {
+			if (keys.contains(KeyEvent.VK_W)) {
 				Vector3f dir = cam.rotMat.multiply(new Vector3f(0, 0, -speed));
-				if ( gravity ) dir.removeY();
+				if (gravity)
+					dir.removeY();
 				cam.cameraPos = cam.cameraPos.sum(dir);
 			}
-			if ( keys.contains(KeyEvent.VK_S) ) {
+			if (keys.contains(KeyEvent.VK_S)) {
 				Vector3f dir = cam.rotMat.multiply(new Vector3f(0, 0, speed));
-				if ( gravity ) dir.removeY();
+				if (gravity)
+					dir.removeY();
 				cam.cameraPos = cam.cameraPos.sum(dir);
 			}
-			if ( keys.contains(KeyEvent.VK_A) ) {
+			if (keys.contains(KeyEvent.VK_A)) {
 				cam.cameraPos = cam.cameraPos.sum(cam.rotMat.multiply(new Vector3f(-speed, 0, 0)).removeY());
 			}
-			if ( keys.contains(KeyEvent.VK_D) ) {
+			if (keys.contains(KeyEvent.VK_D)) {
 				cam.cameraPos = cam.cameraPos.sum(cam.rotMat.multiply(new Vector3f(speed, 0, 0)).removeY());
 			}
-			if ( keys.contains(KeyEvent.VK_SPACE) && cam.cameraPos.y == camHeightTarget ) {
+			if (keys.contains(KeyEvent.VK_SPACE) && cam.cameraPos.y == camHeightTarget) {
 				fallSpeed = -2;
 			}
-			if ( keys.contains(KeyEvent.VK_CONTROL) ) {
+			if (keys.contains(KeyEvent.VK_CONTROL)) {
 				camHeightTarget = 3;
 				speed = 0.2f;
 			} else {
 				camHeightTarget = 5;
 				speed = 1f;
 			}
-			if ( keys.contains(KeyEvent.VK_SHIFT) ) {
+			if (keys.contains(KeyEvent.VK_SHIFT)) {
 				speed = 2.5f;
 			}
 			try {

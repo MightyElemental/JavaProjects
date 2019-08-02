@@ -6,10 +6,10 @@ import net.mightyelemental.maven.RayTraceTest2.objects.Renderable;
 
 public class Ray {
 
-	private Vector3f	direction, start;
-	public float		t0		= Float.MAX_VALUE;
-	public float		t1		= Float.MAX_VALUE;
-	public float		tnear	= Float.MAX_VALUE;
+	private Vector3f direction, start;
+	public float t0 = Float.MAX_VALUE;
+	public float t1 = Float.MAX_VALUE;
+	public float tnear = Float.MAX_VALUE;
 
 	public Ray(Vector3f dir, Vector3f start) {
 		this.direction = dir;
@@ -50,13 +50,16 @@ public class Ray {
 
 	public Renderable trace(List<Renderable> objects, int depth) {
 		Renderable closest = null;
-		for ( Renderable o : objects ) {
-			if(o.ignoreRay(depth)) continue;
+		for (Renderable o : objects) {
+			if (o.ignoreRay(depth))
+				continue;
 			t0 = Float.MAX_VALUE;
 			t1 = Float.MAX_VALUE;
-			if ( !o.intersects(this) ) continue;
-			if ( t0 < 0 ) t0 = t1;
-			if ( t0 < tnear ) {
+			if (!o.intersects(this))
+				continue;
+			if (t0 < 0)
+				t0 = t1;
+			if (t0 < tnear) {
 				tnear = t0;
 				closest = o;
 			}
@@ -74,6 +77,18 @@ public class Ray {
 
 	public void setOrig(Vector3f pos) {
 		this.start = pos;
+	}
+
+	// ior = n1/n2
+	public Vector3f getRefractionVector(float ior, Vector3f normToObj) {
+		Vector3f t = this.getDirection().mul(ior);
+		float angle = this.getDirection().getAngle(normToObj);
+		double cosA = Math.cos(angle);
+		double sin2ot = ior * ior * (1 - cosA * cosA);
+		if (sin2ot > 1)
+			return null;
+		t = t.sum(normToObj.mul((float) (ior * cosA - Math.sqrt(1 - sin2ot))));
+		return t.normalize();
 	}
 
 }

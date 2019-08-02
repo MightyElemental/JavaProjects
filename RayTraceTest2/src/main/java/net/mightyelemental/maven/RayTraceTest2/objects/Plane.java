@@ -56,4 +56,9 @@ public class Plane implements Renderable {
 		return false;
 	}
 
+	@Override
+	public float getOpacity() {
+		return 1;
+	}
+
 }
