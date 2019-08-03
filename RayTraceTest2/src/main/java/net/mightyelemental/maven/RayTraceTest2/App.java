@@ -8,13 +8,23 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.OptionalDouble;
 import java.util.Set;
 
+import javax.imageio.IIOImage;
+import javax.imageio.ImageIO;
+import javax.imageio.ImageWriteParam;
+import javax.imageio.ImageWriter;
+import javax.imageio.plugins.jpeg.JPEGImageWriteParam;
+import javax.imageio.stream.FileImageOutputStream;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
@@ -24,6 +34,7 @@ import net.mightyelemental.maven.RayTraceTest2.objects.Light;
 import net.mightyelemental.maven.RayTraceTest2.objects.Plane;
 import net.mightyelemental.maven.RayTraceTest2.objects.Renderable;
 import net.mightyelemental.maven.RayTraceTest2.objects.Sphere;
+import net.mightyelemental.maven.RayTraceTest2.objects.Triangle;
 
 /**
  * Hello world!
@@ -32,6 +43,8 @@ import net.mightyelemental.maven.RayTraceTest2.objects.Sphere;
 public class App implements KeyListener, MouseWheelListener, Runnable {
 
 	public Thread thread = new Thread(this);
+
+	boolean pause = false;
 
 	public App() {
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -67,6 +80,13 @@ public class App implements KeyListener, MouseWheelListener, Runnable {
 			// System.out.println(timeOff / 1000f);
 			// }
 			frametimes.add(System.currentTimeMillis() - t1);
+			while (pause) {
+				try {
+					Thread.sleep(500);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 	}
 
@@ -107,8 +127,11 @@ public class App implements KeyListener, MouseWheelListener, Runnable {
 		p.col = new Vector3f(255, 109, 0).mul(1f / 255f);
 		// objects.add(p);
 
-		Circle c = new Circle(new Vector3f(0, 1, 0), new Vector3f(0, 40, 0), 20);
+		Circle c = new Circle(new Vector3f(0.5f, 1, 0).normalize(), new Vector3f(0, 40, 0), 20);
 		objects.add(c);
+
+		Triangle t = new Triangle(new Vector3f(5, 1, 1), new Vector3f(5, 5, 1), new Vector3f(5, 1, 10));
+		objects.add(t);
 
 		// objects.add(new Plane(new Vector3f(1, 0, 0), new Vector3f(20, 0, 0)));
 
@@ -146,20 +169,24 @@ public class App implements KeyListener, MouseWheelListener, Runnable {
 			g.fillRect(0, 0, 72, 50);
 			g.setColor(Color.BLACK);
 			g.drawString(text, 5, 20);
-			if (gravity)
+
+			if (pause) {
+				g.drawString("PAUSE", 5, 40);
+			} else if (gravity) {
 				g.drawString("GRAV ON", 5, 40);
+			}
 		}
 	};
 
 	public BufferedImage screen = new BufferedImage(1280, 720, BufferedImage.TYPE_INT_RGB);
 
-	public Camera cam = new Camera(new Vector3f(3, 100, 25), 95, screen.getWidth(), screen.getHeight());
+	public Camera cam = new Camera(new Vector3f(3, 10, 25), 95, screen.getWidth(), screen.getHeight());
 
 	public List<Renderable> objects = new ArrayList<Renderable>();
 	public List<Light> lights = new ArrayList<Light>();
 
 	public Vector3f backgroundColor = new Vector3f(119 / 255f, 181 / 255f, 254 / 255f);
-	public String skyboxLocation = "./imgs/skybox/";
+	public String skyboxLocation = "./imgs/skybox2/";
 
 	public static final float ambientCoeff = 0.3f;
 
@@ -186,42 +213,86 @@ public class App implements KeyListener, MouseWheelListener, Runnable {
 
 	boolean t1Done = false;
 
+	private void hqRender() throws InterruptedException {
+		// cam.width = 3840;
+		// cam.height = 2160;
+		pause = true;
+		Thread.sleep(1);
+		BufferedImage img = new BufferedImage(3840, 2160, BufferedImage.TYPE_INT_RGB);
+		twoThreadRender(img);
+		try {
+			String date = (new Date()).toString().replaceAll(" ", "_").replaceAll(":", ".");
+			new File("./imgs/renders/").mkdirs();
+//			File outputfile = new File("./imgs/renders/render_" + date + ".jpg");
+//			ImageIO.write(img, "jpg", outputfile);
+			saveImage(img, "./imgs/renders/render_" + date + ".jpg", 0.9f);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		pause = false;
+	}
+
+	public void saveImage(BufferedImage img, String location, float quality) throws FileNotFoundException, IOException {
+		JPEGImageWriteParam jpegParams = new JPEGImageWriteParam(null);
+		jpegParams.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
+		jpegParams.setCompressionQuality(quality);
+
+		final ImageWriter writer = ImageIO.getImageWritersByFormatName("jpg").next();
+		// specifies where the jpg image has to be written
+		writer.setOutput(new FileImageOutputStream(new File(location)));
+
+		// writes the file with given compression level
+		// from your JPEGImageWriteParam instance
+		writer.write(null, new IIOImage(img, null, null), jpegParams);
+	}
+
 	public void render() throws InterruptedException {
 		if (getAvgFPS() < FPS_TARGET * 2f) {
 			dynamicRender();
 		} else {
-			Thread t1 = new Thread("t1") {
-				public void run() {
-					t1Done = false;
-					for (int x = 1; x < screen.getWidth(); x += 2) {
-						for (int y = 0; y < screen.getHeight(); y++) {
-							Ray r = cam.createRay(x, y);
-							int c = getIntFromVector(trace(r, 0));
-							setPixel(x, y, c);
-							// System.out.println(c);
-						}
-					}
-					t1Done = true;
-				}
-			};
-			t1.start();
-			for (int x = 0; x < screen.getWidth(); x += 2) {
-				for (int y = 0; y < screen.getHeight(); y++) {
-					Ray r = cam.createRay(x, y);
-					int c = getIntFromVector(trace(r, 0));
-					setPixel(x, y, c);
-					// System.out.println(c);
-				}
-			}
-			t1.join();
-			while (!t1Done) {
-				Thread.sleep(1);
-			}
+			twoThreadRender(screen);
 		}
 		// antiAllias();
 		Thread.sleep(1);
 		pan.repaint();
 		// window.repaint();
+	}
+
+	public BufferedImage twoThreadRender(BufferedImage target) throws InterruptedException {
+		float oldWid = cam.width;
+		float oldHeight = cam.height;
+		cam.width = target.getWidth();
+		cam.height = target.getHeight();
+
+		int[] pixels = ((DataBufferInt) target.getRaster().getDataBuffer()).getData();
+
+		Thread t1 = new Thread("t1") {
+			public void run() {
+				t1Done = false;
+				for (int x = 1; x < target.getWidth(); x += 2) {
+					for (int y = 0; y < target.getHeight(); y++) {
+						Ray r = cam.createRay(x, y);
+						int c = getIntFromVector(trace(r, 0));
+						setPixel(pixels, target.getWidth(), x, y, c);
+						// System.out.println(c);
+					}
+				}
+				t1Done = true;
+			}
+		};
+		t1.start();
+		for (int x = 0; x < target.getWidth(); x += 2) {
+			for (int y = 0; y < target.getHeight(); y++) {
+				Ray r = cam.createRay(x, y);
+				int c = getIntFromVector(trace(r, 0));
+				setPixel(pixels, target.getWidth(), x, y, c);
+				// System.out.println(c);
+			}
+		}
+		t1.join();
+		cam.width = oldWid;
+		cam.height = oldHeight;
+		return target;
 	}
 
 	int toggle = 0;
@@ -452,6 +523,10 @@ public class App implements KeyListener, MouseWheelListener, Runnable {
 		setPixel(x, y, getIntFromVector(vec));
 	}
 
+	private void setPixel(int[] pixels, int width, int x, int y, int c) {
+		pixels[(int) (x + y * width)] = c;
+	}
+
 	public int getPixel(int x, int y) {
 		return pixelGrid[(int) (x + y * screen.getWidth())];
 	}
@@ -510,6 +585,14 @@ public class App implements KeyListener, MouseWheelListener, Runnable {
 		keys.removeIf(e -> e == event.getKeyCode());
 		if (event.getKeyCode() == KeyEvent.VK_G) {
 			gravity = !gravity;
+		} else if (event.getKeyCode() == KeyEvent.VK_P) {
+			pause = !pause;
+		} else if (event.getKeyCode() == KeyEvent.VK_ENTER) {
+			try {
+				hqRender();
+			} catch (InterruptedException e1) {
+				e1.printStackTrace();
+			}
 		}
 	}
 
