@@ -21,7 +21,9 @@ public interface Renderable {
 	 * Used to hide objects until a certain ray bounce count<br>
 	 * Good for hiding objects and only showing them in refractions / reflections
 	 */
-	public boolean ignoreRay(int depth);
+	public default boolean ignoreRay(int depth) {
+		return false;
+	}
 
 	public default float getOpacity() {
 		return 1;

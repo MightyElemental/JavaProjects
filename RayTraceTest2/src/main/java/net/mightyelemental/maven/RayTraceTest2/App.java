@@ -19,6 +19,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import net.mightyelemental.maven.RayTraceTest2.objects.CameraModel;
+import net.mightyelemental.maven.RayTraceTest2.objects.Circle;
 import net.mightyelemental.maven.RayTraceTest2.objects.Light;
 import net.mightyelemental.maven.RayTraceTest2.objects.Plane;
 import net.mightyelemental.maven.RayTraceTest2.objects.Renderable;
@@ -76,8 +77,8 @@ public class App implements KeyListener, MouseWheelListener, Runnable {
 		// objects.add(new Sphere(0.1f));
 		Sphere s = new Sphere(new Vector3f(0, 0, 0), 6);
 		s.col = new Vector3f(1, 1, 1);
-		s.opacity = 0.2f;
-		s.reflectivity = 0;
+		s.opacity = 0.5f;
+		s.reflectivity = 1;
 		s.ior = 4f / 3f;
 		objects.add(s);
 
@@ -99,12 +100,15 @@ public class App implements KeyListener, MouseWheelListener, Runnable {
 		Sphere earth = new Sphere(new Vector3f(0, -6371000, 0), 6371000);
 		earth.col = new Vector3f(67, 109, 7).mul(1f / 255f);
 
-		//objects.add(earth);
+		// objects.add(earth);
 
 		Plane p = new Plane(new Vector3f(0, 1, 0), new Vector3f(0, -2, 0));
 		p.reflectivity = 0;
 		p.col = new Vector3f(255, 109, 0).mul(1f / 255f);
 		// objects.add(p);
+
+		Circle c = new Circle(new Vector3f(0, 1, 0), new Vector3f(0, 40, 0), 20);
+		objects.add(c);
 
 		// objects.add(new Plane(new Vector3f(1, 0, 0), new Vector3f(20, 0, 0)));
 
@@ -567,12 +571,20 @@ public class App implements KeyListener, MouseWheelListener, Runnable {
 			if (keys.contains(KeyEvent.VK_D)) {
 				cam.cameraPos = cam.cameraPos.sum(cam.rotMat.multiply(new Vector3f(speed, 0, 0)).removeY());
 			}
-			if (keys.contains(KeyEvent.VK_SPACE) && cam.cameraPos.y == camHeightTarget) {
-				fallSpeed = -2;
+			if (keys.contains(KeyEvent.VK_SPACE)) {
+				if (gravity && cam.cameraPos.y == camHeightTarget) {
+					fallSpeed = -2;
+				} else {
+					cam.cameraPos.y += speed;
+				}
 			}
 			if (keys.contains(KeyEvent.VK_CONTROL)) {
 				camHeightTarget = 3;
-				speed = 0.2f;
+				if (gravity) {
+					speed = 0.2f;
+				} else {
+					cam.cameraPos.y -= speed;
+				}
 			} else {
 				camHeightTarget = 5;
 				speed = 1f;

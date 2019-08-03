@@ -151,4 +151,12 @@ public class Vector3f {
 		return this;
 	}
 
+	public static Vector3f nullVec() {
+		return new Vector3f(Float.NaN, Float.NaN, Float.NaN);
+	}
+
+	public static boolean isNullVec(Vector3f vec) {
+		return Float.isNaN(vec.x) && Float.isNaN(vec.y) && Float.isNaN(vec.z);
+	}
+
 }

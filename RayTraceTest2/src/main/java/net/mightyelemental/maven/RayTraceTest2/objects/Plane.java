@@ -52,11 +52,6 @@ public class Plane implements Renderable {
 	}
 
 	@Override
-	public boolean ignoreRay(int depth) {
-		return false;
-	}
-
-	@Override
 	public float getOpacity() {
 		return 1;
 	}
