@@ -8,11 +8,12 @@ public class Circle extends Plane {
 	@Override
 	public boolean intersects(Ray r) {
 		boolean inter = super.intersects(r);
-		Vector3f hit = r.getOrig().sum(r.getDirection().mul(r.t0));
-		Vector3f pq = hit.sub(origin);
-		boolean test = pq.dot(pq) <= radius * radius;
-		// System.out.println(r.getHitPoint());
-		return inter && test;
+		if (inter) {
+			Vector3f hit = r.getOrig().sum(r.getDirection().mul(r.t0));
+			Vector3f pq = hit.sub(origin);
+			return pq.dot(pq) <= radius * radius;
+		}
+		return false;
 	}
 
 	public float radius = 1;
