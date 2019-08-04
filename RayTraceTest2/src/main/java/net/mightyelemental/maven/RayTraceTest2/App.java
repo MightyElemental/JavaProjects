@@ -134,12 +134,13 @@ public class App implements KeyListener, MouseWheelListener, Runnable {
 		Circle c = new Circle(new Vector3f(0.5f, 1, 0).normalize(), new Vector3f(0, 40, 0), 20);
 		worldScene.add(c);
 
-		Triangle t = new Triangle(new Vector3f(5, 1, 1), new Vector3f(5, 5, 1), new Vector3f(5, 1, 10));
-		Triangle t2 = new Triangle(new Vector3f(5, 1, 1), new Vector3f(5, 5, 1), new Vector3f(8, 5, 7));
+		Triangle t = new Triangle(new Vector3f(5, 0, 0), new Vector3f(5, 10, 0), new Vector3f(10, 10, 0));
+		Triangle t2 = new Triangle(new Vector3f(5, 0, 0), new Vector3f(10, 0, 0), new Vector3f(10, 10, 0));
 		List<Renderable> vec = new ArrayList<Renderable>();
 		vec.add(t);
 		vec.add(t2);
-		ComplexRenderable comp = new ComplexRenderable(new Vector3f(10, 10, 10), vec);
+		ComplexRenderable comp = new ComplexRenderable(vec);
+		comp.setMaterial(0f,0.1f,5f);
 		worldScene.add(comp);
 
 		// worldScene.add(new Plane(new Vector3f(1, 0, 0), new Vector3f(20, 0, 0)));
@@ -223,7 +224,7 @@ public class App implements KeyListener, MouseWheelListener, Runnable {
 		// cam.height = 2160;
 		pause = true;
 		Thread.sleep(1);
-		BufferedImage img = new BufferedImage(7680, 4320, BufferedImage.TYPE_INT_RGB);
+		BufferedImage img = new BufferedImage(3840, 2160, BufferedImage.TYPE_INT_RGB);
 		twoThreadRender(img);
 		try {
 			String date = (new Date()).toString().replaceAll(" ", "_").replaceAll(":", ".");

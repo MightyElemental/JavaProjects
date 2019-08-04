@@ -13,9 +13,11 @@ public class ComplexRenderable implements Renderable {
 
 	private Material mat = Material.basic();
 
-	public ComplexRenderable(Vector3f origin, List<Renderable> objects) {
+	public ComplexRenderable(List<Renderable> objects) {
 		objs = objects;
-		this.origin = origin;
+		for (Renderable rend : objs) {
+			rend.setMaterial(mat);
+		}
 	}
 
 	@Override
@@ -72,11 +74,17 @@ public class ComplexRenderable implements Renderable {
 	@Override
 	public void setMaterial(Material mat) {
 		this.mat = mat;
+		for (Renderable rend : objs) {
+			rend.setMaterial(mat);
+		}
 	}
 
 	@Override
 	public void setMaterial(float reflec, float opac, float ior) {
 		mat = new Material(reflec, opac, ior);
+		for (Renderable rend : objs) {
+			rend.setMaterial(mat);
+		}
 	}
 
 }
