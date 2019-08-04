@@ -12,7 +12,7 @@ public class Triangle extends Plane {
 		boolean inter = super.intersects(r);
 		if (inter) {
 			Vector3f hit = r.getOrig().sum(r.getDirection().mul(r.t0));
-			
+
 			Vector3f edge0 = p2.sub(p1);
 			Vector3f vp0 = hit.sub(p1);
 			if (normal.dot(edge0.cross(vp0)) < 0)
@@ -27,7 +27,7 @@ public class Triangle extends Plane {
 			Vector3f vp2 = hit.sub(p3);
 			if (normal.dot(edge2.cross(vp2)) < 0)
 				return false;
-
+			
 			return true;
 		}
 		return false;
@@ -42,6 +42,28 @@ public class Triangle extends Plane {
 //		float y = (p1.y + p2.y + p3.y) / 3f;
 //		float z = (p1.z + p2.z + p3.z) / 3f;
 //		this.origin = new Vector3f(x, y, z);
+	}
+
+	@Override
+	public boolean isPointWithin(Vector3f hit) {
+		if (!super.isPointWithin(hit))
+			return false;
+		Vector3f edge0 = p2.sub(p1);
+		Vector3f vp0 = hit.sub(p1);
+		if (normal.dot(edge0.cross(vp0)) < 0)
+			return false;
+
+		Vector3f edge1 = p3.sub(p2);
+		Vector3f vp1 = hit.sub(p2);
+		if (normal.dot(edge1.cross(vp1)) < 0)
+			return false;
+
+		Vector3f edge2 = p1.sub(p3);
+		Vector3f vp2 = hit.sub(p3);
+		if (normal.dot(edge2.cross(vp2)) < 0)
+			return false;
+
+		return true;
 	}
 
 }

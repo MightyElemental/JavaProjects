@@ -7,6 +7,9 @@ public interface Renderable {
 
 	public boolean intersects(Ray r);
 
+	/** Used to test if a point intersects with the renderable object */
+	public boolean isPointWithin(Vector3f vec);
+
 	// public Vector3f shade(Vector3f rayDir, Vector3f hit, List<Light> lights);
 
 	public Vector3f getNormal(Vector3f hit);
@@ -32,5 +35,7 @@ public interface Renderable {
 	public default float getIOR() {
 		return 1;
 	}
+
+	public Vector3f getPos();
 
 }

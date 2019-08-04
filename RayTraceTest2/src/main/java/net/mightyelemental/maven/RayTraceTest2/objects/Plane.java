@@ -9,9 +9,9 @@ import net.mightyelemental.maven.RayTraceTest2.Vector3f;
 
 public class Plane implements Renderable {
 
-	public Vector3f	normal, origin;
-	public Vector3f	col;
-	public float	reflectivity;
+	public Vector3f normal, origin;
+	public Vector3f col;
+	public float reflectivity;
 
 	public Plane(Vector3f normal, Vector3f origin) {
 		this.normal = normal.getUnitVec();
@@ -20,7 +20,8 @@ public class Plane implements Renderable {
 
 	public boolean intersects(Ray r) {
 		float d = origin.sub(r.getOrig()).dot(normal) / (normal.dot(r.getDirection()));
-		if ( d < 0 ) return false;
+		if (d < 0)
+			return false;
 		r.t0 = d;
 		return true;
 	}
@@ -54,6 +55,17 @@ public class Plane implements Renderable {
 	@Override
 	public float getOpacity() {
 		return 1;
+	}
+
+	@Override
+	public boolean isPointWithin(Vector3f vec) {
+		Vector3f aMinB = vec.sub(origin);
+		return Math.abs(aMinB.dot(normal)) <= 0.0001f;
+	}
+
+	@Override
+	public Vector3f getPos() {
+		return origin;
 	}
 
 }

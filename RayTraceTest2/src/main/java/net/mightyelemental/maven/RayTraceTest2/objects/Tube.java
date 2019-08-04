@@ -5,8 +5,8 @@ import net.mightyelemental.maven.RayTraceTest2.Vector3f;
 
 public class Tube implements Renderable {
 
-	public Ray		defLine;
-	public float	length, radius;
+	public Ray defLine;
+	public float length, radius;
 
 	public Tube(Vector3f orient, float length, float radius) {
 		this.defLine = new Ray(orient.getUnitVec(), new Vector3f(0, 0, 0));
@@ -33,16 +33,20 @@ public class Tube implements Renderable {
 		float C = Cv.dot(Cv) - radius * radius;
 		float det = B * B - 4 * A * C;
 		// if ( det < 0 ) return false;
-		if ( va.dot(delP) <= 0 ) return false;
+		if (va.dot(delP) <= 0)
+			return false;
 
 		det = (float) Math.sqrt(det);
 		r.t0 = -B - det / (2 * A);
 		r.t1 = -B + det / (2 * A);
-		if ( r.t0 < 0 && r.t1 < 0 ) return false;
+		if (r.t0 < 0 && r.t1 < 0)
+			return false;
 
-		if ( r.t0 < 0 ) r.t0 = r.t1;
+		if (r.t0 < 0)
+			r.t0 = r.t1;
 		Vector3f hit = p.sum(v.mul(r.t0));
-		if ( hit.sub(pa).dot(hit.sub(pa)) > radius * radius ) return false;
+		if (hit.sub(pa).dot(hit.sub(pa)) > radius * radius)
+			return false;
 
 		return true;
 	}
@@ -71,6 +75,17 @@ public class Tube implements Renderable {
 	@Override
 	public boolean ignoreRay(int depth) {
 		return false;
+	}
+
+	@Override
+	public boolean isPointWithin(Vector3f vec) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public Vector3f getPos() {
+		return defLine.getOrig();
 	}
 
 }

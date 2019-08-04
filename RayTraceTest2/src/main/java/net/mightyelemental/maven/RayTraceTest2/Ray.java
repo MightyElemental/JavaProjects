@@ -2,6 +2,7 @@ package net.mightyelemental.maven.RayTraceTest2;
 
 import java.util.List;
 
+import net.mightyelemental.maven.RayTraceTest2.objects.ComplexRenderable;
 import net.mightyelemental.maven.RayTraceTest2.objects.Renderable;
 
 public class Ray {
@@ -50,11 +51,14 @@ public class Ray {
 
 	public Renderable trace(List<Renderable> objects, int depth) {
 		Renderable closest = null;
+		float tnear = Float.MAX_VALUE;
 		for (Renderable o : objects) {
 			if (o.ignoreRay(depth))
 				continue;
 			t0 = Float.MAX_VALUE;
 			t1 = Float.MAX_VALUE;
+			if (o instanceof ComplexRenderable)
+				continue;
 			if (!o.intersects(this))
 				continue;
 			if (t0 < 0)
@@ -64,6 +68,7 @@ public class Ray {
 				closest = o;
 			}
 		}
+		this.tnear = tnear;
 		return closest;
 	}
 

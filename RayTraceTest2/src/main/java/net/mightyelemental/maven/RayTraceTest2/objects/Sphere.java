@@ -79,4 +79,15 @@ public class Sphere implements Renderable {
 		return ior;
 	}
 
+	@Override
+	public boolean isPointWithin(Vector3f vec) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public Vector3f getPos() {
+		return center;
+	}
+
 }
