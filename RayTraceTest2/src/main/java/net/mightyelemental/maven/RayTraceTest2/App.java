@@ -30,9 +30,11 @@ import javax.swing.JPanel;
 
 import net.mightyelemental.maven.RayTraceTest2.objects.CameraModel;
 import net.mightyelemental.maven.RayTraceTest2.objects.Circle;
+import net.mightyelemental.maven.RayTraceTest2.objects.ComplexRenderable;
 import net.mightyelemental.maven.RayTraceTest2.objects.Light;
 import net.mightyelemental.maven.RayTraceTest2.objects.Plane;
 import net.mightyelemental.maven.RayTraceTest2.objects.Renderable;
+import net.mightyelemental.maven.RayTraceTest2.objects.Scene;
 import net.mightyelemental.maven.RayTraceTest2.objects.Sphere;
 import net.mightyelemental.maven.RayTraceTest2.objects.Triangle;
 
@@ -82,6 +84,7 @@ public class App implements KeyListener, MouseWheelListener, Runnable {
 			frametimes.add(System.currentTimeMillis() - t1);
 			while (pause) {
 				try {
+					render();
 					Thread.sleep(500);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
@@ -100,54 +103,59 @@ public class App implements KeyListener, MouseWheelListener, Runnable {
 		s.opacity = 0.5f;
 		s.reflectivity = 1;
 		s.ior = 4f / 3f;
-		objects.add(s);
+		worldScene.add(s);
 
 		Sphere s2 = new Sphere(new Vector3f(0, 5, 12), 4);
 		s2.col = new Vector3f(1, 0, 1);
 		s2.reflectivity = 0.2f;
-		// objects.add(s2);
+		// worldScene.add(s2);
 
 		Sphere s3 = new Sphere(new Vector3f(8, 7.5f, -15), 7);
 		s3.col = new Vector3f(1, 0, 0);
 		// s3.reflectivity = 0f;
-		// objects.add(s3);
+		// worldScene.add(s3);
 
 		Sphere s4 = new Sphere(new Vector3f(-13, 3, -20), 5);
 		s4.col = new Vector3f(0.5f, 0, 1);
 		s4.reflectivity = 0.8f;
-		// objects.add(s4);
+		// worldScene.add(s4);
 
 		Sphere earth = new Sphere(new Vector3f(0, -6371000, 0), 6371000);
 		earth.col = new Vector3f(67, 109, 7).mul(1f / 255f);
 
-		// objects.add(earth);
+		// worldScene.add(earth);
 
 		Plane p = new Plane(new Vector3f(0, 1, 0), new Vector3f(0, -2, 0));
 		p.reflectivity = 0;
 		p.col = new Vector3f(255, 109, 0).mul(1f / 255f);
-		// objects.add(p);
+		// worldScene.add(p);
 
 		Circle c = new Circle(new Vector3f(0.5f, 1, 0).normalize(), new Vector3f(0, 40, 0), 20);
-		objects.add(c);
+		worldScene.add(c);
 
 		Triangle t = new Triangle(new Vector3f(5, 1, 1), new Vector3f(5, 5, 1), new Vector3f(5, 1, 10));
-		objects.add(t);
+		Triangle t2 = new Triangle(new Vector3f(5, 1, 1), new Vector3f(5, 5, 1), new Vector3f(8, 5, 7));
+		List<Renderable> vec = new ArrayList<Renderable>();
+		vec.add(t);
+		vec.add(t2);
+		ComplexRenderable comp = new ComplexRenderable(new Vector3f(10, 10, 10), vec);
+		worldScene.add(comp);
 
-		// objects.add(new Plane(new Vector3f(1, 0, 0), new Vector3f(20, 0, 0)));
+		// worldScene.add(new Plane(new Vector3f(1, 0, 0), new Vector3f(20, 0, 0)));
 
 		s5.col = new Vector3f(0, 1, 0);
-		objects.add(s5);
+		worldScene.add(s5);
 
-		objects.add(camS);
+		worldScene.add(camS);
 		cam.setCamObj(camS);
 
-		// objects.add(new Tube(new Vector3f(0, 1, 0), new Vector3f(0, 2, 4), 0, 2));
+		// worldScene.add(new Tube(new Vector3f(0, 1, 0), new Vector3f(0, 2, 4), 0, 2));
 
-		lights.add(new Light(1000, 500, 400));
+		worldScene.add(new Light(1000, 500, 400));
 		// lights.add(new Light(10, 20, 3));
 		// Sphere ls = new Sphere(lights.get(0).pos, 9f);
 		// ls.col = new Vector3f(1, 1, 0f);
-		// objects.add(ls);
+		// worldScene.add(ls);
 	}
 
 	private List<Long> frametimes = new ArrayList<Long>();
@@ -182,11 +190,9 @@ public class App implements KeyListener, MouseWheelListener, Runnable {
 
 	public Camera cam = new Camera(new Vector3f(3, 10, 25), 95, screen.getWidth(), screen.getHeight());
 
-	public List<Renderable> objects = new ArrayList<Renderable>();
-	public List<Light> lights = new ArrayList<Light>();
+	public Scene worldScene = new Scene();
 
 	public Vector3f backgroundColor = new Vector3f(119 / 255f, 181 / 255f, 254 / 255f);
-	public String skyboxLocation = "./imgs/skybox2/";
 
 	public static final float ambientCoeff = 0.3f;
 
@@ -218,7 +224,7 @@ public class App implements KeyListener, MouseWheelListener, Runnable {
 		// cam.height = 2160;
 		pause = true;
 		Thread.sleep(1);
-		BufferedImage img = new BufferedImage(3840, 2160, BufferedImage.TYPE_INT_RGB);
+		BufferedImage img = new BufferedImage(7680, 4320, BufferedImage.TYPE_INT_RGB);
 		twoThreadRender(img);
 		try {
 			String date = (new Date()).toString().replaceAll(" ", "_").replaceAll(":", ".");
@@ -328,7 +334,7 @@ public class App implements KeyListener, MouseWheelListener, Runnable {
 
 	private void dynamicRender() {
 		int fps = (int) Math.round(getAvgFPS());
-		int step = FPS_TARGET - fps > 1 ? FPS_TARGET - fps : 1;
+		int step = pause ? 1 : (FPS_TARGET - fps > 1 ? FPS_TARGET - fps : 1);
 
 		int width = screen.getWidth();
 		int height = screen.getHeight();
@@ -383,7 +389,7 @@ public class App implements KeyListener, MouseWheelListener, Runnable {
 	}
 
 	public Vector3f trace(Ray r, int depth) {
-		Renderable rend = r.trace(objects, depth);
+		Renderable rend = r.trace(worldScene.objectList, depth);
 		if (rend == null)
 			return getBackground(r.getDirection());
 		Vector3f hit = r.getHitPoint();
@@ -446,37 +452,37 @@ public class App implements KeyListener, MouseWheelListener, Runnable {
 			maxAxis = absX;
 			uc = -vec.z;
 			vc = vec.y;
-			td.img = ResourceLoader.loadImage(skyboxLocation + "side_0.png");
+			td.img = ResourceLoader.loadImage(worldScene.getSkybox() + "side_0.png");
 		}
 		if (!isXPositive && absX >= absY && absX >= absZ) {
 			maxAxis = absX;
 			uc = vec.z;
 			vc = vec.y;
-			td.img = ResourceLoader.loadImage(skyboxLocation + "side_1.png");
+			td.img = ResourceLoader.loadImage(worldScene.getSkybox() + "side_1.png");
 		}
 		if (isYPositive && absY >= absX && absY >= absZ) {
 			maxAxis = absY;
 			uc = vec.x;
 			vc = -vec.z;
-			td.img = ResourceLoader.loadImage(skyboxLocation + "side_2.png");
+			td.img = ResourceLoader.loadImage(worldScene.getSkybox() + "side_2.png");
 		}
 		if (!isYPositive && absY >= absX && absY >= absZ) {
 			maxAxis = absY;
 			uc = vec.x;
 			vc = vec.z;
-			td.img = ResourceLoader.loadImage(skyboxLocation + "side_3.png");
+			td.img = ResourceLoader.loadImage(worldScene.getSkybox() + "side_3.png");
 		}
 		if (isZPositive && absZ >= absX && absZ >= absY) {
 			maxAxis = absZ;
 			uc = vec.x;
 			vc = vec.y;
-			td.img = ResourceLoader.loadImage(skyboxLocation + "side_4.png");
+			td.img = ResourceLoader.loadImage(worldScene.getSkybox() + "side_4.png");
 		}
 		if (!isZPositive && absZ >= absX && absZ >= absY) {
 			maxAxis = absZ;
 			uc = -vec.x;
 			vc = vec.y;
-			td.img = ResourceLoader.loadImage(skyboxLocation + "side_5.png");
+			td.img = ResourceLoader.loadImage(worldScene.getSkybox() + "side_5.png");
 		}
 		td.uvX = 0.5f * (uc / maxAxis + 1f);
 		td.uvY = 0.5f * (vc / maxAxis + 1.0f);
@@ -494,10 +500,10 @@ public class App implements KeyListener, MouseWheelListener, Runnable {
 	private Vector3f getDiffuse(Renderable rend, Vector3f hit, int depth) {
 		Vector3f color = rend.getColor().mul(ambientCoeff);
 		Vector3f lightSamples = new Vector3f(0, 0, 0);
-		for (Light l : lights) {
+		for (Light l : worldScene.lightList) {
 			Vector3f lvec = hit.vecTo(l.pos).normalize();
 			Ray shadowRay = new Ray(lvec, hit.sum(lvec.mul(0.01f)));
-			Renderable obj = shadowRay.trace(objects, depth);
+			Renderable obj = shadowRay.trace(worldScene.objectList, depth);
 			if (obj == null || (obj instanceof Sphere && ((Sphere) obj).center.equals(l.pos))) {// TODO: fix sun shadow
 				float dot = rend.getNormal(hit).getUnitVec().dot(lvec);
 				if (dot > 0)
@@ -506,7 +512,7 @@ public class App implements KeyListener, MouseWheelListener, Runnable {
 				break;
 			}
 		}
-		return color.sum(lightSamples.mul((1 - ambientCoeff) / lights.size()));
+		return color.sum(lightSamples.mul((1 - ambientCoeff) / worldScene.lightList.size()));
 	}
 
 	private int getIntFromVector(Vector3f col) {
@@ -614,66 +620,68 @@ public class App implements KeyListener, MouseWheelListener, Runnable {
 			while (frametimes.size() > 200) {
 				frametimes.remove(0);
 			}
-			if (gravity) {
-				cam.cameraPos.y -= fallSpeed;
-				if (cam.cameraPos.y > camHeightTarget) {
-					fallSpeed += grav / 20f;
-				}
-				if (cam.cameraPos.y < camHeightTarget) {
-					cam.cameraPos.setY(camHeightTarget);
-					fallSpeed = 0;
-				}
-			}
-			if (keys.contains(KeyEvent.VK_UP)) {
-				cam.cameraAngle.addX(2.5f);
-			}
-			if (keys.contains(KeyEvent.VK_DOWN)) {
-				cam.cameraAngle.addX(-2.5f);
-			}
-			if (keys.contains(KeyEvent.VK_RIGHT)) {
-				cam.cameraAngle.addY(-2.5f);
-			}
-			if (keys.contains(KeyEvent.VK_LEFT)) {
-				cam.cameraAngle.addY(2.5f);
-			}
-			if (keys.contains(KeyEvent.VK_W)) {
-				Vector3f dir = cam.rotMat.multiply(new Vector3f(0, 0, -speed));
-				if (gravity)
-					dir.removeY();
-				cam.cameraPos = cam.cameraPos.sum(dir);
-			}
-			if (keys.contains(KeyEvent.VK_S)) {
-				Vector3f dir = cam.rotMat.multiply(new Vector3f(0, 0, speed));
-				if (gravity)
-					dir.removeY();
-				cam.cameraPos = cam.cameraPos.sum(dir);
-			}
-			if (keys.contains(KeyEvent.VK_A)) {
-				cam.cameraPos = cam.cameraPos.sum(cam.rotMat.multiply(new Vector3f(-speed, 0, 0)).removeY());
-			}
-			if (keys.contains(KeyEvent.VK_D)) {
-				cam.cameraPos = cam.cameraPos.sum(cam.rotMat.multiply(new Vector3f(speed, 0, 0)).removeY());
-			}
-			if (keys.contains(KeyEvent.VK_SPACE)) {
-				if (gravity && cam.cameraPos.y == camHeightTarget) {
-					fallSpeed = -2;
-				} else {
-					cam.cameraPos.y += speed;
-				}
-			}
-			if (keys.contains(KeyEvent.VK_CONTROL)) {
-				camHeightTarget = 3;
+			if (!pause) {
 				if (gravity) {
-					speed = 0.2f;
-				} else {
-					cam.cameraPos.y -= speed;
+					cam.cameraPos.y -= fallSpeed;
+					if (cam.cameraPos.y > camHeightTarget) {
+						fallSpeed += grav / 20f;
+					}
+					if (cam.cameraPos.y < camHeightTarget) {
+						cam.cameraPos.setY(camHeightTarget);
+						fallSpeed = 0;
+					}
 				}
-			} else {
-				camHeightTarget = 5;
-				speed = 1f;
-			}
-			if (keys.contains(KeyEvent.VK_SHIFT)) {
-				speed = 2.5f;
+				if (keys.contains(KeyEvent.VK_UP)) {
+					cam.cameraAngle.addX(2.5f);
+				}
+				if (keys.contains(KeyEvent.VK_DOWN)) {
+					cam.cameraAngle.addX(-2.5f);
+				}
+				if (keys.contains(KeyEvent.VK_RIGHT)) {
+					cam.cameraAngle.addY(-2.5f);
+				}
+				if (keys.contains(KeyEvent.VK_LEFT)) {
+					cam.cameraAngle.addY(2.5f);
+				}
+				if (keys.contains(KeyEvent.VK_W)) {
+					Vector3f dir = cam.rotMat.multiply(new Vector3f(0, 0, -speed));
+					if (gravity)
+						dir.removeY();
+					cam.cameraPos = cam.cameraPos.sum(dir);
+				}
+				if (keys.contains(KeyEvent.VK_S)) {
+					Vector3f dir = cam.rotMat.multiply(new Vector3f(0, 0, speed));
+					if (gravity)
+						dir.removeY();
+					cam.cameraPos = cam.cameraPos.sum(dir);
+				}
+				if (keys.contains(KeyEvent.VK_A)) {
+					cam.cameraPos = cam.cameraPos.sum(cam.rotMat.multiply(new Vector3f(-speed, 0, 0)).removeY());
+				}
+				if (keys.contains(KeyEvent.VK_D)) {
+					cam.cameraPos = cam.cameraPos.sum(cam.rotMat.multiply(new Vector3f(speed, 0, 0)).removeY());
+				}
+				if (keys.contains(KeyEvent.VK_SPACE)) {
+					if (gravity && cam.cameraPos.y == camHeightTarget) {
+						fallSpeed = -2;
+					} else {
+						cam.cameraPos.y += speed;
+					}
+				}
+				if (keys.contains(KeyEvent.VK_CONTROL)) {
+					camHeightTarget = 3;
+					if (gravity) {
+						speed = 0.2f;
+					} else {
+						cam.cameraPos.y -= speed;
+					}
+				} else {
+					camHeightTarget = 5;
+					speed = 1f;
+				}
+				if (keys.contains(KeyEvent.VK_SHIFT)) {
+					speed = 2.5f;
+				}
 			}
 			try {
 				Thread.sleep(50);
