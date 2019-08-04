@@ -4,11 +4,14 @@ import java.util.List;
 
 import net.mightyelemental.maven.RayTraceTest2.Ray;
 import net.mightyelemental.maven.RayTraceTest2.Vector3f;
+import net.mightyelemental.maven.RayTraceTest2.materials.Material;
 
 public class ComplexRenderable implements Renderable {
 
 	public List<Renderable> objs;
 	public Vector3f origin;
+
+	private Material mat = Material.basic();
 
 	public ComplexRenderable(Vector3f origin, List<Renderable> objects) {
 		objs = objects;
@@ -31,12 +34,6 @@ public class ComplexRenderable implements Renderable {
 				return rend.getNormal(hit);
 		}
 		return Vector3f.nullVec();
-	}
-
-	@Override
-	public float getReflectivity() {
-		// TODO Auto-generated method stub
-		return 0;
 	}
 
 	@Override
@@ -65,6 +62,21 @@ public class ComplexRenderable implements Renderable {
 	@Override
 	public Vector3f getPos() {
 		return origin;
+	}
+
+	@Override
+	public Material getMaterial() {
+		return mat;
+	}
+
+	@Override
+	public void setMaterial(Material mat) {
+		this.mat = mat;
+	}
+
+	@Override
+	public void setMaterial(float reflec, float opac, float ior) {
+		mat = new Material(reflec, opac, ior);
 	}
 
 }

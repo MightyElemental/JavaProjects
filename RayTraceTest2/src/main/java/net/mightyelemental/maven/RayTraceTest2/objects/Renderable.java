@@ -2,6 +2,7 @@ package net.mightyelemental.maven.RayTraceTest2.objects;
 
 import net.mightyelemental.maven.RayTraceTest2.Ray;
 import net.mightyelemental.maven.RayTraceTest2.Vector3f;
+import net.mightyelemental.maven.RayTraceTest2.materials.Material;
 
 public interface Renderable {
 
@@ -14,11 +15,15 @@ public interface Renderable {
 
 	public Vector3f getNormal(Vector3f hit);
 
-	public float getReflectivity();
-
 	public Vector3f getColor();
 
 	public void setPos(Vector3f pos);
+	
+	public Material getMaterial();
+	
+	public void setMaterial(Material mat);
+	
+	public void setMaterial(float reflec, float opac, float ior);
 
 	/**
 	 * Used to hide objects until a certain ray bounce count<br>
@@ -26,14 +31,6 @@ public interface Renderable {
 	 */
 	public default boolean ignoreRay(int depth) {
 		return false;
-	}
-
-	public default float getOpacity() {
-		return 1;
-	}
-
-	public default float getIOR() {
-		return 1;
 	}
 
 	public Vector3f getPos();

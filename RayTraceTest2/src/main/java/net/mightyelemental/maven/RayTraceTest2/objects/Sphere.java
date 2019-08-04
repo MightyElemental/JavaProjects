@@ -6,13 +6,15 @@ import net.mightyelemental.maven.RayTraceTest2.App;
 import net.mightyelemental.maven.RayTraceTest2.Ray;
 import net.mightyelemental.maven.RayTraceTest2.Utils;
 import net.mightyelemental.maven.RayTraceTest2.Vector3f;
+import net.mightyelemental.maven.RayTraceTest2.materials.Material;
 
 public class Sphere implements Renderable {
 
-	public Vector3f	center;
-	public float	radius;
-	public Vector3f	col;
-	public float	reflectivity, ior = 1, opacity = 1;
+	public Vector3f center;
+	public float radius;
+	public Vector3f col;
+
+	private Material mat = Material.basic();
 
 	public Sphere(Vector3f center, float radius) {
 		this.center = center;
@@ -27,9 +29,11 @@ public class Sphere implements Renderable {
 		// if ( r.getDistanceToPoint(center) > radius ) return false;
 		Vector3f l = center.sub(r.getOrig());
 		float tca = l.dot(r.getDirection());
-		if ( tca < 0 ) return false;
+		if (tca < 0)
+			return false;
 		float d2 = l.dot(l) - tca * tca;
-		if ( d2 > radius * radius ) return false;
+		if (d2 > radius * radius)
+			return false;
 		float thc = (float) Math.sqrt(radius * radius - d2);
 
 		r.t0 = tca - thc;
@@ -53,10 +57,6 @@ public class Sphere implements Renderable {
 		return center.vecTo(hit);
 	}
 
-	public float getReflectivity() {
-		return reflectivity;
-	}
-
 	public Vector3f getColor() {
 		return col == null ? new Vector3f(1, 1, 1) : col;
 	}
@@ -70,14 +70,6 @@ public class Sphere implements Renderable {
 	public boolean ignoreRay(int depth) {
 		return false;
 	}
-	
-	public float getOpacity() {
-		return opacity;
-	}
-
-	public float getIOR() {
-		return ior;
-	}
 
 	@Override
 	public boolean isPointWithin(Vector3f vec) {
@@ -88,6 +80,21 @@ public class Sphere implements Renderable {
 	@Override
 	public Vector3f getPos() {
 		return center;
+	}
+
+	@Override
+	public Material getMaterial() {
+		return mat;
+	}
+
+	@Override
+	public void setMaterial(Material mat) {
+		this.mat = mat;
+	}
+
+	@Override
+	public void setMaterial(float reflec, float opac, float ior) {
+		mat = new Material(reflec, opac, ior);
 	}
 
 }

@@ -99,15 +99,16 @@ public class App implements KeyListener, MouseWheelListener, Runnable {
 	public void setupScene() {
 		// objects.add(new Sphere(0.1f));
 		Sphere s = new Sphere(new Vector3f(0, 0, 0), 6);
-		s.col = new Vector3f(1, 1, 1);
-		s.opacity = 0.5f;
-		s.reflectivity = 1;
-		s.ior = 4f / 3f;
+		s.col = new Vector3f(1, 0, 1);
+		s.setMaterial(0f, 0.3f, 1.52f);
+//		s.opacity = 0.3f;
+//		s.reflectivity = 0f;
+//		s.ior = 1.52f;//4f / 3f;
 		worldScene.add(s);
 
 		Sphere s2 = new Sphere(new Vector3f(0, 5, 12), 4);
 		s2.col = new Vector3f(1, 0, 1);
-		s2.reflectivity = 0.2f;
+		s2.setMaterial(0.2f, 1, 1);
 		// worldScene.add(s2);
 
 		Sphere s3 = new Sphere(new Vector3f(8, 7.5f, -15), 7);
@@ -117,7 +118,7 @@ public class App implements KeyListener, MouseWheelListener, Runnable {
 
 		Sphere s4 = new Sphere(new Vector3f(-13, 3, -20), 5);
 		s4.col = new Vector3f(0.5f, 0, 1);
-		s4.reflectivity = 0.8f;
+		s4.setMaterial(0.8f, 1, 1);
 		// worldScene.add(s4);
 
 		Sphere earth = new Sphere(new Vector3f(0, -6371000, 0), 6371000);
@@ -128,7 +129,7 @@ public class App implements KeyListener, MouseWheelListener, Runnable {
 		Plane p = new Plane(new Vector3f(0, 1, 0), new Vector3f(0, -2, 0));
 		p.reflectivity = 0;
 		p.col = new Vector3f(255, 109, 0).mul(1f / 255f);
-		// worldScene.add(p);
+		worldScene.add(p);
 
 		Circle c = new Circle(new Vector3f(0.5f, 1, 0).normalize(), new Vector3f(0, 40, 0), 20);
 		worldScene.add(c);
@@ -191,8 +192,6 @@ public class App implements KeyListener, MouseWheelListener, Runnable {
 	public Camera cam = new Camera(new Vector3f(3, 10, 25), 95, screen.getWidth(), screen.getHeight());
 
 	public Scene worldScene = new Scene();
-
-	public Vector3f backgroundColor = new Vector3f(119 / 255f, 181 / 255f, 254 / 255f);
 
 	public static final float ambientCoeff = 0.3f;
 
@@ -395,25 +394,27 @@ public class App implements KeyListener, MouseWheelListener, Runnable {
 		Vector3f hit = r.getHitPoint();
 		Vector3f color = new Vector3f(0, 0, 0);
 		Vector3f base = getDiffuse(rend, hit, depth);
-		if (depth < MAX_RAY_DEPTH && rend.getReflectivity() > 0 && rend.getOpacity() < 1) {
+		if (depth < MAX_RAY_DEPTH && rend.getMaterial().getReflectivity() > 0 && rend.getMaterial().getOpacity() < 1) {
 			Vector3f ref = traceReflection(r, rend, hit, depth);
-			Vector3f adjustedRef = ref.mul(rend.getOpacity() * (1 - ambientCoeff) * rend.getReflectivity());
+			Vector3f adjustedRef = ref
+					.mul(rend.getMaterial().getOpacity() * (1 - ambientCoeff) * rend.getMaterial().getReflectivity());
 			// refraction
 			Vector3f refractionCol = traceRefraction(r, rend, hit, depth);
-			Vector3f adjustedRefrac = refractionCol.mul((1 - rend.getOpacity()) * (1 - ambientCoeff));
+			Vector3f adjustedRefrac = refractionCol.mul((1 - rend.getMaterial().getOpacity()) * (1 - ambientCoeff));
 
-			color = base.mul(ambientCoeff * rend.getOpacity() * (1 - rend.getReflectivity())).sum(adjustedRef)
-					.sum(adjustedRefrac);
-		} else if (depth < MAX_RAY_DEPTH && rend.getReflectivity() > 0) { // reflection
+			color = base
+					.mul(ambientCoeff * rend.getMaterial().getOpacity() * (1 - rend.getMaterial().getReflectivity()))
+					.sum(adjustedRef).sum(adjustedRefrac);
+		} else if (depth < MAX_RAY_DEPTH && rend.getMaterial().getReflectivity() > 0) { // reflection
 			Vector3f ref = traceReflection(r, rend, hit, depth);
-			Vector3f adjustedRef = ref.mul((1 - ambientCoeff) * rend.getReflectivity());
+			Vector3f adjustedRef = ref.mul((1 - ambientCoeff) * rend.getMaterial().getReflectivity());
 
-			color = base.mul(ambientCoeff * (1 - rend.getReflectivity())).sum(adjustedRef);
-		} else if (depth < MAX_RAY_DEPTH && rend.getOpacity() < 1) { // refraction
+			color = base.mul(ambientCoeff * (1 - rend.getMaterial().getReflectivity())).sum(adjustedRef);
+		} else if (depth < MAX_RAY_DEPTH && rend.getMaterial().getOpacity() < 1) { // refraction
 			Vector3f refractionCol = traceRefraction(r, rend, hit, depth);
-			Vector3f adjustedRefrac = refractionCol.mul((1 - rend.getOpacity()) * (1 - ambientCoeff));
+			Vector3f adjustedRefrac = refractionCol.mul((1 - rend.getMaterial().getOpacity()) * (1 - ambientCoeff));
 
-			color = base.mul(ambientCoeff * rend.getOpacity()).sum(adjustedRefrac);
+			color = base.mul(ambientCoeff * rend.getMaterial().getOpacity()).sum(adjustedRefrac);
 		} else {
 			color = getDiffuse(rend, hit, depth);
 		}
@@ -427,7 +428,8 @@ public class App implements KeyListener, MouseWheelListener, Runnable {
 	}
 
 	public Vector3f traceRefraction(Ray r, Renderable rend, Vector3f hit, int depth) {
-		Vector3f refracDir = r.getRefractionVector(1f / rend.getIOR(), rend.getNormal(hit).normalize()).normalize();
+		Vector3f refracDir = r.getRefractionVector(1f / rend.getMaterial().getIOR(), rend.getNormal(hit).normalize())
+				.normalize();
 		Ray refractionRay = new Ray(refracDir, hit.sum(refracDir.mul(0.01f)));
 		return trace(refractionRay, depth + 1);
 	}
@@ -606,8 +608,6 @@ public class App implements KeyListener, MouseWheelListener, Runnable {
 
 	@Override
 	public void keyTyped(KeyEvent e) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override

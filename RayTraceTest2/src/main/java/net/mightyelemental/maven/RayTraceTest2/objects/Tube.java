@@ -2,11 +2,14 @@ package net.mightyelemental.maven.RayTraceTest2.objects;
 
 import net.mightyelemental.maven.RayTraceTest2.Ray;
 import net.mightyelemental.maven.RayTraceTest2.Vector3f;
+import net.mightyelemental.maven.RayTraceTest2.materials.Material;
 
 public class Tube implements Renderable {
 
 	public Ray defLine;
 	public float length, radius;
+
+	private Material mat = Material.basic();
 
 	public Tube(Vector3f orient, float length, float radius) {
 		this.defLine = new Ray(orient.getUnitVec(), new Vector3f(0, 0, 0));
@@ -57,11 +60,6 @@ public class Tube implements Renderable {
 	}
 
 	@Override
-	public float getReflectivity() {
-		return 0;
-	}
-
-	@Override
 	public Vector3f getColor() {
 		// TODO Auto-generated method stub
 		return new Vector3f(0.5f, 0, 0.5f);
@@ -86,6 +84,21 @@ public class Tube implements Renderable {
 	@Override
 	public Vector3f getPos() {
 		return defLine.getOrig();
+	}
+
+	@Override
+	public Material getMaterial() {
+		return mat;
+	}
+
+	@Override
+	public void setMaterial(Material mat) {
+		this.mat = mat;
+	}
+
+	@Override
+	public void setMaterial(float reflec, float opac, float ior) {
+		mat = new Material(reflec, opac, ior);
 	}
 
 }

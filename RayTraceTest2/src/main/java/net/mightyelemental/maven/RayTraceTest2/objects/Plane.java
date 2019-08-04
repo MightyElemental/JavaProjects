@@ -6,12 +6,15 @@ import net.mightyelemental.maven.RayTraceTest2.App;
 import net.mightyelemental.maven.RayTraceTest2.Ray;
 import net.mightyelemental.maven.RayTraceTest2.Utils;
 import net.mightyelemental.maven.RayTraceTest2.Vector3f;
+import net.mightyelemental.maven.RayTraceTest2.materials.Material;
 
 public class Plane implements Renderable {
 
 	public Vector3f normal, origin;
 	public Vector3f col;
 	public float reflectivity;
+
+	Material mat = Material.basic();
 
 	public Plane(Vector3f normal, Vector3f origin) {
 		this.normal = normal.getUnitVec();
@@ -53,11 +56,6 @@ public class Plane implements Renderable {
 	}
 
 	@Override
-	public float getOpacity() {
-		return 1;
-	}
-
-	@Override
 	public boolean isPointWithin(Vector3f vec) {
 		Vector3f aMinB = vec.sub(origin);
 		return Math.abs(aMinB.dot(normal)) <= 0.0001f;
@@ -66,6 +64,21 @@ public class Plane implements Renderable {
 	@Override
 	public Vector3f getPos() {
 		return origin;
+	}
+
+	@Override
+	public Material getMaterial() {
+		return mat;
+	}
+
+	@Override
+	public void setMaterial(Material mat) {
+		this.mat = mat;
+	}
+
+	@Override
+	public void setMaterial(float reflec, float opac, float ior) {
+		mat = new Material(reflec, opac, ior);
 	}
 
 }
