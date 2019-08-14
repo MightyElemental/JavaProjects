@@ -13,7 +13,7 @@ public interface Renderable {
 
 	// public Vector3f shade(Vector3f rayDir, Vector3f hit, List<Light> lights);
 
-	public Vector3f getNormal(Vector3f hit);
+	public Vector3f getNormal(Vector3f hit, Vector3f rayDir);
 
 	public Vector3f getColor();
 

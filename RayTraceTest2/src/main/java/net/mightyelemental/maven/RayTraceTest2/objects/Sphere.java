@@ -45,7 +45,7 @@ public class Sphere implements Renderable {
 	@Deprecated
 	public Vector3f shade(Vector3f rayDir, Vector3f hit, List<Light> lights) {
 		Vector3f dir = hit.vecTo(lights.get(0).pos).normalize();
-		Vector3f lamb = Utils.lambertainShade(getNormal(hit).getUnitVec(), dir, .9f, getColor());
+		Vector3f lamb = Utils.lambertainShade(getNormal(hit, rayDir).getUnitVec(), dir, .9f, getColor());
 		// Vector3f spec = Utils.specularShade(rayDir, dir, getNormal(hit), .9f, 1f,
 		// getColor());
 		return getColor().mul(App.ambientCoeff).sum(lamb.mul(1 - App.ambientCoeff));
@@ -53,7 +53,7 @@ public class Sphere implements Renderable {
 		// new Color((int) (Math.random() * Math.pow(255, 3)))
 	}
 
-	public Vector3f getNormal(Vector3f hit) {
+	public Vector3f getNormal(Vector3f hit, Vector3f rayDir) {
 		return center.vecTo(hit);
 	}
 

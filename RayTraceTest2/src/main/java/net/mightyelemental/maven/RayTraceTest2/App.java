@@ -28,6 +28,8 @@ import javax.imageio.stream.FileImageOutputStream;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import net.mightyelemental.maven.RayTraceTest2.materials.Material;
+import net.mightyelemental.maven.RayTraceTest2.objects.Box;
 import net.mightyelemental.maven.RayTraceTest2.objects.CameraModel;
 import net.mightyelemental.maven.RayTraceTest2.objects.Circle;
 import net.mightyelemental.maven.RayTraceTest2.objects.ComplexRenderable;
@@ -99,8 +101,9 @@ public class App implements KeyListener, MouseWheelListener, Runnable {
 	public void setupScene() {
 		// objects.add(new Sphere(0.1f));
 		Sphere s = new Sphere(new Vector3f(0, 0, 0), 6);
-		s.col = new Vector3f(1, 0, 1);
-		s.setMaterial(0f, 0.3f, 1.52f);
+		s.col = new Vector3f(0, 0, 1);
+		// s.setMaterial(0f, 0.3f, 1.52f);
+		s.setMaterial(0f, 0f, 1f);
 //		s.opacity = 0.3f;
 //		s.reflectivity = 0f;
 //		s.ior = 1.52f;//4f / 3f;
@@ -108,8 +111,8 @@ public class App implements KeyListener, MouseWheelListener, Runnable {
 
 		Sphere s2 = new Sphere(new Vector3f(0, 5, 12), 4);
 		s2.col = new Vector3f(1, 0, 1);
-		s2.setMaterial(0.2f, 1, 1);
-		// worldScene.add(s2);
+		s2.setMaterial(0f, 0, 1f);
+		worldScene.add(s2);
 
 		Sphere s3 = new Sphere(new Vector3f(8, 7.5f, -15), 7);
 		s3.col = new Vector3f(1, 0, 0);
@@ -129,10 +132,10 @@ public class App implements KeyListener, MouseWheelListener, Runnable {
 		Plane p = new Plane(new Vector3f(0, 1, 0), new Vector3f(0, -2, 0));
 		p.reflectivity = 0;
 		p.col = new Vector3f(255, 109, 0).mul(1f / 255f);
-		worldScene.add(p);
+		// worldScene.add(p);
 
 		Circle c = new Circle(new Vector3f(0.5f, 1, 0).normalize(), new Vector3f(0, 40, 0), 20);
-		worldScene.add(c);
+		// worldScene.add(c);
 
 		Triangle t = new Triangle(new Vector3f(5, 0, 0), new Vector3f(5, 10, 0), new Vector3f(10, 10, 0));
 		Triangle t2 = new Triangle(new Vector3f(5, 0, 0), new Vector3f(10, 0, 0), new Vector3f(10, 10, 0));
@@ -140,13 +143,17 @@ public class App implements KeyListener, MouseWheelListener, Runnable {
 		vec.add(t);
 		vec.add(t2);
 		ComplexRenderable comp = new ComplexRenderable(vec);
-		comp.setMaterial(0f,0.1f,5f);
+		comp.setMaterial(1f, 1f, 1f);
 		worldScene.add(comp);
+
+		Box box = new Box(new Vector3f(10, 10, 10), 15, 5, 8);
+		box.setMaterial(0f, 0f, 1f);
+		worldScene.add(box);
 
 		// worldScene.add(new Plane(new Vector3f(1, 0, 0), new Vector3f(20, 0, 0)));
 
 		s5.col = new Vector3f(0, 1, 0);
-		worldScene.add(s5);
+		// worldScene.add(s5);
 
 		worldScene.add(camS);
 		cam.setCamObj(camS);
@@ -164,7 +171,7 @@ public class App implements KeyListener, MouseWheelListener, Runnable {
 
 	public static final int FPS_TARGET = 30;
 
-	public static int MAX_RAY_DEPTH = 3;
+	public static int MAX_RAY_DEPTH = 5;
 
 	public JFrame window = new JFrame();
 	public JPanel pan = new JPanel() {
@@ -253,6 +260,7 @@ public class App implements KeyListener, MouseWheelListener, Runnable {
 	}
 
 	public void render() throws InterruptedException {
+		cam.calculateStartingMaterial(worldScene.objectList);
 		if (getAvgFPS() < FPS_TARGET * 2f) {
 			dynamicRender();
 		} else {
@@ -394,7 +402,7 @@ public class App implements KeyListener, MouseWheelListener, Runnable {
 			return getBackground(r.getDirection());
 		Vector3f hit = r.getHitPoint();
 		Vector3f color = new Vector3f(0, 0, 0);
-		Vector3f base = getDiffuse(rend, hit, depth);
+		Vector3f base = getDiffuse(r.getDirection(), rend, hit, depth);
 		if (depth < MAX_RAY_DEPTH && rend.getMaterial().getReflectivity() > 0 && rend.getMaterial().getOpacity() < 1) {
 			Vector3f ref = traceReflection(r, rend, hit, depth);
 			Vector3f adjustedRef = ref
@@ -413,25 +421,36 @@ public class App implements KeyListener, MouseWheelListener, Runnable {
 			color = base.mul(ambientCoeff * (1 - rend.getMaterial().getReflectivity())).sum(adjustedRef);
 		} else if (depth < MAX_RAY_DEPTH && rend.getMaterial().getOpacity() < 1) { // refraction
 			Vector3f refractionCol = traceRefraction(r, rend, hit, depth);
-			Vector3f adjustedRefrac = refractionCol.mul((1 - rend.getMaterial().getOpacity()) * (1 - ambientCoeff));
+			Vector3f adjustedRefrac = refractionCol.mul((1 - rend.getMaterial().getOpacity() * (1 - ambientCoeff)));
 
 			color = base.mul(ambientCoeff * rend.getMaterial().getOpacity()).sum(adjustedRefrac);
 		} else {
-			color = getDiffuse(rend, hit, depth);
+			color = getDiffuse(r.getDirection(), rend, hit, depth);
 		}
 		return color;
 	}
 
 	public Vector3f traceReflection(Ray r, Renderable rend, Vector3f hit, int depth) {
-		Vector3f dir = r.getReflectedVector(rend.getNormal(hit)).normalize();
-		Ray refr = new Ray(dir, hit.sum(dir.mul(0.01f)));
+		Vector3f dir = r.getReflectedVector(rend.getNormal(hit, r.getDirection())).normalize();
+		Ray refr = new Ray(dir, hit.sum(dir.mul(0.01f)), rend.getMaterial());
 		return trace(refr, depth + 1);
 	}
 
 	public Vector3f traceRefraction(Ray r, Renderable rend, Vector3f hit, int depth) {
-		Vector3f refracDir = r.getRefractionVector(1f / rend.getMaterial().getIOR(), rend.getNormal(hit).normalize())
-				.normalize();
-		Ray refractionRay = new Ray(refracDir, hit.sum(refracDir.mul(0.01f)));
+		// System.out.println(depth);
+		Vector3f norm = rend.getNormal(hit, r.getDirection()).normalize();
+		Material rayStartMat = r.getStartingMaterial();
+		Vector3f refracDir = r.getRefractionVector(rayStartMat.getIOR() / rend.getMaterial().getIOR(), norm);// TODO:
+																												// ASSUMING
+																												// ALWAYS
+																												// STARTING
+																												// IN
+																												// AIR
+																												// IS
+																												// WRONG
+		if (refracDir == null)// TODO: replace with TIR
+			return Vector3f.origin();
+		Ray refractionRay = new Ray(refracDir, hit.sum(refracDir.mul(0.001f)), r.getStartingMaterial());
 		return trace(refractionRay, depth + 1);
 	}
 
@@ -500,7 +519,7 @@ public class App implements KeyListener, MouseWheelListener, Runnable {
 		return new Vector3f(r, g, b);
 	}
 
-	private Vector3f getDiffuse(Renderable rend, Vector3f hit, int depth) {
+	private Vector3f getDiffuse(Vector3f rayDir, Renderable rend, Vector3f hit, int depth) {
 		Vector3f color = rend.getColor().mul(ambientCoeff);
 		Vector3f lightSamples = new Vector3f(0, 0, 0);
 		for (Light l : worldScene.lightList) {
@@ -508,7 +527,7 @@ public class App implements KeyListener, MouseWheelListener, Runnable {
 			Ray shadowRay = new Ray(lvec, hit.sum(lvec.mul(0.01f)));
 			Renderable obj = shadowRay.trace(worldScene.objectList, depth);
 			if (obj == null || (obj instanceof Sphere && ((Sphere) obj).center.equals(l.pos))) {// TODO: fix sun shadow
-				float dot = rend.getNormal(hit).getUnitVec().dot(lvec);
+				float dot = rend.getNormal(hit, rayDir).getUnitVec().dot(lvec);
 				if (dot > 0)
 					lightSamples = lightSamples.sum(l.color.mul(l.brightness * dot));
 				// System.out.println("asd");

@@ -2,6 +2,8 @@ package net.mightyelemental.maven.RayTraceTest2.materials;
 
 public class Material {
 
+	public static final Material AIR = new Material(0, 0, 1);
+
 	public float reflectiveness = 0, opacity = 1, refractiveIndex = 1;
 
 	public Material(float reflec, float opac, float ior) {
@@ -24,6 +26,10 @@ public class Material {
 
 	public static Material basic() {
 		return new Material(0f, 1f, 1f);
+	}
+
+	public static Material air() {
+		return AIR;
 	}
 
 }

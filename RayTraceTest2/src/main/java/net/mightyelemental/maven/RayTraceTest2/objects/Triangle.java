@@ -27,7 +27,7 @@ public class Triangle extends Plane {
 			Vector3f vp2 = hit.sub(p3);
 			if (normal.dot(edge2.cross(vp2)) < 0)
 				return false;
-			
+
 			return true;
 		}
 		return false;

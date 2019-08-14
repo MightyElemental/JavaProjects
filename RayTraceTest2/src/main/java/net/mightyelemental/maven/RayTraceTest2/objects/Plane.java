@@ -32,7 +32,7 @@ public class Plane implements Renderable {
 	@Deprecated
 	public Vector3f shade(Vector3f rayDir, Vector3f hit, List<Light> lights) {
 		Vector3f dir = hit.vecTo(lights.get(0).pos).normalize();
-		Vector3f lamb = Utils.lambertainShade(getNormal(hit).getUnitVec(), dir, 1f, getColor());
+		Vector3f lamb = Utils.lambertainShade(getNormal(hit, rayDir).getUnitVec(), dir, 1f, getColor());
 		// Vector3f spec = Utils.specularShade(rayDir, dir, getNormal(hit), 1f, 1f,
 		// getColor());
 		return getColor().mul(App.ambientCoeff).sum(lamb.mul(1 - App.ambientCoeff));
@@ -42,8 +42,13 @@ public class Plane implements Renderable {
 		return col == null ? new Vector3f(0, 1, 0) : col;
 	}
 
-	public Vector3f getNormal(Vector3f hit) {
-		return normal;
+	@Override
+	public Vector3f getNormal(Vector3f hit, Vector3f rayDir) {
+		if (rayDir.dot(normal) >= 0) {
+			return normal.getNegative();
+		} else {
+			return normal;
+		}
 	}
 
 	public float getReflectivity() {

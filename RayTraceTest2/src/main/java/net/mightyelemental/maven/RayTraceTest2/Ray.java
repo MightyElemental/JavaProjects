@@ -2,6 +2,7 @@ package net.mightyelemental.maven.RayTraceTest2;
 
 import java.util.List;
 
+import net.mightyelemental.maven.RayTraceTest2.materials.Material;
 import net.mightyelemental.maven.RayTraceTest2.objects.ComplexRenderable;
 import net.mightyelemental.maven.RayTraceTest2.objects.Renderable;
 
@@ -12,9 +13,17 @@ public class Ray {
 	public float t1 = Float.MAX_VALUE;
 	public float tnear = Float.MAX_VALUE;
 
+	/** The material the ray starts in. */
+	public Material startMat = Material.AIR;
+
 	public Ray(Vector3f dir, Vector3f start) {
 		this.direction = dir;
 		this.start = start;
+	}
+
+	public Ray(Vector3f dir, Vector3f start, Material mat) {
+		this(dir, start);
+		this.startMat = mat;
 	}
 
 	public float getDistanceToPoint(Vector3f v) {
@@ -87,13 +96,19 @@ public class Ray {
 	// ior = n1/n2
 	public Vector3f getRefractionVector(float ior, Vector3f normToObj) {
 		Vector3f t = this.getDirection().mul(ior);
-		float angle = this.getDirection().getAngle(normToObj);
-		double cosA = Math.cos(angle);
+		double cosA = this.getDirection().getCosOfAngle(normToObj);
 		double sin2ot = ior * ior * (1 - cosA * cosA);
 		if (sin2ot > 1)
 			return null;
-		t = t.sum(normToObj.mul((float) (ior * cosA - Math.sqrt(1 - sin2ot))));
+		Vector3f print = normToObj.mul((float) (ior * cosA - Math.sqrt(1 - sin2ot)));
+		t = t.sum(print);
+		// System.out.println(ior + " | " + getDirection() + " | " + t + " | " + angle +
+		// " | " + print);
 		return t.normalize();
+	}
+
+	public Material getStartingMaterial() {
+		return startMat;
 	}
 
 }

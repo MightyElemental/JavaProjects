@@ -76,7 +76,7 @@ public class Vector3f {
 	}
 
 	public float getLength() {
-		return (float) Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2) + Math.pow(z, 2));
+		return (float) Math.sqrt(x * x + y * y + z * z);
 	}
 
 	public String toString() {
@@ -130,11 +130,15 @@ public class Vector3f {
 	public Vector3f getReflectedVector(Vector3f normal) {
 		return this.sub(normal.mul(2 * this.dot(normal)));
 	}
-
-	public float getAngle(Vector3f vec) {// TODO: might cause instability
+	
+	public float getCosOfAngle(Vector3f vec) {
 		float dot = this.dot(vec);
 		float mul = vec.getLength() * this.getLength();
-		return (float) Math.acos(dot / mul);
+		return dot/mul;
+	}
+
+	public float getAngle(Vector3f vec) {// TODO: might cause instability
+		return (float) Math.acos(getCosOfAngle(vec));
 	}
 
 	public boolean equals(Object o) {

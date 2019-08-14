@@ -55,7 +55,7 @@ public class Tube implements Renderable {
 	}
 
 	@Override
-	public Vector3f getNormal(Vector3f hit) {
+	public Vector3f getNormal(Vector3f hit, Vector3f rayDir) {
 		return defLine.getRayToPoint(hit).getDirection();
 	}
 

@@ -13,6 +13,9 @@ public class ComplexRenderable implements Renderable {
 
 	private Material mat = Material.basic();
 
+	protected ComplexRenderable() {
+	}
+
 	public ComplexRenderable(List<Renderable> objects) {
 		objs = objects;
 		for (Renderable rend : objs) {
@@ -30,10 +33,10 @@ public class ComplexRenderable implements Renderable {
 	}
 
 	@Override
-	public Vector3f getNormal(Vector3f hit) {
+	public Vector3f getNormal(Vector3f hit, Vector3f rayDir) {
 		for (Renderable rend : objs) {
 			if (rend.isPointWithin(hit))
-				return rend.getNormal(hit);
+				return rend.getNormal(hit, rayDir);
 		}
 		return Vector3f.nullVec();
 	}
