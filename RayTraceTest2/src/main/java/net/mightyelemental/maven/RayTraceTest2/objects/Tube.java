@@ -101,4 +101,9 @@ public class Tube implements Renderable {
 		mat = new Material(reflec, opac, ior);
 	}
 
+	@Override
+	public void setColor(Vector3f vec) {
+		
+	}
+
 }

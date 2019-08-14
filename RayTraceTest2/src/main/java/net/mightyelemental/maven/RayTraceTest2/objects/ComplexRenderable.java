@@ -89,5 +89,11 @@ public class ComplexRenderable implements Renderable {
 			rend.setMaterial(mat);
 		}
 	}
+	
+	public void setColor(Vector3f vec) {
+		for (Renderable rend : objs) {
+			rend.setColor(vec);
+		}
+	}
 
 }

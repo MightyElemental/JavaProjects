@@ -127,8 +127,8 @@ public class App implements KeyListener, MouseWheelListener {
 		// objects.add(new Sphere(0.1f));
 		Sphere s = new Sphere(new Vector3f(0, 0, 0), 6);
 		s.col = new Vector3f(0, 0, 1);
-		// s.setMaterial(0f, 0.3f, 1.52f);
-		s.setMaterial(0f, 0f, 1f);
+		 s.setMaterial(0f, 0.3f, 1.52f);
+		//s.setMaterial(0f, 0f, 1f);
 //		s.opacity = 0.3f;
 //		s.reflectivity = 0f;
 //		s.ior = 1.52f;//4f / 3f;
@@ -172,7 +172,8 @@ public class App implements KeyListener, MouseWheelListener {
 		worldScene.add(comp);
 
 		Box box = new Box(new Vector3f(10, 10, 10), 15, 5, 8);
-		box.setMaterial(0f, 0f, 1f);
+		box.setMaterial(0.2f, 1f, 1f);
+		box.setColor(new Vector3f(0.5f, 0.1f, 1f));
 		worldScene.add(box);
 
 		// worldScene.add(new Plane(new Vector3f(1, 0, 0), new Vector3f(20, 0, 0)));
@@ -196,7 +197,7 @@ public class App implements KeyListener, MouseWheelListener {
 
 	public static final int FPS_TARGET = 15;
 
-	public static int MAX_RAY_DEPTH = 5;
+	public static int MAX_RAY_DEPTH = 6;
 
 	public JFrame window = new JFrame();
 	public JPanel pan = new JPanel() {
@@ -332,7 +333,7 @@ public class App implements KeyListener, MouseWheelListener {
 
 		int cores = Properties.cores;
 
-		for (int x = target.getWidth() / cores * (cores - 1); x < target.getWidth(); x ++) {
+		for (int x = target.getWidth() / cores * (cores - 1); x < target.getWidth(); x++) {
 			for (int y = 0; y < target.getHeight(); y++) {
 				Ray r = cam.createRay(x, y);
 				int c = getIntFromVector(trace(r, 0));

@@ -35,4 +35,6 @@ public interface Renderable {
 
 	public Vector3f getPos();
 
+	public void setColor(Vector3f vec);
+
 }

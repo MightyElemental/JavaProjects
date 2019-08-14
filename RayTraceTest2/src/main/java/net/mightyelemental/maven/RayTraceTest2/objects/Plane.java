@@ -86,4 +86,9 @@ public class Plane implements Renderable {
 		mat = new Material(reflec, opac, ior);
 	}
 
+	@Override
+	public void setColor(Vector3f vec) {
+		this.col = vec;
+	}
+
 }
