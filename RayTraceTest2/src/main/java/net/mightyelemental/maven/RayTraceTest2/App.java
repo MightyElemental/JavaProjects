@@ -44,13 +44,12 @@ import net.mightyelemental.maven.RayTraceTest2.objects.Triangle;
  * Hello world!
  *
  */
-public class App implements KeyListener, MouseWheelListener, Runnable {
-
-	public Thread thread = new Thread(this);
+public class App implements KeyListener, MouseWheelListener {
 
 	boolean pause = false;
 
 	public App() {
+		System.out.println("Thread count: " + Properties.cores);
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		window.setTitle("A ray tracer");
 		window.setSize(screen.getWidth(), screen.getHeight());
@@ -63,7 +62,6 @@ public class App implements KeyListener, MouseWheelListener, Runnable {
 		// lights.get(0).color = new Vector3f(1,0.5f,1);
 		int ticks = 0;
 		long timeOff = 0;
-		thread.start();
 		while (true) {
 			long t1 = System.currentTimeMillis();
 			// cam.moveTo((float) Math.sin(ticks / 80f) * 10 + 3, 10, 10);
@@ -71,6 +69,8 @@ public class App implements KeyListener, MouseWheelListener, Runnable {
 			// lights.get(0).pos.setY((float) Math.cos(ticks / 60f) * 500);
 			s5.center.setX((float) Math.sin(ticks / 30f) * 10);
 			s5.center.setZ((float) Math.cos(ticks / 30f) * 10);
+
+			updateControls();
 
 			try {
 				render();
@@ -97,6 +97,31 @@ public class App implements KeyListener, MouseWheelListener, Runnable {
 
 	Sphere s5 = new Sphere(new Vector3f(7, 4, 2), 1);
 	CameraModel camS = new CameraModel(new Vector3f(0, 0, 0));
+
+	public List<Thread> setupRenderingThreads(int[] pixels, int width, int height, int pixelSize) {
+		List<Thread> renderingThreads = new ArrayList<Thread>();
+		for (int i = 0; i < Properties.cores - 1; i++) {
+			final int threadNum = i;
+			Thread rt = new Thread("t" + threadNum) {
+				public void run() {
+					for (int x = width / Properties.cores * threadNum; x < width / Properties.cores
+							* (threadNum + 1); x += pixelSize) {
+						for (int y = 0; y < height; y += pixelSize) {
+							Ray r = cam.createRay(x, y);
+							int c = getIntFromVector(trace(r, 0));
+							for (int i = 0; i < pixelSize && x + i < width; i++) {
+								for (int j = 0; j < pixelSize && y + j < height; j++) {
+									setPixel(pixels, width, x + i, y + j, c);
+								}
+							}
+						}
+					}
+				}
+			};
+			renderingThreads.add(rt);
+		}
+		return renderingThreads;
+	}
 
 	public void setupScene() {
 		// objects.add(new Sphere(0.1f));
@@ -135,7 +160,7 @@ public class App implements KeyListener, MouseWheelListener, Runnable {
 		// worldScene.add(p);
 
 		Circle c = new Circle(new Vector3f(0.5f, 1, 0).normalize(), new Vector3f(0, 40, 0), 20);
-		// worldScene.add(c);
+		worldScene.add(c);
 
 		Triangle t = new Triangle(new Vector3f(5, 0, 0), new Vector3f(5, 10, 0), new Vector3f(10, 10, 0));
 		Triangle t2 = new Triangle(new Vector3f(5, 0, 0), new Vector3f(10, 0, 0), new Vector3f(10, 10, 0));
@@ -169,7 +194,7 @@ public class App implements KeyListener, MouseWheelListener, Runnable {
 
 	private List<Long> frametimes = new ArrayList<Long>();
 
-	public static final int FPS_TARGET = 30;
+	public static final int FPS_TARGET = 15;
 
 	public static int MAX_RAY_DEPTH = 5;
 
@@ -224,25 +249,44 @@ public class App implements KeyListener, MouseWheelListener, Runnable {
 		return 0xFF000000 | Red | Green | Blue; // 0xFF000000 for 100% Alpha. Bitwise OR everything together.
 	}
 
-	boolean t1Done = false;
-
 	private void hqRender() throws InterruptedException {
 		// cam.width = 3840;
 		// cam.height = 2160;
 		pause = true;
 		Thread.sleep(1);
 		BufferedImage img = new BufferedImage(3840, 2160, BufferedImage.TYPE_INT_RGB);
-		twoThreadRender(img);
+		renderToTarget(img);
 		try {
 			String date = (new Date()).toString().replaceAll(" ", "_").replaceAll(":", ".");
 			new File("./imgs/renders/").mkdirs();
 //			File outputfile = new File("./imgs/renders/render_" + date + ".jpg");
 //			ImageIO.write(img, "jpg", outputfile);
-			saveImage(img, "./imgs/renders/render_" + date + ".jpg", 0.9f);
+			String path = "./imgs/renders/render_" + date.toLowerCase() + ".jpg";
+			saveImage(img, path, 0.9f);
+			showFileInExplorer(path);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		pause = false;
+	}
+
+	public void showFileInExplorer(String path) throws IOException {
+		Properties.OSTYPE os = Properties.getOSType();
+		switch (os) {
+		case LINUX:
+			Runtime.getRuntime().exec("xdg-open " + path);
+			break;
+		case MAC:
+			break;
+		case OTHER:
+			System.out.println("Could not open file explorer");
+			break;
+		case WINDOWS:
+			Runtime.getRuntime().exec("explorer.exe /select," + path);
+			break;
+		default:
+			break;
+		}
 	}
 
 	public void saveImage(BufferedImage img, String location, float quality) throws FileNotFoundException, IOException {
@@ -264,7 +308,7 @@ public class App implements KeyListener, MouseWheelListener, Runnable {
 		if (getAvgFPS() < FPS_TARGET * 2f) {
 			dynamicRender();
 		} else {
-			twoThreadRender(screen);
+			renderToTarget(screen);
 		}
 		// antiAllias();
 		Thread.sleep(1);
@@ -272,7 +316,7 @@ public class App implements KeyListener, MouseWheelListener, Runnable {
 		// window.repaint();
 	}
 
-	public BufferedImage twoThreadRender(BufferedImage target) throws InterruptedException {
+	public BufferedImage renderToTarget(BufferedImage target) throws InterruptedException {
 		float oldWid = cam.width;
 		float oldHeight = cam.height;
 		cam.width = target.getWidth();
@@ -280,22 +324,15 @@ public class App implements KeyListener, MouseWheelListener, Runnable {
 
 		int[] pixels = ((DataBufferInt) target.getRaster().getDataBuffer()).getData();
 
-		Thread t1 = new Thread("t1") {
-			public void run() {
-				t1Done = false;
-				for (int x = 1; x < target.getWidth(); x += 2) {
-					for (int y = 0; y < target.getHeight(); y++) {
-						Ray r = cam.createRay(x, y);
-						int c = getIntFromVector(trace(r, 0));
-						setPixel(pixels, target.getWidth(), x, y, c);
-						// System.out.println(c);
-					}
-				}
-				t1Done = true;
-			}
-		};
-		t1.start();
-		for (int x = 0; x < target.getWidth(); x += 2) {
+		List<Thread> renderingThreads = setupRenderingThreads(pixels, target.getWidth(), target.getHeight(), 1);
+
+		for (Thread t : renderingThreads) {
+			t.start();
+		}
+
+		int cores = Properties.cores;
+
+		for (int x = target.getWidth() / cores * (cores - 1); x < target.getWidth(); x ++) {
 			for (int y = 0; y < target.getHeight(); y++) {
 				Ray r = cam.createRay(x, y);
 				int c = getIntFromVector(trace(r, 0));
@@ -303,7 +340,9 @@ public class App implements KeyListener, MouseWheelListener, Runnable {
 				// System.out.println(c);
 			}
 		}
-		t1.join();
+		for (Thread t : renderingThreads) {
+			t.join();
+		}
 		cam.width = oldWid;
 		cam.height = oldHeight;
 		return target;
@@ -347,27 +386,14 @@ public class App implements KeyListener, MouseWheelListener, Runnable {
 		int width = screen.getWidth();
 		int height = screen.getHeight();
 
-		Thread t1 = new Thread("t1") {
-			public void run() {
-				t1Done = false;
-				for (int x = 0; x < width; x += step) {
-					for (int y = 0; y < height / 2; y += step) {
-						Ray r = cam.createRay(x, y);
-						int c = getIntFromVector(trace(r, 0));
-						for (int i = 0; i < step; i++) {
-							for (int j = 0; j < step; j++) {
-								setPixel(x + i, y + j, c);
-							}
-						}
-					}
-				}
-				t1Done = true;
-			}
-		};
-		t1.start();
+		List<Thread> renderingThreads = setupRenderingThreads(pixelGrid, width, height, step);
 
-		for (int x = 0; x < width; x += step) {
-			for (int y = height / 2; y < height; y += step) {
+		for (Thread t : renderingThreads) {
+			t.start();
+		}
+
+		for (int x = width / Properties.cores * (Properties.cores - 1); x < width; x += step) {
+			for (int y = 0; y < height; y += step) {
 				Ray r = cam.createRay(x, y);
 				int c = getIntFromVector(trace(r, 0));
 				for (int i = 0; i < step; i++) {
@@ -379,9 +405,8 @@ public class App implements KeyListener, MouseWheelListener, Runnable {
 			}
 		}
 		try {
-			t1.join();
-			while (!t1Done) {
-				Thread.sleep(1);
+			for (Thread t : renderingThreads) {
+				t.join();
 			}
 		} catch (InterruptedException e) {
 			e.printStackTrace();
@@ -552,6 +577,8 @@ public class App implements KeyListener, MouseWheelListener, Runnable {
 	}
 
 	private void setPixel(int[] pixels, int width, int x, int y, int c) {
+		if (x > width)
+			return;
 		pixels[(int) (x + y * width)] = c;
 	}
 
@@ -598,7 +625,7 @@ public class App implements KeyListener, MouseWheelListener, Runnable {
 		} catch (NullPointerException | ConcurrentModificationException e) {
 			// ignore all
 		}
-		return 1000f / od.orElse(FPS_TARGET + 1);
+		return 1000f / od.orElse(FPS_TARGET);
 	}
 
 	Set<Integer> keys = new HashSet<Integer>();
@@ -625,88 +652,80 @@ public class App implements KeyListener, MouseWheelListener, Runnable {
 	}
 
 	public boolean gravity = false;
+	public float fallSpeed = 0;
 
 	@Override
 	public void keyTyped(KeyEvent e) {
 	}
 
-	@Override
-	public void run() {
-		float fallSpeed = 0;
-		float grav = 9.8f;
-		float camHeightTarget = 5;
+	public void updateControls() {
 		float speed = 1;
-		while (true) {
-			while (frametimes.size() > 200) {
-				frametimes.remove(0);
+		float camHeightTarget = 5;
+
+		while (frametimes.size() > 200) {
+			frametimes.remove(0);
+		}
+		if (!pause) {
+			if (gravity) {
+				cam.cameraPos.y -= fallSpeed;
+				if (cam.cameraPos.y > camHeightTarget) {
+					fallSpeed += worldScene.gravity / 20f;
+				}
+				if (cam.cameraPos.y < camHeightTarget) {
+					cam.cameraPos.setY(camHeightTarget);
+					fallSpeed = 0;
+				}
 			}
-			if (!pause) {
-				if (gravity) {
-					cam.cameraPos.y -= fallSpeed;
-					if (cam.cameraPos.y > camHeightTarget) {
-						fallSpeed += grav / 20f;
-					}
-					if (cam.cameraPos.y < camHeightTarget) {
-						cam.cameraPos.setY(camHeightTarget);
-						fallSpeed = 0;
-					}
-				}
-				if (keys.contains(KeyEvent.VK_UP)) {
-					cam.cameraAngle.addX(2.5f);
-				}
-				if (keys.contains(KeyEvent.VK_DOWN)) {
-					cam.cameraAngle.addX(-2.5f);
-				}
-				if (keys.contains(KeyEvent.VK_RIGHT)) {
-					cam.cameraAngle.addY(-2.5f);
-				}
-				if (keys.contains(KeyEvent.VK_LEFT)) {
-					cam.cameraAngle.addY(2.5f);
-				}
-				if (keys.contains(KeyEvent.VK_W)) {
-					Vector3f dir = cam.rotMat.multiply(new Vector3f(0, 0, -speed));
-					if (gravity)
-						dir.removeY();
-					cam.cameraPos = cam.cameraPos.sum(dir);
-				}
-				if (keys.contains(KeyEvent.VK_S)) {
-					Vector3f dir = cam.rotMat.multiply(new Vector3f(0, 0, speed));
-					if (gravity)
-						dir.removeY();
-					cam.cameraPos = cam.cameraPos.sum(dir);
-				}
-				if (keys.contains(KeyEvent.VK_A)) {
-					cam.cameraPos = cam.cameraPos.sum(cam.rotMat.multiply(new Vector3f(-speed, 0, 0)).removeY());
-				}
-				if (keys.contains(KeyEvent.VK_D)) {
-					cam.cameraPos = cam.cameraPos.sum(cam.rotMat.multiply(new Vector3f(speed, 0, 0)).removeY());
-				}
-				if (keys.contains(KeyEvent.VK_SPACE)) {
-					if (gravity && cam.cameraPos.y == camHeightTarget) {
-						fallSpeed = -2;
-					} else {
-						cam.cameraPos.y += speed;
-					}
-				}
-				if (keys.contains(KeyEvent.VK_CONTROL)) {
-					camHeightTarget = 3;
-					if (gravity) {
-						speed = 0.2f;
-					} else {
-						cam.cameraPos.y -= speed;
-					}
+			if (keys.contains(KeyEvent.VK_UP)) {
+				cam.cameraAngle.addX(2.5f);
+			}
+			if (keys.contains(KeyEvent.VK_DOWN)) {
+				cam.cameraAngle.addX(-2.5f);
+			}
+			if (keys.contains(KeyEvent.VK_RIGHT)) {
+				cam.cameraAngle.addY(-2.5f);
+			}
+			if (keys.contains(KeyEvent.VK_LEFT)) {
+				cam.cameraAngle.addY(2.5f);
+			}
+			if (keys.contains(KeyEvent.VK_W)) {
+				Vector3f dir = cam.rotMat.multiply(new Vector3f(0, 0, -speed));
+				if (gravity)
+					dir.removeY();
+				cam.cameraPos = cam.cameraPos.sum(dir);
+			}
+			if (keys.contains(KeyEvent.VK_S)) {
+				Vector3f dir = cam.rotMat.multiply(new Vector3f(0, 0, speed));
+				if (gravity)
+					dir.removeY();
+				cam.cameraPos = cam.cameraPos.sum(dir);
+			}
+			if (keys.contains(KeyEvent.VK_A)) {
+				cam.cameraPos = cam.cameraPos.sum(cam.rotMat.multiply(new Vector3f(-speed, 0, 0)).removeY());
+			}
+			if (keys.contains(KeyEvent.VK_D)) {
+				cam.cameraPos = cam.cameraPos.sum(cam.rotMat.multiply(new Vector3f(speed, 0, 0)).removeY());
+			}
+			if (keys.contains(KeyEvent.VK_SPACE)) {
+				if (gravity && cam.cameraPos.y == camHeightTarget) {
+					fallSpeed = -2;
 				} else {
-					camHeightTarget = 5;
-					speed = 1f;
-				}
-				if (keys.contains(KeyEvent.VK_SHIFT)) {
-					speed = 2.5f;
+					cam.cameraPos.y += speed;
 				}
 			}
-			try {
-				Thread.sleep(50);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
+			if (keys.contains(KeyEvent.VK_CONTROL)) {
+				camHeightTarget = 3;
+				if (gravity) {
+					speed = 0.2f;
+				} else {
+					cam.cameraPos.y -= speed;
+				}
+			} else {
+				camHeightTarget = 5;
+				speed = 1f;
+			}
+			if (keys.contains(KeyEvent.VK_SHIFT)) {
+				speed = 2.5f;
 			}
 		}
 	}

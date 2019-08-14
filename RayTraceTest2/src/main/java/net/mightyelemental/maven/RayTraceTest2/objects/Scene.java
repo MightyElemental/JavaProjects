@@ -8,6 +8,8 @@ public class Scene {
 	public Vector<Light> lightList = new Vector<Light>();
 
 	public String skyboxLocation = "./imgs/skybox/";
+	
+	public float gravity = 9.8f;
 
 	// public Vector3f backgroundColor = new Vector3f(119 / 255f, 181 / 255f, 254 /
 	// 255f);
