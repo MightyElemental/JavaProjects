@@ -172,7 +172,7 @@ public class App implements KeyListener, MouseWheelListener {
 		// worldScene.add(comp);
 
 		Box box = new Box(new Vector3f(10, 10, 10), 15, 5, 8);
-		box.setMaterial(0f, 0f, 1f);
+		box.setMaterial(0f, 0.1f, 1f);
 		box.setColor(new Vector3f(0.5f, 0.1f, 1f));
 		worldScene.add(box);
 
@@ -422,7 +422,7 @@ public class App implements KeyListener, MouseWheelListener {
 		pixelGrid = ((DataBufferInt) screen.getRaster().getDataBuffer()).getData();
 	}
 
-	public Vector3f trace(Ray r, int depth) {
+	public Vector3f trace(Ray r, int depth) {//TODO: make shadows depend on transparency
 		Renderable rend = r.trace(worldScene.objectList, depth);
 		if (rend == null)
 			return getBackground(r.getDirection());
@@ -471,7 +471,7 @@ public class App implements KeyListener, MouseWheelListener {
 		if (refracDir == null)// TODO: replace with TIR
 			return Vector3f.origin();
 		// TODO: make sure this is the correct material
-		Ray refractionRay = new Ray(refracDir, hit.sum(refracDir.mul(0.001f)), rend.getMaterial());
+		Ray refractionRay = new Ray(refracDir, hit.sub(norm.mul(0.01f)), rend.getMaterial());
 		return trace(refractionRay, depth + 1);
 	}
 

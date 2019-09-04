@@ -96,7 +96,7 @@ public class Ray {
 	// ior = n1/n2
 	public Vector3f getRefractionVector(float ior, Vector3f normToObj) {
 //		Vector3f t = this.getDirection().mul(ior);
-		double cosA = this.getDirection().getCosOfAngle(normToObj);
+		// double cosA = this.getDirection().getCosOfAngle(normToObj);
 //		double sin2ot = ior * ior * (1 - cosA * cosA);
 //		//System.out.println(sin2ot);
 //		if (sin2ot > 1)
@@ -108,10 +108,15 @@ public class Ray {
 //		// " | " + print);
 //		return t.normalize();
 
-		float c1 = normToObj.dot(getDirection());
-		float c2 = (float) Math.sqrt(1 - ior * ior * (1 - cosA * cosA));
+		// float c1 = (float) cosA;// normToObj.dot(getDirection());
+		// float c2 = (float) Math.sqrt(1 - ior * ior * (1 - cosA * cosA));
 
-		return getDirection().mul(ior).sum(normToObj.mul(ior * c1 - c2)).normalize();
+		// return getDirection().mul(ior).sum(normToObj.mul(ior * c1 - c2)).normalize();
+
+		// from wolfgang: self.direction * eta - inter.normal * (-n_dot_d + eta * n_dot_d);
+		float eta = 2 - ior;
+		float ndt = normToObj.dot(getDirection());
+		return getDirection().mul(eta).sub(normToObj.mul(-ndt + eta * ndt));
 
 	}
 
