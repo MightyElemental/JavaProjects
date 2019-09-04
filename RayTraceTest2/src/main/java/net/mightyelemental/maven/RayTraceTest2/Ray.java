@@ -95,16 +95,24 @@ public class Ray {
 
 	// ior = n1/n2
 	public Vector3f getRefractionVector(float ior, Vector3f normToObj) {
-		Vector3f t = this.getDirection().mul(ior);
+//		Vector3f t = this.getDirection().mul(ior);
 		double cosA = this.getDirection().getCosOfAngle(normToObj);
-		double sin2ot = ior * ior * (1 - cosA * cosA);
-		if (sin2ot > 1)
-			return null;
-		Vector3f print = normToObj.mul((float) (ior * cosA - Math.sqrt(1 - sin2ot)));
-		t = t.sum(print);
-		// System.out.println(ior + " | " + getDirection() + " | " + t + " | " + angle +
-		// " | " + print);
-		return t.normalize();
+//		double sin2ot = ior * ior * (1 - cosA * cosA);
+//		//System.out.println(sin2ot);
+//		if (sin2ot > 1)
+//			return null;
+//		Vector3f print = normToObj.mul((float) (ior * cosA - Math.sqrt(1 - sin2ot)));
+//		t = t.sum(print);
+//		//System.out.println(t + "|" + this.getDirection());
+//		// System.out.println(ior + " | " + getDirection() + " | " + t + " | " + angle +
+//		// " | " + print);
+//		return t.normalize();
+
+		float c1 = normToObj.dot(getDirection());
+		float c2 = (float) Math.sqrt(1 - ior * ior * (1 - cosA * cosA));
+
+		return getDirection().mul(ior).sum(normToObj.mul(ior * c1 - c2)).normalize();
+
 	}
 
 	public Material getStartingMaterial() {

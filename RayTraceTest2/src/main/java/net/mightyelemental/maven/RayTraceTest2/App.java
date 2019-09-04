@@ -127,8 +127,8 @@ public class App implements KeyListener, MouseWheelListener {
 		// objects.add(new Sphere(0.1f));
 		Sphere s = new Sphere(new Vector3f(0, 0, 0), 6);
 		s.col = new Vector3f(0, 0, 1);
-		 s.setMaterial(0f, 0.3f, 1.52f);
-		//s.setMaterial(0f, 0f, 1f);
+		s.setMaterial(0f, 0.3f, 1.52f);
+		// s.setMaterial(0f, 0f, 1f);
 //		s.opacity = 0.3f;
 //		s.reflectivity = 0f;
 //		s.ior = 1.52f;//4f / 3f;
@@ -136,8 +136,8 @@ public class App implements KeyListener, MouseWheelListener {
 
 		Sphere s2 = new Sphere(new Vector3f(0, 5, 12), 4);
 		s2.col = new Vector3f(1, 0, 1);
-		s2.setMaterial(0f, 0, 1f);
-		worldScene.add(s2);
+		s2.setMaterial(0f, 0.1f, 1f);
+		// worldScene.add(s2);
 
 		Sphere s3 = new Sphere(new Vector3f(8, 7.5f, -15), 7);
 		s3.col = new Vector3f(1, 0, 0);
@@ -157,10 +157,10 @@ public class App implements KeyListener, MouseWheelListener {
 		Plane p = new Plane(new Vector3f(0, 1, 0), new Vector3f(0, -2, 0));
 		p.reflectivity = 0;
 		p.col = new Vector3f(255, 109, 0).mul(1f / 255f);
-		// worldScene.add(p);
+		worldScene.add(p);// Floor
 
 		Circle c = new Circle(new Vector3f(0.5f, 1, 0).normalize(), new Vector3f(0, 40, 0), 20);
-		worldScene.add(c);
+		// worldScene.add(c);
 
 		Triangle t = new Triangle(new Vector3f(5, 0, 0), new Vector3f(5, 10, 0), new Vector3f(10, 10, 0));
 		Triangle t2 = new Triangle(new Vector3f(5, 0, 0), new Vector3f(10, 0, 0), new Vector3f(10, 10, 0));
@@ -169,17 +169,17 @@ public class App implements KeyListener, MouseWheelListener {
 		vec.add(t2);
 		ComplexRenderable comp = new ComplexRenderable(vec);
 		comp.setMaterial(1f, 1f, 1f);
-		worldScene.add(comp);
+		// worldScene.add(comp);
 
 		Box box = new Box(new Vector3f(10, 10, 10), 15, 5, 8);
-		box.setMaterial(0.2f, 1f, 1f);
+		box.setMaterial(0f, 0f, 1f);
 		box.setColor(new Vector3f(0.5f, 0.1f, 1f));
 		worldScene.add(box);
 
 		// worldScene.add(new Plane(new Vector3f(1, 0, 0), new Vector3f(20, 0, 0)));
 
 		s5.col = new Vector3f(0, 1, 0);
-		// worldScene.add(s5);
+		worldScene.add(s5);
 
 		worldScene.add(camS);
 		cam.setCamObj(camS);
@@ -195,9 +195,9 @@ public class App implements KeyListener, MouseWheelListener {
 
 	private List<Long> frametimes = new ArrayList<Long>();
 
-	public static final int FPS_TARGET = 15;
+	public static final int FPS_TARGET = 30;
 
-	public static int MAX_RAY_DEPTH = 6;
+	public static int MAX_RAY_DEPTH = 4;
 
 	public JFrame window = new JFrame();
 	public JPanel pan = new JPanel() {
@@ -466,75 +466,17 @@ public class App implements KeyListener, MouseWheelListener {
 		// System.out.println(depth);
 		Vector3f norm = rend.getNormal(hit, r.getDirection()).normalize();
 		Material rayStartMat = r.getStartingMaterial();
-		Vector3f refracDir = r.getRefractionVector(rayStartMat.getIOR() / rend.getMaterial().getIOR(), norm);// TODO:
-																												// ASSUMING
-																												// ALWAYS
-																												// STARTING
-																												// IN
-																												// AIR
-																												// IS
-																												// WRONG
+		// TODO: calculate the material better.
+		Vector3f refracDir = r.getRefractionVector(rayStartMat.getIOR() / rend.getMaterial().getIOR(), norm);
 		if (refracDir == null)// TODO: replace with TIR
 			return Vector3f.origin();
-		Ray refractionRay = new Ray(refracDir, hit.sum(refracDir.mul(0.001f)), r.getStartingMaterial());
+		// TODO: make sure this is the correct material
+		Ray refractionRay = new Ray(refracDir, hit.sum(refracDir.mul(0.001f)), rend.getMaterial());
 		return trace(refractionRay, depth + 1);
 	}
 
 	private Vector3f getBackground(Vector3f frag) {
-		return convertVecToCubeUV(frag).getColor();
-	}
-
-	public TexData convertVecToCubeUV(Vector3f vec) {
-		TexData td = new TexData();
-		float absX = Math.abs(vec.x);
-		float absY = Math.abs(vec.y);
-		float absZ = Math.abs(vec.z);
-
-		boolean isXPositive = vec.x > 0;
-		boolean isYPositive = vec.y > 0;
-		boolean isZPositive = vec.z > 0;
-
-		float maxAxis = 1, uc = 0, vc = 0;
-
-		if (isXPositive && absX >= absY && absX >= absZ) {
-			maxAxis = absX;
-			uc = -vec.z;
-			vc = vec.y;
-			td.img = ResourceLoader.loadImage(worldScene.getSkybox() + "side_0.png");
-		}
-		if (!isXPositive && absX >= absY && absX >= absZ) {
-			maxAxis = absX;
-			uc = vec.z;
-			vc = vec.y;
-			td.img = ResourceLoader.loadImage(worldScene.getSkybox() + "side_1.png");
-		}
-		if (isYPositive && absY >= absX && absY >= absZ) {
-			maxAxis = absY;
-			uc = vec.x;
-			vc = -vec.z;
-			td.img = ResourceLoader.loadImage(worldScene.getSkybox() + "side_2.png");
-		}
-		if (!isYPositive && absY >= absX && absY >= absZ) {
-			maxAxis = absY;
-			uc = vec.x;
-			vc = vec.z;
-			td.img = ResourceLoader.loadImage(worldScene.getSkybox() + "side_3.png");
-		}
-		if (isZPositive && absZ >= absX && absZ >= absY) {
-			maxAxis = absZ;
-			uc = vec.x;
-			vc = vec.y;
-			td.img = ResourceLoader.loadImage(worldScene.getSkybox() + "side_4.png");
-		}
-		if (!isZPositive && absZ >= absX && absZ >= absY) {
-			maxAxis = absZ;
-			uc = -vec.x;
-			vc = vec.y;
-			td.img = ResourceLoader.loadImage(worldScene.getSkybox() + "side_5.png");
-		}
-		td.uvX = 0.5f * (uc / maxAxis + 1f);
-		td.uvY = 0.5f * (vc / maxAxis + 1.0f);
-		return td;
+		return Utils.convertVecToCubeUV(worldScene.getSkybox(), frag).getColor();
 	}
 
 	public static Vector3f rgbIntToVec(int col) {

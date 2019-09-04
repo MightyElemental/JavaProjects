@@ -15,5 +15,58 @@ public class Utils {
 		float max = Math.max(0, 1 - beta * lambda);
 		return color.mul(specCoeff * (float) Math.pow(max, gamma));
 	}
+	
+	public static TexData convertVecToCubeUV(String skyboxImg, Vector3f vec) {
+		TexData td = new TexData();
+		float absX = Math.abs(vec.x);
+		float absY = Math.abs(vec.y);
+		float absZ = Math.abs(vec.z);
+
+		boolean isXPositive = vec.x > 0;
+		boolean isYPositive = vec.y > 0;
+		boolean isZPositive = vec.z > 0;
+
+		float maxAxis = 1, uc = 0, vc = 0;
+
+		if (isXPositive && absX >= absY && absX >= absZ) {
+			maxAxis = absX;
+			uc = -vec.z;
+			vc = vec.y;
+			td.img = ResourceLoader.loadImage(skyboxImg + "side_0.png");
+		}
+		if (!isXPositive && absX >= absY && absX >= absZ) {
+			maxAxis = absX;
+			uc = vec.z;
+			vc = vec.y;
+			td.img = ResourceLoader.loadImage(skyboxImg + "side_1.png");
+		}
+		if (isYPositive && absY >= absX && absY >= absZ) {
+			maxAxis = absY;
+			uc = vec.x;
+			vc = -vec.z;
+			td.img = ResourceLoader.loadImage(skyboxImg + "side_2.png");
+		}
+		if (!isYPositive && absY >= absX && absY >= absZ) {
+			maxAxis = absY;
+			uc = vec.x;
+			vc = vec.z;
+			td.img = ResourceLoader.loadImage(skyboxImg + "side_3.png");
+		}
+		if (isZPositive && absZ >= absX && absZ >= absY) {
+			maxAxis = absZ;
+			uc = vec.x;
+			vc = vec.y;
+			td.img = ResourceLoader.loadImage(skyboxImg + "side_4.png");
+		}
+		if (!isZPositive && absZ >= absX && absZ >= absY) {
+			maxAxis = absZ;
+			uc = -vec.x;
+			vc = vec.y;
+			td.img = ResourceLoader.loadImage(skyboxImg + "side_5.png");
+		}
+		td.uvX = 0.5f * (uc / maxAxis + 1f);
+		td.uvY = 0.5f * (vc / maxAxis + 1.0f);
+		return td;
+	}
 
 }
