@@ -3,6 +3,7 @@ package net.mightyelemental.maven.RayTraceTest2.objects;
 import java.util.List;
 
 import net.mightyelemental.maven.RayTraceTest2.App;
+import net.mightyelemental.maven.RayTraceTest2.Mat4f;
 import net.mightyelemental.maven.RayTraceTest2.Ray;
 import net.mightyelemental.maven.RayTraceTest2.Utils;
 import net.mightyelemental.maven.RayTraceTest2.Vector3f;
@@ -89,6 +90,17 @@ public class Plane implements Renderable {
 	@Override
 	public void setColor(Vector3f vec) {
 		this.col = vec;
+	}
+
+	@Override
+	public void translate(Vector3f transVec) {
+		origin = origin.sum(transVec);
+	}
+
+	@Override
+	public void rotate(Vector3f rotVec) {
+		Mat4f rotMat = Mat4f.getFullRotationDeg(rotVec);
+		normal = rotMat.multiply(normal);
 	}
 
 }

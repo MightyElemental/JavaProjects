@@ -102,4 +102,14 @@ public class Sphere implements Renderable {
 		col = vec;
 	}
 
+	@Override
+	public void translate(Vector3f transVec) {
+		center = center.sum(transVec);
+	}
+
+	@Override
+	public void rotate(Vector3f rotVec) {
+		// nothing to rotate.
+	}
+
 }

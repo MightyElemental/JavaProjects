@@ -1,5 +1,6 @@
 package net.mightyelemental.maven.RayTraceTest2.objects;
 
+import net.mightyelemental.maven.RayTraceTest2.Mat4f;
 import net.mightyelemental.maven.RayTraceTest2.Ray;
 import net.mightyelemental.maven.RayTraceTest2.Vector3f;
 import net.mightyelemental.maven.RayTraceTest2.materials.Material;
@@ -103,7 +104,19 @@ public class Tube implements Renderable {
 
 	@Override
 	public void setColor(Vector3f vec) {
-		
+
+	}
+
+	@Override
+	public void translate(Vector3f transVec) {
+		defLine.setOrig(defLine.getOrig().sum(transVec));
+	}
+
+	@Override
+	public void rotate(Vector3f rotVec) {
+		Mat4f rotMat = Mat4f.getFullRotationDeg(rotVec);
+		defLine.setOrig(rotMat.multiply(defLine.getOrig()));
+		// TODO: add rotation for direction
 	}
 
 }

@@ -18,11 +18,11 @@ public interface Renderable {
 	public Vector3f getColor();
 
 	public void setPos(Vector3f pos);
-	
+
 	public Material getMaterial();
-	
+
 	public void setMaterial(Material mat);
-	
+
 	public void setMaterial(float reflec, float opac, float ior);
 
 	/**
@@ -36,5 +36,9 @@ public interface Renderable {
 	public Vector3f getPos();
 
 	public void setColor(Vector3f vec);
+
+	public void translate(Vector3f transVec);
+	
+	public void rotate(Vector3f rotVec);
 
 }
