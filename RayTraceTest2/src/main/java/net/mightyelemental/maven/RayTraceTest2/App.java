@@ -39,6 +39,8 @@ import net.mightyelemental.maven.RayTraceTest2.objects.Renderable;
 import net.mightyelemental.maven.RayTraceTest2.objects.Scene;
 import net.mightyelemental.maven.RayTraceTest2.objects.Sphere;
 import net.mightyelemental.maven.RayTraceTest2.objects.Triangle;
+import net.mightyelemental.maven.RayTraceTest2.thread.RenderChunk;
+import net.mightyelemental.maven.RayTraceTest2.thread.ThreadHandler;
 
 /**
  * Hello world!
@@ -47,6 +49,21 @@ import net.mightyelemental.maven.RayTraceTest2.objects.Triangle;
 public class App implements KeyListener, MouseWheelListener {
 
 	boolean pause = false;
+
+	int frameCount = 0;
+
+	Thread starting = new Thread() {
+		public void run() {
+			while (frameCount <= 0) {
+				pan.repaint();
+				try {
+					sleep(10);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	};
 
 	public App() {
 		System.out.println("Thread count: " + Properties.cores);
@@ -62,6 +79,7 @@ public class App implements KeyListener, MouseWheelListener {
 		// lights.get(0).color = new Vector3f(1,0.5f,1);
 		int ticks = 0;
 		long timeOff = 0;
+		starting.start();
 		while (true) {
 			long t1 = System.currentTimeMillis();
 			// cam.moveTo((float) Math.sin(ticks / 80f) * 10 + 3, 10, 10);
@@ -132,7 +150,7 @@ public class App implements KeyListener, MouseWheelListener {
 //		s.opacity = 0.3f;
 //		s.reflectivity = 0f;
 //		s.ior = 1.52f;//4f / 3f;
-		worldScene.add(s);
+		// worldScene.add(s);
 
 		Sphere s2 = new Sphere(new Vector3f(0, 5, 12), 4);
 		s2.col = new Vector3f(1, 0, 1);
@@ -174,7 +192,7 @@ public class App implements KeyListener, MouseWheelListener {
 		Box box = new Box(new Vector3f(10, 10, 10), 15, 5, 8);
 		box.setMaterial(0f, 0.1f, 1f);
 		box.setColor(new Vector3f(0.5f, 0.1f, 1f));
-		worldScene.add(box);
+		// worldScene.add(box);
 
 		// worldScene.add(new Plane(new Vector3f(1, 0, 0), new Vector3f(20, 0, 0)));
 
@@ -183,6 +201,10 @@ public class App implements KeyListener, MouseWheelListener {
 
 		worldScene.add(camS);
 		cam.setCamObj(camS);
+
+		ComplexRenderable pikachu = Utils.getRenderableFromObjFile("pikachu.obj").get();
+		pikachu.rotate(new Vector3f(-90, 0, 0));
+		worldScene.add(pikachu);
 
 		// worldScene.add(new Tube(new Vector3f(0, 1, 0), new Vector3f(0, 2, 4), 0, 2));
 
@@ -220,7 +242,6 @@ public class App implements KeyListener, MouseWheelListener {
 			}
 		}
 	};
-
 	public BufferedImage screen = new BufferedImage(1280, 720, BufferedImage.TYPE_INT_RGB);
 
 	public Camera cam = new Camera(new Vector3f(3, 10, 25), 95, screen.getWidth(), screen.getHeight());
@@ -380,6 +401,8 @@ public class App implements KeyListener, MouseWheelListener {
 		toggle = (++toggle) % 4;
 	}
 
+	ThreadHandler thrHnd = new ThreadHandler(160, 180, screen.getWidth(), screen.getHeight());
+
 	private void dynamicRender() {
 		int fps = (int) Math.round(getAvgFPS());
 		int step = pause ? 1 : (FPS_TARGET - fps > 1 ? FPS_TARGET - fps : 1);
@@ -387,24 +410,46 @@ public class App implements KeyListener, MouseWheelListener {
 		int width = screen.getWidth();
 		int height = screen.getHeight();
 
-		List<Thread> renderingThreads = setupRenderingThreads(pixelGrid, width, height, step);
+		List<Thread> renderingThreads = thrHnd.setupRenderingThreads(this, pixelGrid, step);
 
 		for (Thread t : renderingThreads) {
 			t.start();
 		}
 
-		for (int x = width / Properties.cores * (Properties.cores - 1); x < width; x += step) {
-			for (int y = 0; y < height; y += step) {
-				Ray r = cam.createRay(x, y);
-				int c = getIntFromVector(trace(r, 0));
-				for (int i = 0; i < step; i++) {
-					for (int j = 0; j < step; j++) {
-						setPixel(x + i, y + j, c);
-					}
+		boolean completed = false;
+		while (!completed) {
+			try {
+				Thread.sleep(5);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			completed = true;
+			for (RenderChunk c : thrHnd.chunks) {
+				if (!c.finishedRender) {
+					completed = false;
+					continue;
 				}
-				// System.out.println(c);
 			}
 		}
+
+//		List<Thread> renderingThreads = setupRenderingThreads(pixelGrid, width, height, step);
+//
+//		for (Thread t : renderingThreads) {
+//			t.start();
+//		}
+//
+//		for (int x = width / Properties.cores * (Properties.cores - 1); x < width; x += step) {
+//			for (int y = 0; y < height; y += step) {
+//				Ray r = cam.createRay(x, y);
+//				int c = getIntFromVector(trace(r, 0));
+//				for (int i = 0; i < step; i++) {
+//					for (int j = 0; j < step; j++) {
+//						setPixel(x + i, y + j, c);
+//					}
+//				}
+//				// System.out.println(c);
+//			}
+//		}
 		try {
 			for (Thread t : renderingThreads) {
 				t.join();
@@ -422,7 +467,7 @@ public class App implements KeyListener, MouseWheelListener {
 		pixelGrid = ((DataBufferInt) screen.getRaster().getDataBuffer()).getData();
 	}
 
-	public Vector3f trace(Ray r, int depth) {//TODO: make shadows depend on transparency
+	public Vector3f trace(Ray r, int depth) {// TODO: make shadows depend on transparency
 		Renderable rend = r.trace(worldScene.objectList, depth);
 		if (rend == null)
 			return getBackground(r.getDirection());
@@ -505,7 +550,7 @@ public class App implements KeyListener, MouseWheelListener {
 		return color.sum(lightSamples.mul((1 - ambientCoeff) / worldScene.lightList.size()));
 	}
 
-	private int getIntFromVector(Vector3f col) {
+	public int getIntFromVector(Vector3f col) {
 		return getIntFromColor((int) (col.x * 255), (int) (col.y * 255), (int) (col.z * 255));
 	}
 
@@ -519,7 +564,7 @@ public class App implements KeyListener, MouseWheelListener {
 		setPixel(x, y, getIntFromVector(vec));
 	}
 
-	private void setPixel(int[] pixels, int width, int x, int y, int c) {
+	public void setPixel(int[] pixels, int width, int x, int y, int c) {
 		if (x > width)
 			return;
 		pixels[(int) (x + y * width)] = c;
@@ -568,7 +613,7 @@ public class App implements KeyListener, MouseWheelListener {
 		} catch (NullPointerException | ConcurrentModificationException e) {
 			// ignore all
 		}
-		return 1000f / od.orElse(FPS_TARGET);
+		return 1000f / od.orElse(1000);
 	}
 
 	Set<Integer> keys = new HashSet<Integer>();
