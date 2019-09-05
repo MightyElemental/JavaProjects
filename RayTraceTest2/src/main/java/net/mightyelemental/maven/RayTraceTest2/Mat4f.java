@@ -36,6 +36,13 @@ public class Mat4f {
 				0, 0, 1, 0,
 				0, 0, 0, 1 });
 	}
+	
+	public static Mat4f getFullRotationDeg(Vector3f vec) {
+		Mat4f x = getXRotationDeg(vec.x);
+		Mat4f y = getYRotationDeg(vec.y);
+		Mat4f z = getZRotationDeg(vec.z);
+		return x.multiply(z).multiply(y);
+	}
 
 	public static Mat4f getIdentity() {
 		return new Mat4f(new float[] { 1, 0, 0, 0,

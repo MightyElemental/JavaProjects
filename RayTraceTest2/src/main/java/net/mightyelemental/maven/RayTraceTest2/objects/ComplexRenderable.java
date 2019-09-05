@@ -43,7 +43,6 @@ public class ComplexRenderable implements Renderable {
 
 	@Override
 	public Vector3f getColor() {
-		// TODO Auto-generated method stub
 		return new Vector3f(0.5f, 0.5f, 0);
 	}
 
@@ -89,10 +88,24 @@ public class ComplexRenderable implements Renderable {
 			rend.setMaterial(mat);
 		}
 	}
-	
+
 	public void setColor(Vector3f vec) {
 		for (Renderable rend : objs) {
 			rend.setColor(vec);
+		}
+	}
+
+	@Override
+	public void translate(Vector3f transVec) {
+		for (Renderable rend : objs) {
+			rend.translate(transVec);
+		}
+	}
+
+	@Override
+	public void rotate(Vector3f rotVec) {
+		for (Renderable rend : objs) {
+			rend.rotate(rotVec);
 		}
 	}
 
