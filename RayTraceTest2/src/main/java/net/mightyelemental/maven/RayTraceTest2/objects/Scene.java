@@ -1,5 +1,6 @@
 package net.mightyelemental.maven.RayTraceTest2.objects;
 
+import java.util.Optional;
 import java.util.Vector;
 
 public class Scene {
@@ -8,7 +9,7 @@ public class Scene {
 	public Vector<Light> lightList = new Vector<Light>();
 
 	public String skyboxLocation = "./imgs/skybox/";
-	
+
 	public float gravity = 9.8f;
 
 	// public Vector3f backgroundColor = new Vector3f(119 / 255f, 181 / 255f, 254 /
@@ -36,6 +37,11 @@ public class Scene {
 
 	public String getSkybox() {
 		return skyboxLocation;
+	}
+
+	public void add(Optional<ComplexRenderable> rend) {
+		if (rend.isPresent())
+			add(rend.get());
 	}
 
 }
