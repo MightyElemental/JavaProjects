@@ -5,29 +5,29 @@ import java.util.List;
 import net.mightyelemental.maven.RayTraceTest2.App;
 import net.mightyelemental.maven.RayTraceTest2.Ray;
 import net.mightyelemental.maven.RayTraceTest2.Utils;
-import net.mightyelemental.maven.RayTraceTest2.Vector3f;
+import net.mightyelemental.maven.RayTraceTest2.Vec3f;
 import net.mightyelemental.maven.RayTraceTest2.materials.Material;
 
 public class Sphere implements Renderable {
 
-	public Vector3f center;
+	public Vec3f center;
 	public float radius;
-	public Vector3f col;
+	public Vec3f col;
 
 	private Material mat = Material.basic();
 
-	public Sphere(Vector3f center, float radius) {
+	public Sphere(Vec3f center, float radius) {
 		this.center = center;
 		this.radius = radius;
 	}
 
 	public Sphere(float radius) {
-		this(new Vector3f(0, 0, 0), radius);
+		this(new Vec3f(0, 0, 0), radius);
 	}
 
 	public boolean intersects(Ray r) {
 		// if ( r.getDistanceToPoint(center) > radius ) return false;
-		Vector3f l = center.sub(r.getOrig());
+		Vec3f l = center.sub(r.getOrig());
 		float tca = l.dot(r.getDirection());
 		if (tca < 0)
 			return false;
@@ -43,9 +43,9 @@ public class Sphere implements Renderable {
 	}
 
 	@Deprecated
-	public Vector3f shade(Vector3f rayDir, Vector3f hit, List<Light> lights) {
-		Vector3f dir = hit.vecTo(lights.get(0).pos).normalize();
-		Vector3f lamb = Utils.lambertainShade(getNormal(hit, rayDir).getUnitVec(), dir, .9f, getColor());
+	public Vec3f shade(Vec3f rayDir, Vec3f hit, List<Light> lights) {
+		Vec3f dir = hit.vecTo(lights.get(0).pos).normalize();
+		Vec3f lamb = Utils.lambertainShade(getNormal(hit, rayDir).getUnitVec(), dir, .9f, getColor());
 		// Vector3f spec = Utils.specularShade(rayDir, dir, getNormal(hit), .9f, 1f,
 		// getColor());
 		return getColor().mul(App.ambientCoeff).sum(lamb.mul(1 - App.ambientCoeff));
@@ -53,16 +53,16 @@ public class Sphere implements Renderable {
 		// new Color((int) (Math.random() * Math.pow(255, 3)))
 	}
 
-	public Vector3f getNormal(Vector3f hit, Vector3f rayDir) {
+	public Vec3f getNormal(Vec3f hit, Vec3f rayDir) {
 		return center.vecTo(hit);
 	}
 
-	public Vector3f getColor() {
-		return col == null ? new Vector3f(1, 1, 1) : col;
+	public Vec3f getColor() {
+		return col == null ? new Vec3f(1, 1, 1) : col;
 	}
 
 	@Override
-	public void setPos(Vector3f pos) {
+	public void setPos(Vec3f pos) {
 		this.center = pos;
 	}
 
@@ -72,13 +72,13 @@ public class Sphere implements Renderable {
 	}
 
 	@Override
-	public boolean isPointWithin(Vector3f vec) {
+	public boolean isPointWithin(Vec3f vec) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
-	public Vector3f getPos() {
+	public Vec3f getPos() {
 		return center;
 	}
 
@@ -98,17 +98,17 @@ public class Sphere implements Renderable {
 	}
 
 	@Override
-	public void setColor(Vector3f vec) {
+	public void setColor(Vec3f vec) {
 		col = vec;
 	}
 
 	@Override
-	public void translate(Vector3f transVec) {
+	public void translate(Vec3f transVec) {
 		center = center.sum(transVec);
 	}
 
 	@Override
-	public void rotate(Vector3f rotVec) {
+	public void rotate(Vec3f rotVec) {
 		// nothing to rotate.
 	}
 

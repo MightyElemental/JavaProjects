@@ -37,7 +37,7 @@ public class Mat4f {
 				0, 0, 0, 1 });
 	}
 	
-	public static Mat4f getFullRotationDeg(Vector3f vec) {
+	public static Mat4f getFullRotationDeg(Vec3f vec) {
 		Mat4f x = getXRotationDeg(vec.x);
 		Mat4f y = getYRotationDeg(vec.y);
 		Mat4f z = getZRotationDeg(vec.z);
@@ -51,11 +51,11 @@ public class Mat4f {
 				0, 0, 0, 1});
 	}
 
-	public static Vector3f multiply(Mat4f mat, Vector3f vec) {
+	public static Vec3f multiply(Mat4f mat, Vec3f vec) {
 		float nx = mat.get(0, 0) * vec.x + mat.get(1, 0) * vec.y + mat.get(2, 0) * vec.z + mat.get(3, 0);
 		float ny = mat.get(0, 1) * vec.x + mat.get(1, 1) * vec.y + mat.get(2, 1) * vec.z + mat.get(3, 1);
 		float nz = mat.get(0, 2) * vec.x + mat.get(1, 2) * vec.y + mat.get(2, 2) * vec.z + mat.get(3, 2);
-		return new Vector3f(nx, ny, nz);
+		return new Vec3f(nx, ny, nz);
 	}
 
 	public static Mat4f multiply(Mat4f matA, Mat4f matB) {
@@ -70,7 +70,7 @@ public class Mat4f {
 		return new Mat4f(product);
 	}
 
-	public Vector3f multiply(Vector3f vec) {
+	public Vec3f multiply(Vec3f vec) {
 		return multiply(this, vec);
 	}
 

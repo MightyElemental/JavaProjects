@@ -6,14 +6,13 @@ import java.util.Vector;
 public class Scene {
 
 	public Vector<Renderable> objectList = new Vector<Renderable>();
-	public Vector<Light> lightList = new Vector<Light>();
+	public Vector<Light>      lightList  = new Vector<Light>();
 
-	public String skyboxLocation = "./imgs/skybox/";
+	public String skyboxLocation = "./imgs/yokohama3/";
 
 	public float gravity = 9.8f;
 
-	// public Vector3f backgroundColor = new Vector3f(119 / 255f, 181 / 255f, 254 /
-	// 255f);
+	// public Vector3f backgroundColor = new Vector3f(119 / 255f, 181 / 255f, 254 / 255f);
 
 	public Scene() {
 
@@ -21,27 +20,18 @@ public class Scene {
 
 	public void add(Renderable rend) {
 		if (rend instanceof ComplexRenderable) {
-			objectList.addAll(((ComplexRenderable) rend).objs);
+			objectList.addAll( ((ComplexRenderable) rend).objs );
 		} else {
-			objectList.add(rend);
+			objectList.add( rend );
 		}
 	}
 
-	public void setSkyBox(String skyboxLocation) {
-		this.skyboxLocation = skyboxLocation;
-	}
+	public void setSkyBox(String skyboxLocation) { this.skyboxLocation = skyboxLocation; }
 
-	public void add(Light light) {
-		lightList.add(light);
-	}
+	public void add(Light light) { lightList.add( light ); }
 
-	public String getSkybox() {
-		return skyboxLocation;
-	}
+	public String getSkybox() { return skyboxLocation; }
 
-	public void add(Optional<ComplexRenderable> rend) {
-		if (rend.isPresent())
-			add(rend.get());
-	}
+	public void add(Optional<ComplexRenderable> rend) { if (rend.isPresent()) add( rend.get() ); }
 
 }

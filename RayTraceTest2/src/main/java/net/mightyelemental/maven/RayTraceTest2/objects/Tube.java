@@ -2,7 +2,7 @@ package net.mightyelemental.maven.RayTraceTest2.objects;
 
 import net.mightyelemental.maven.RayTraceTest2.Mat4f;
 import net.mightyelemental.maven.RayTraceTest2.Ray;
-import net.mightyelemental.maven.RayTraceTest2.Vector3f;
+import net.mightyelemental.maven.RayTraceTest2.Vec3f;
 import net.mightyelemental.maven.RayTraceTest2.materials.Material;
 
 public class Tube implements Renderable {
@@ -12,28 +12,28 @@ public class Tube implements Renderable {
 
 	private Material mat = Material.basic();
 
-	public Tube(Vector3f orient, float length, float radius) {
-		this.defLine = new Ray(orient.getUnitVec(), new Vector3f(0, 0, 0));
+	public Tube(Vec3f orient, float length, float radius) {
+		this.defLine = new Ray(orient.getUnitVec(), new Vec3f(0, 0, 0));
 		this.length = length;
 		this.radius = radius;
 	}
 
-	public Tube(Vector3f orient, Vector3f pos, float length, float radius) {
+	public Tube(Vec3f orient, Vec3f pos, float length, float radius) {
 		this(orient, length, radius);
 		defLine.setOrig(pos);
 	}
 
 	@Override
 	public boolean intersects(Ray r) {
-		Vector3f v = r.getDirection();
-		Vector3f va = defLine.getDirection().getUnitVec();
-		Vector3f pa = defLine.getOrig();
-		Vector3f p = r.getOrig();
-		Vector3f delP = p.sub(pa);
+		Vec3f v = r.getDirection();
+		Vec3f va = defLine.getDirection().getUnitVec();
+		Vec3f pa = defLine.getOrig();
+		Vec3f p = r.getOrig();
+		Vec3f delP = p.sub(pa);
 		float B = 2 * (v.sub(va.mul(v.dot(va)))).dot(delP.sub(va.mul(delP.dot(va))));
-		Vector3f Av = v.sub(va.mul(v.dot(va)));
+		Vec3f Av = v.sub(va.mul(v.dot(va)));
 		float A = Av.dot(Av);
-		Vector3f Cv = delP.sub(va.mul(delP.dot(va)));
+		Vec3f Cv = delP.sub(va.mul(delP.dot(va)));
 		float C = Cv.dot(Cv) - radius * radius;
 		float det = B * B - 4 * A * C;
 		// if ( det < 0 ) return false;
@@ -48,7 +48,7 @@ public class Tube implements Renderable {
 
 		if (r.t0 < 0)
 			r.t0 = r.t1;
-		Vector3f hit = p.sum(v.mul(r.t0));
+		Vec3f hit = p.sum(v.mul(r.t0));
 		if (hit.sub(pa).dot(hit.sub(pa)) > radius * radius)
 			return false;
 
@@ -56,18 +56,18 @@ public class Tube implements Renderable {
 	}
 
 	@Override
-	public Vector3f getNormal(Vector3f hit, Vector3f rayDir) {
+	public Vec3f getNormal(Vec3f hit, Vec3f rayDir) {
 		return defLine.getRayToPoint(hit).getDirection();
 	}
 
 	@Override
-	public Vector3f getColor() {
+	public Vec3f getColor() {
 		// TODO Auto-generated method stub
-		return new Vector3f(0.5f, 0, 0.5f);
+		return new Vec3f(0.5f, 0, 0.5f);
 	}
 
 	@Override
-	public void setPos(Vector3f pos) {
+	public void setPos(Vec3f pos) {
 		defLine.setOrig(pos);
 	}
 
@@ -77,13 +77,13 @@ public class Tube implements Renderable {
 	}
 
 	@Override
-	public boolean isPointWithin(Vector3f vec) {
+	public boolean isPointWithin(Vec3f vec) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
-	public Vector3f getPos() {
+	public Vec3f getPos() {
 		return defLine.getOrig();
 	}
 
@@ -103,17 +103,17 @@ public class Tube implements Renderable {
 	}
 
 	@Override
-	public void setColor(Vector3f vec) {
+	public void setColor(Vec3f vec) {
 
 	}
 
 	@Override
-	public void translate(Vector3f transVec) {
+	public void translate(Vec3f transVec) {
 		defLine.setOrig(defLine.getOrig().sum(transVec));
 	}
 
 	@Override
-	public void rotate(Vector3f rotVec) {
+	public void rotate(Vec3f rotVec) {
 		Mat4f rotMat = Mat4f.getFullRotationDeg(rotVec);
 		defLine.setOrig(rotMat.multiply(defLine.getOrig()));
 		// TODO: add rotation for direction

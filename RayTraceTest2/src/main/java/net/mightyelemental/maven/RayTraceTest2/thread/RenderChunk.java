@@ -4,17 +4,14 @@ public class RenderChunk {
 
 	public boolean startedRender, finishedRender;
 
-	public int x, y, width, height;
+	public int x, y;
+
+	public static final int CHUNK_SIZE = 64;
 
 	/** starting and ending times for the render */
 	public long startingTime, finishTime;
 
-	public RenderChunk(int x, int y, int width, int height) {
-		this.x = x;
-		this.y = y;
-		this.width = width;
-		this.height = height;
-	}
+	public RenderChunk(int x, int y) { this.x = x; this.y = y; }
 
 	public void startRender() {
 		startedRender = true;
@@ -24,7 +21,7 @@ public class RenderChunk {
 	public void endRender() {
 		finishedRender = true;
 		finishTime = System.currentTimeMillis();
-		System.out.println(x+"|"+y+" took "+(finishTime-startingTime)+"ms to render");
+		// System.out.println(x + "|" + y + " took " + (finishTime - startingTime) + "ms to render");
 	}
 
 	public void reset() {

@@ -1,19 +1,19 @@
 package net.mightyelemental.maven.RayTraceTest2.objects;
 
-import net.mightyelemental.maven.RayTraceTest2.Vector3f;
+import net.mightyelemental.maven.RayTraceTest2.Vec3f;
 
 public class Light {
 
-	public Vector3f	pos, color;
+	public Vec3f	pos, color;
 	public float	brightness = 1;
 
 	public Light(float x, float y, float z) {
-		this(new Vector3f(x, y, z));
+		this(new Vec3f(x, y, z));
 	}
 
-	public Light(Vector3f pos) {
+	public Light(Vec3f pos) {
 		this.pos = pos;
-		this.color = new Vector3f(1, 1, 1);
+		this.color = new Vec3f(1, 1, 1);
 	}
 
 }

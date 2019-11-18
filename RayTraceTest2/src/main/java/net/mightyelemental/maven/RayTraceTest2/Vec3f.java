@@ -1,12 +1,12 @@
 package net.mightyelemental.maven.RayTraceTest2;
 
-public class Vector3f {
+public class Vec3f {
 
 	public float x;
 	public float y;
 	public float z;
 
-	public Vector3f(float x, float y, float z) {
+	public Vec3f(float x, float y, float z) {
 		this.x = x;
 		this.y = y;
 		this.z = z;
@@ -48,16 +48,16 @@ public class Vector3f {
 		this.z += z;
 	}
 
-	public Vector3f sum(Vector3f v) {
-		return new Vector3f(v.x + x, v.y + y, v.z + z);
+	public Vec3f sum(Vec3f v) {
+		return new Vec3f(v.x + x, v.y + y, v.z + z);
 	}
 
-	public Vector3f getUnitVec() {
+	public Vec3f getUnitVec() {
 		float l = getLength();
-		return new Vector3f(x / l, y / l, z / l);
+		return new Vec3f(x / l, y / l, z / l);
 	}
 
-	public Vector3f normalize() {
+	public Vec3f normalize() {
 		float l = getLength();
 		if (l != 0 && l != 1) {
 			x /= l;
@@ -67,11 +67,11 @@ public class Vector3f {
 		return this;
 	}
 
-	public Vector3f vecTo(Vector3f v) {
-		return new Vector3f(v.x - x, v.y - y, v.z - z);
+	public Vec3f vecTo(Vec3f v) {
+		return new Vec3f(v.x - x, v.y - y, v.z - z);
 	}
 
-	public float dot(Vector3f v) {
+	public float dot(Vec3f v) {
 		return x * v.x + y * v.y + z * v.z;
 	}
 
@@ -83,83 +83,83 @@ public class Vector3f {
 		return "{" + x + "," + y + "," + z + "}";
 	}
 
-	public Vector3f sub(Vector3f v) {
-		return new Vector3f(x - v.x, y - v.y, z - v.z);
+	public Vec3f sub(Vec3f v) {
+		return new Vec3f(x - v.x, y - v.y, z - v.z);
 	}
 
-	public Vector3f mul(float s) {
-		return new Vector3f(x * s, y * s, z * s);
+	public Vec3f mul(float s) {
+		return new Vec3f(x * s, y * s, z * s);
 	}
 
-	public Vector3f getNegative() {
-		return new Vector3f(-x, -y, -z);
+	public Vec3f getNegative() {
+		return new Vec3f(-x, -y, -z);
 	}
 
-	public Vector3f negate() {
+	public Vec3f negate() {
 		this.x = -x;
 		this.y = -y;
 		this.z = -z;
 		return this;
 	}
 
-	public Vector3f sum(float s) {
-		return new Vector3f(x + s, y + s, z + s);
+	public Vec3f sum(float s) {
+		return new Vec3f(x + s, y + s, z + s);
 	}
 
-	public Vector3f mul(Vector3f v) {
-		return new Vector3f(x * v.x, y * v.y, z * v.z);
+	public Vec3f mul(Vec3f v) {
+		return new Vec3f(x * v.x, y * v.y, z * v.z);
 	}
 
-	public static Vector3f origin() {
-		return new Vector3f(0, 0, 0);
+	public static Vec3f origin() {
+		return new Vec3f(0, 0, 0);
 	}
 
-	public final Vector3f cross(Vector3f B) {
-		return new Vector3f(y * B.z - z * B.y, z * B.x - x * B.z, x * B.y - y * B.x);
+	public final Vec3f cross(Vec3f B) {
+		return new Vec3f(y * B.z - z * B.y, z * B.x - x * B.z, x * B.y - y * B.x);
 	}
 
 	public float dot(float f, float g, float h) {
-		return dot(new Vector3f(f, g, h));
+		return dot(new Vec3f(f, g, h));
 	}
 
-	public static Vector3f bisect(Vector3f rayDir, Vector3f vecToLight) {
+	public static Vec3f bisect(Vec3f rayDir, Vec3f vecToLight) {
 		float len = rayDir.sum(vecToLight).getLength();
 		return rayDir.sum(vecToLight).mul(1f / len);
 	}
 
-	public Vector3f getReflectedVector(Vector3f normal) {
+	public Vec3f getReflectedVector(Vec3f normal) {
 		return this.sub(normal.mul(2 * this.dot(normal)));
 	}
 	
-	public float getCosOfAngle(Vector3f vec) {
+	public float getCosOfAngle(Vec3f vec) {
 		float dot = this.dot(vec);
 		float mul = vec.getLength() * this.getLength();
 		return dot/mul;
 	}
 
-	public float getAngle(Vector3f vec) {// TODO: might cause instability
+	public float getAngle(Vec3f vec) {// TODO: might cause instability
 		return (float) Math.acos(getCosOfAngle(vec));
 	}
 
 	public boolean equals(Object o) {
-		if (!(o instanceof Vector3f))
+		if (!(o instanceof Vec3f))
 			return false;
-		Vector3f v = (Vector3f) o;
+		Vec3f v = (Vec3f) o;
 		if (v.x == x && v.y == y && v.z == z)
 			return true;
 		return false;
 	}
 
-	public Vector3f removeY() {
+	public Vec3f removeY() {
 		this.y = 0;
 		return this;
 	}
 
-	public static Vector3f nullVec() {
-		return new Vector3f(Float.NaN, Float.NaN, Float.NaN);
+	public static Vec3f nullVec() {
+		return new Vec3f(Float.NaN, Float.NaN, Float.NaN);
 	}
 
-	public static boolean isNullVec(Vector3f vec) {
+	public static boolean isNullVec(Vec3f vec) {
 		return Float.isNaN(vec.x) && Float.isNaN(vec.y) && Float.isNaN(vec.z);
 	}
 

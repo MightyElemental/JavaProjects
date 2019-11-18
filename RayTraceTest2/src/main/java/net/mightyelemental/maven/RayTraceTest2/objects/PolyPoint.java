@@ -1,20 +1,20 @@
 package net.mightyelemental.maven.RayTraceTest2.objects;
 
-import net.mightyelemental.maven.RayTraceTest2.Vector3f;
+import net.mightyelemental.maven.RayTraceTest2.Vec3f;
 
 public class PolyPoint {
 
-	public Vector3f location;
-	public Vector3f uvMapping;
-	public Vector3f normal;
+	public Vec3f location;
+	public Vec3f uvMapping;
+	public Vec3f normal;
 
-	public PolyPoint(Vector3f loc, Vector3f uv, Vector3f norm) {
+	public PolyPoint(Vec3f loc, Vec3f uv, Vec3f norm) {
 		this.location = loc;
 		this.uvMapping = uv;
 		this.normal = norm;
 	}
 
-	public PolyPoint(Vector3f loc) {
+	public PolyPoint(Vec3f loc) {
 		this.location = loc;
 	}
 

@@ -5,7 +5,7 @@ import java.util.List;
 
 import net.mightyelemental.maven.RayTraceTest2.Mat4f;
 import net.mightyelemental.maven.RayTraceTest2.Ray;
-import net.mightyelemental.maven.RayTraceTest2.Vector3f;
+import net.mightyelemental.maven.RayTraceTest2.Vec3f;
 
 public class Triangle extends Plane {
 
@@ -15,35 +15,31 @@ public class Triangle extends Plane {
 
 	@Override
 	public boolean intersects(Ray r) {
-		if (!smoothNormal) {
-			boolean inter = super.intersects(r);
-			if (inter) {
-				Vector3f hit = r.getOrig().sum(r.getDirection().mul(r.t0));
+		boolean inter = super.intersects(r);
+		if (inter) {
+			Vec3f hit = r.getOrig().sum(r.getDirection().mul(r.t0));
 
-				Vector3f edge0 = p2.location.sub(p1.location);
-				Vector3f vp0 = hit.sub(p1.location);
-				if (normal.dot(edge0.cross(vp0)) < 0)
-					return false;
+			Vec3f edge0 = p2.location.sub(p1.location);
+			Vec3f vp0 = hit.sub(p1.location);
+			if (normal.dot(edge0.cross(vp0)) < 0)
+				return false;
 
-				Vector3f edge1 = p3.location.sub(p2.location);
-				Vector3f vp1 = hit.sub(p2.location);
-				if (normal.dot(edge1.cross(vp1)) < 0)
-					return false;
+			Vec3f edge1 = p3.location.sub(p2.location);
+			Vec3f vp1 = hit.sub(p2.location);
+			if (normal.dot(edge1.cross(vp1)) < 0)
+				return false;
 
-				Vector3f edge2 = p1.location.sub(p3.location);
-				Vector3f vp2 = hit.sub(p3.location);
-				if (normal.dot(edge2.cross(vp2)) < 0)
-					return false;
+			Vec3f edge2 = p1.location.sub(p3.location);
+			Vec3f vp2 = hit.sub(p3.location);
+			if (normal.dot(edge2.cross(vp2)) < 0)
+				return false;
 
-				return true;
-			}
-		} else {
-
+			return true;
 		}
 		return false;
 	}
 
-	public Triangle(Vector3f p1, Vector3f p2, Vector3f p3) {
+	public Triangle(Vec3f p1, Vec3f p2, Vec3f p3) {
 		super(p3.sub(p2).cross(p1.sub(p2)).normalize(), p1);
 		this.p1 = new PolyPoint(p1);
 		this.p2 = new PolyPoint(p2);
@@ -60,31 +56,31 @@ public class Triangle extends Plane {
 		this.p1 = p1;
 		this.p2 = p2;
 		this.p3 = p3;
-		smoothNormal = false;// TODO: change once added feature
+		smoothNormal = true;// TODO: change once added feature
 	}
 
-	public void translate(Vector3f transVec) {
+	public void translate(Vec3f transVec) {
 		p1.location = p1.location.sum(transVec);
 		p2.location = p2.location.sum(transVec);
 		p3.location = p3.location.sum(transVec);
 	}
 
 	@Override
-	public boolean isPointWithin(Vector3f hit) {
+	public boolean isPointWithin(Vec3f hit) {
 		if (!super.isPointWithin(hit))
 			return false;
-		Vector3f edge0 = p2.location.sub(p1.location);
-		Vector3f vp0 = hit.sub(p1.location);
+		Vec3f edge0 = p2.location.sub(p1.location);
+		Vec3f vp0 = hit.sub(p1.location);
 		if (normal.dot(edge0.cross(vp0)) < 0)
 			return false;
 
-		Vector3f edge1 = p3.location.sub(p2.location);
-		Vector3f vp1 = hit.sub(p2.location);
+		Vec3f edge1 = p3.location.sub(p2.location);
+		Vec3f vp1 = hit.sub(p2.location);
 		if (normal.dot(edge1.cross(vp1)) < 0)
 			return false;
 
-		Vector3f edge2 = p1.location.sub(p3.location);
-		Vector3f vp2 = hit.sub(p3.location);
+		Vec3f edge2 = p1.location.sub(p3.location);
+		Vec3f vp2 = hit.sub(p3.location);
 		if (normal.dot(edge2.cross(vp2)) < 0)
 			return false;
 
@@ -101,13 +97,32 @@ public class Triangle extends Plane {
 		return tris;
 	}
 
-	public void rotate(Vector3f rotVec) {
+	public void rotate(Vec3f rotVec) {
 		Mat4f rotMat = Mat4f.getFullRotationDeg(rotVec);
 		p1.location = rotMat.multiply(p1.location);
 		p2.location = rotMat.multiply(p2.location);
 		p3.location = rotMat.multiply(p3.location);
 		origin = p1.location;
 		normal = p3.location.sub(p2.location).cross(p1.location.sub(p2.location)).normalize();
+	}
+
+	@Override
+	public Vec3f getNormal(Vec3f hit, Vec3f rayDir) {
+		if (smoothNormal) {
+//			const Vec3f &n0 = N[trisIndex[triIndex * 3]]; 
+//		    const Vec3f &n1 = N[trisIndex[triIndex * 3 + 1]]; 
+//		    const Vec3f &n2 = N[trisIndex[triIndex * 3 + 2]]; 
+//		    hitNormal = (1 - uv.x - uv.y) * n0 + uv.x * n1 + uv.y * n2; 
+
+			return p1.normal.sum(p2.normal).sum(p3.normal);
+		} else {
+			if (rayDir.dot(normal) >= 0) {
+				return normal.getNegative();
+			} else {
+				return normal;
+			}
+		}
+
 	}
 
 }

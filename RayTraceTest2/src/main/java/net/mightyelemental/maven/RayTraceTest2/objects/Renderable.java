@@ -1,7 +1,7 @@
 package net.mightyelemental.maven.RayTraceTest2.objects;
 
 import net.mightyelemental.maven.RayTraceTest2.Ray;
-import net.mightyelemental.maven.RayTraceTest2.Vector3f;
+import net.mightyelemental.maven.RayTraceTest2.Vec3f;
 import net.mightyelemental.maven.RayTraceTest2.materials.Material;
 
 public interface Renderable {
@@ -9,15 +9,15 @@ public interface Renderable {
 	public boolean intersects(Ray r);
 
 	/** Used to test if a point intersects with the renderable object */
-	public boolean isPointWithin(Vector3f vec);
+	public boolean isPointWithin(Vec3f vec);
 
 	// public Vector3f shade(Vector3f rayDir, Vector3f hit, List<Light> lights);
 
-	public Vector3f getNormal(Vector3f hit, Vector3f rayDir);
+	public Vec3f getNormal(Vec3f hit, Vec3f rayDir);
 
-	public Vector3f getColor();
+	public Vec3f getColor();
 
-	public void setPos(Vector3f pos);
+	public void setPos(Vec3f pos);
 
 	public Material getMaterial();
 
@@ -33,12 +33,12 @@ public interface Renderable {
 		return false;
 	}
 
-	public Vector3f getPos();
+	public Vec3f getPos();
 
-	public void setColor(Vector3f vec);
+	public void setColor(Vec3f vec);
 
-	public void translate(Vector3f transVec);
+	public void translate(Vec3f transVec);
 	
-	public void rotate(Vector3f rotVec);
+	public void rotate(Vec3f rotVec);
 
 }

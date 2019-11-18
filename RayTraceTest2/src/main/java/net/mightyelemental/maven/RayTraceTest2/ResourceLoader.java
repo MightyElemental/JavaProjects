@@ -14,11 +14,23 @@ public class ResourceLoader {
 
 	private static Map<String, BufferedImage> cache = new HashMap<String, BufferedImage>();
 
+	/** Will attempt to load all the images in the set until it finds a valid one */
+	public static BufferedImage loadImage(String... locs) {
+		for (String loc : locs) {
+			BufferedImage bi = loadImage(loc);
+			if (!bi.equals(nullImage())) {
+				return bi;
+			}
+		}
+		return nullImage();
+	}
+
 	public static BufferedImage loadImage(String loc) {
-		if ( cache.containsKey(loc) ) return cache.get(loc);
+		if (cache.containsKey(loc))
+			return cache.get(loc);
 		BufferedImage img = nullImage();
 		File f = new File(loc);
-		if ( f.exists() ) {
+		if (f.exists()) {
 			try {
 				img = ImageIO.read(f);
 			} catch (IOException e) {
@@ -31,7 +43,8 @@ public class ResourceLoader {
 	}
 
 	public static BufferedImage nullImage() {
-		if ( cache.containsKey("null") ) return cache.get("null");
+		if (cache.containsKey("null"))
+			return cache.get("null");
 		BufferedImage img = new BufferedImage(2, 2, BufferedImage.TYPE_INT_RGB);
 		Graphics g = img.getGraphics();
 		g.setColor(Color.MAGENTA);

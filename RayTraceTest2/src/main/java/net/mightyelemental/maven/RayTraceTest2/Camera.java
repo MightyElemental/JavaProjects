@@ -7,7 +7,7 @@ import net.mightyelemental.maven.RayTraceTest2.objects.Renderable;
 
 public class Camera {
 
-	public Vector3f cameraPos, cameraAngle;
+	public Vec3f cameraPos, cameraAngle;
 	public float fov = 90;
 	Mat4f rotMat;
 
@@ -17,12 +17,12 @@ public class Camera {
 
 	public Renderable camObj;
 
-	public Camera(Vector3f pos, float fov, int width, int height) {
+	public Camera(Vec3f pos, float fov, int width, int height) {
 		this.cameraPos = pos;
 		this.fov = fov;
 		this.width = width;
 		this.height = height;
-		cameraAngle = new Vector3f(0, -30, 0);
+		cameraAngle = new Vec3f(0, -30, 0);
 		Mat4f rotX = Mat4f.getXRotationDeg(cameraAngle.x);
 		Mat4f rotY = Mat4f.getYRotationDeg(cameraAngle.y);
 		Mat4f rotZ = Mat4f.getZRotationDeg(cameraAngle.z);
@@ -49,7 +49,7 @@ public class Camera {
 		float xx = (2 * ((x + 0.5f) * invWidth) - 1) * angle * aspRat;
 		float yy = (1 - 2 * ((y + 0.5f) * invHeight)) * angle;
 
-		Vector3f dirVec = new Vector3f(xx, yy, -1).normalize();
+		Vec3f dirVec = new Vec3f(xx, yy, -1).normalize();
 		dirVec = rotMat.multiply(dirVec);
 		// System.out.println(dirVec);
 
