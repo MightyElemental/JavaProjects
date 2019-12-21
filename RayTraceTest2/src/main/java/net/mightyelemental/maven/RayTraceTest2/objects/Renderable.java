@@ -41,4 +41,6 @@ public interface Renderable {
 	
 	public void rotate(Vec3f rotVec);
 
+	public BoundingBox generateBoundingBox();
+
 }

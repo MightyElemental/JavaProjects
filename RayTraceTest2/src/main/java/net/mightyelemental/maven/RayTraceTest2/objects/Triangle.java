@@ -5,6 +5,7 @@ import java.util.List;
 
 import net.mightyelemental.maven.RayTraceTest2.Mat4f;
 import net.mightyelemental.maven.RayTraceTest2.Ray;
+import net.mightyelemental.maven.RayTraceTest2.Utils;
 import net.mightyelemental.maven.RayTraceTest2.Vec3f;
 
 public class Triangle extends Plane {
@@ -15,24 +16,21 @@ public class Triangle extends Plane {
 
 	@Override
 	public boolean intersects(Ray r) {
-		boolean inter = super.intersects(r);
+		boolean inter = super.intersects( r );
 		if (inter) {
-			Vec3f hit = r.getOrig().sum(r.getDirection().mul(r.t0));
+			Vec3f hit = r.getOrig().sum( r.getDirection().mul( r.t0 ) );
 
-			Vec3f edge0 = p2.location.sub(p1.location);
-			Vec3f vp0 = hit.sub(p1.location);
-			if (normal.dot(edge0.cross(vp0)) < 0)
-				return false;
+			Vec3f edge0 = p2.location.sub( p1.location );
+			Vec3f vp0 = hit.sub( p1.location );
+			if (normal.dot( edge0.cross( vp0 ) ) < 0) return false;
 
-			Vec3f edge1 = p3.location.sub(p2.location);
-			Vec3f vp1 = hit.sub(p2.location);
-			if (normal.dot(edge1.cross(vp1)) < 0)
-				return false;
+			Vec3f edge1 = p3.location.sub( p2.location );
+			Vec3f vp1 = hit.sub( p2.location );
+			if (normal.dot( edge1.cross( vp1 ) ) < 0) return false;
 
-			Vec3f edge2 = p1.location.sub(p3.location);
-			Vec3f vp2 = hit.sub(p3.location);
-			if (normal.dot(edge2.cross(vp2)) < 0)
-				return false;
+			Vec3f edge2 = p1.location.sub( p3.location );
+			Vec3f vp2 = hit.sub( p3.location );
+			if (normal.dot( edge2.cross( vp2 ) ) < 0) return false;
 
 			return true;
 		}
@@ -40,10 +38,10 @@ public class Triangle extends Plane {
 	}
 
 	public Triangle(Vec3f p1, Vec3f p2, Vec3f p3) {
-		super(p3.sub(p2).cross(p1.sub(p2)).normalize(), p1);
-		this.p1 = new PolyPoint(p1);
-		this.p2 = new PolyPoint(p2);
-		this.p3 = new PolyPoint(p3);
+		super( p3.sub( p2 ).cross( p1.sub( p2 ) ).normalize(), p1 );
+		this.p1 = new PolyPoint( p1 );
+		this.p2 = new PolyPoint( p2 );
+		this.p3 = new PolyPoint( p3 );
 		smoothNormal = false;
 //		float x = (p1.x + p2.x + p3.x) / 3f;
 //		float y = (p1.y + p2.y + p3.y) / 3f;
@@ -52,7 +50,8 @@ public class Triangle extends Plane {
 	}
 
 	public Triangle(PolyPoint p1, PolyPoint p2, PolyPoint p3) {
-		super(p3.location.sub(p2.location).cross(p1.location.sub(p2.location)).normalize(), p1.location);
+		super( p3.location.sub( p2.location ).cross( p1.location.sub( p2.location ) ).normalize(),
+				p1.location );
 		this.p1 = p1;
 		this.p2 = p2;
 		this.p3 = p3;
@@ -60,50 +59,46 @@ public class Triangle extends Plane {
 	}
 
 	public void translate(Vec3f transVec) {
-		p1.location = p1.location.sum(transVec);
-		p2.location = p2.location.sum(transVec);
-		p3.location = p3.location.sum(transVec);
+		p1.location = p1.location.sum( transVec );
+		p2.location = p2.location.sum( transVec );
+		p3.location = p3.location.sum( transVec );
 	}
 
 	@Override
 	public boolean isPointWithin(Vec3f hit) {
-		if (!super.isPointWithin(hit))
-			return false;
-		Vec3f edge0 = p2.location.sub(p1.location);
-		Vec3f vp0 = hit.sub(p1.location);
-		if (normal.dot(edge0.cross(vp0)) < 0)
-			return false;
+		if (!super.isPointWithin( hit )) return false;
+		Vec3f edge0 = p2.location.sub( p1.location );
+		Vec3f vp0 = hit.sub( p1.location );
+		if (normal.dot( edge0.cross( vp0 ) ) < 0) return false;
 
-		Vec3f edge1 = p3.location.sub(p2.location);
-		Vec3f vp1 = hit.sub(p2.location);
-		if (normal.dot(edge1.cross(vp1)) < 0)
-			return false;
+		Vec3f edge1 = p3.location.sub( p2.location );
+		Vec3f vp1 = hit.sub( p2.location );
+		if (normal.dot( edge1.cross( vp1 ) ) < 0) return false;
 
-		Vec3f edge2 = p1.location.sub(p3.location);
-		Vec3f vp2 = hit.sub(p3.location);
-		if (normal.dot(edge2.cross(vp2)) < 0)
-			return false;
+		Vec3f edge2 = p1.location.sub( p3.location );
+		Vec3f vp2 = hit.sub( p3.location );
+		if (normal.dot( edge2.cross( vp2 ) ) < 0) return false;
 
 		return true;
 	}
 
 	public static List<Triangle> getTrisFromPoints(PolyPoint... vecs) {
 		if (vecs.length < 3)
-			System.err.println("Not enough points were given to form any triangles!");
+			System.err.println( "Not enough points were given to form any triangles!" );
 		List<Triangle> tris = new ArrayList<Triangle>();
 		for (int i = 1; i < vecs.length - 1; i++) {
-			tris.add(new Triangle(vecs[0], vecs[i], vecs[i + 1]));
+			tris.add( new Triangle( vecs[0], vecs[i], vecs[i + 1] ) );
 		}
 		return tris;
 	}
 
 	public void rotate(Vec3f rotVec) {
-		Mat4f rotMat = Mat4f.getFullRotationDeg(rotVec);
-		p1.location = rotMat.multiply(p1.location);
-		p2.location = rotMat.multiply(p2.location);
-		p3.location = rotMat.multiply(p3.location);
+		Mat4f rotMat = Mat4f.getFullRotationDeg( rotVec );
+		p1.location = rotMat.multiply( p1.location );
+		p2.location = rotMat.multiply( p2.location );
+		p3.location = rotMat.multiply( p3.location );
 		origin = p1.location;
-		normal = p3.location.sub(p2.location).cross(p1.location.sub(p2.location)).normalize();
+		normal = p3.location.sub( p2.location ).cross( p1.location.sub( p2.location ) ).normalize();
 	}
 
 	@Override
@@ -114,15 +109,22 @@ public class Triangle extends Plane {
 //		    const Vec3f &n2 = N[trisIndex[triIndex * 3 + 2]]; 
 //		    hitNormal = (1 - uv.x - uv.y) * n0 + uv.x * n1 + uv.y * n2; 
 
-			return p1.normal.sum(p2.normal).sum(p3.normal);
+			return p1.normal.sum( p2.normal ).sum( p3.normal );
 		} else {
-			if (rayDir.dot(normal) >= 0) {
+			if (rayDir.dot( normal ) >= 0) {
 				return normal.getNegative();
 			} else {
 				return normal;
 			}
 		}
 
+	}
+
+	@Override
+	public BoundingBox generateBoundingBox() {
+		Vec3f min = Utils.minVec( p1.location, p2.location, p3.location );
+		Vec3f max = Utils.maxVec( p1.location, p2.location, p3.location );
+		return new BoundingBox( min, max );
 	}
 
 }

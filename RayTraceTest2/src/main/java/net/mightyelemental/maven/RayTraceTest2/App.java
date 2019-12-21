@@ -18,9 +18,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.OptionalDouble;
 import java.util.Set;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
@@ -31,13 +31,14 @@ import javax.imageio.stream.FileImageOutputStream;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import net.mightyelemental.maven.RayTraceTest2.BVH.BVH;
 import net.mightyelemental.maven.RayTraceTest2.materials.Material;
 import net.mightyelemental.maven.RayTraceTest2.objects.Box;
 import net.mightyelemental.maven.RayTraceTest2.objects.CameraModel;
 import net.mightyelemental.maven.RayTraceTest2.objects.Circle;
-import net.mightyelemental.maven.RayTraceTest2.objects.ComplexRenderable;
 import net.mightyelemental.maven.RayTraceTest2.objects.Light;
 import net.mightyelemental.maven.RayTraceTest2.objects.Plane;
+import net.mightyelemental.maven.RayTraceTest2.objects.Polyhedron;
 import net.mightyelemental.maven.RayTraceTest2.objects.Renderable;
 import net.mightyelemental.maven.RayTraceTest2.objects.Scene;
 import net.mightyelemental.maven.RayTraceTest2.objects.Sphere;
@@ -83,6 +84,7 @@ public class App implements KeyListener, MouseWheelListener {
 		int ticks = 0;
 		long timeOff = 0;
 		starting.start();
+		BVH.generateBVHTree( worldScene );
 		while (true) {
 			long t1 = System.currentTimeMillis();
 			// cam.moveTo((float) Math.sin(ticks / 80f) * 10 + 3, 10, 10);
@@ -119,16 +121,15 @@ public class App implements KeyListener, MouseWheelListener {
 	Sphere      s5   = new Sphere( new Vec3f( 7, 4, 2 ), 1 );
 	CameraModel camS = new CameraModel( new Vec3f( 0, 0, 0 ) );
 
-	public List<Thread> setupRenderingThreads(int[] pixels, int width,
-			int height, int pixelSize) {
+	public List<Thread> setupRenderingThreads(int[] pixels, int width, int height, int pixelSize) {
 		List<Thread> renderingThreads = new ArrayList<Thread>();
 		for (int i = 0; i < Properties.cores - 1; i++) {
 			final int threadNum = i;
 			Thread rt = new Thread( "t" + threadNum ) {
 
 				public void run() {
-					for (int x = width / Properties.cores * threadNum; x < width
-							/ Properties.cores * (threadNum + 1); x += pixelSize) {
+					for (int x = width / Properties.cores * threadNum; x < width / Properties.cores
+							* (threadNum + 1); x += pixelSize) {
 						for (int y = 0; y < height; y += pixelSize) {
 							Ray r = cam.createRay( x, y );
 							int c = getIntFromVector( trace( r, 0 ) );
@@ -146,13 +147,11 @@ public class App implements KeyListener, MouseWheelListener {
 		return renderingThreads;
 	}
 
-	public void renderLoop(RenderChunk rc, int screenWidth, int screenHeight,
-			int pixelSize, int[] pixels) {
+	public void renderLoop(RenderChunk rc, int screenWidth, int screenHeight, int pixelSize,
+			int[] pixels) {
 
-		for (int x = rc.x; x < screenWidth
-				&& x < RenderChunk.CHUNK_SIZE + rc.x; x += pixelSize) {
-			for (int y = 0; y < screenHeight
-					&& y < RenderChunk.CHUNK_SIZE + rc.y; y += pixelSize) {
+		for (int x = rc.x; x < screenWidth && x < RenderChunk.CHUNK_SIZE + rc.x; x += pixelSize) {
+			for (int y = 0; y < screenHeight && y < RenderChunk.CHUNK_SIZE + rc.y; y += pixelSize) {
 				Ray r = cam.createRay( x, y );
 				int c = getIntFromVector( trace( r, 0 ) );
 				for (int i = 0; i < pixelSize && x + i < screenWidth; i++) {
@@ -203,18 +202,17 @@ public class App implements KeyListener, MouseWheelListener {
 		p.col = new Vec3f( 255, 109, 0 ).mul( 1f / 255f );
 		// worldScene.add(p);// Floor
 
-		Circle c = new Circle( new Vec3f( 0.5f, 1, 0 ).normalize(),
-				new Vec3f( 0, 40, 0 ), 20 );
+		Circle c = new Circle( new Vec3f( 0.5f, 1, 0 ).normalize(), new Vec3f( 0, 40, 0 ), 20 );
 		// worldScene.add(c);
 
 		Triangle t = new Triangle( new Vec3f( 5, 0, 0 ), new Vec3f( 5, 10, 0 ),
 				new Vec3f( 10, 10, 0 ) );
 		Triangle t2 = new Triangle( new Vec3f( 5, 0, 0 ), new Vec3f( 10, 0, 0 ),
 				new Vec3f( 10, 10, 0 ) );
-		List<Renderable> vec = new ArrayList<Renderable>();
+		List<Triangle> vec = new ArrayList<Triangle>();
 		vec.add( t );
 		vec.add( t2 );
-		ComplexRenderable comp = new ComplexRenderable( vec );
+		Polyhedron comp = new Polyhedron( vec );
 		comp.setMaterial( 1f, 1f, 1f );
 		// worldScene.add(comp);
 
@@ -231,12 +229,11 @@ public class App implements KeyListener, MouseWheelListener {
 		worldScene.add( camS );
 		cam.setCamObj( camS );
 
-		ComplexRenderable ammo = Utils.getRenderableFromObjFile( "ammo.obj" )
-				.get();
+		Polyhedron ammo = Utils.getRenderableFromObjFile( "pikachu.obj" ).get();
 		ammo.setMaterial( 0f, 1f, 1f );
-		ammo.setColor( new Vec3f( 244 / 255f, 205 / 255f, 138 / 255f ) );
+		// ammo.setColor( new Vec3f( 244 / 255f, 205 / 255f, 138 / 255f ) );
 		// ammo.rotate(new Vec3f(-90, 0, 0));
-		 worldScene.add( ammo );
+		worldScene.add( ammo );
 
 		// worldScene.add(new Tube(new Vector3f(0, 1, 0), new Vector3f(0, 2, 4), 0, 2));
 
@@ -253,33 +250,30 @@ public class App implements KeyListener, MouseWheelListener {
 
 	public JFrame window = new JFrame();
 
-	public JPanel        pan    = new JPanel() {
+	public JPanel pan = new JPanel() {
 
-												private static final long serialVersionUID = -3107887887785696282L;
+		private static final long serialVersionUID = -3107887887785696282L;
 
-												public void paint(Graphics g) {
-													// ((Graphics2D) g).setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-													// RenderingHints.VALUE_ANTIALIAS_ON);
-													g.drawImage( screen, 0, 0, 1280, 720,
-															null );
-													String text = "FPS: "
-															+ round( getAvgFPS(), 2 );
-													g.setColor( Color.WHITE );
-													g.fillRect( 0, 0, 72, 50 );
-													g.setColor( Color.BLACK );
-													g.drawString( text, 5, 20 );
+		public void paint(Graphics g) {
+			// ((Graphics2D) g).setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+			// RenderingHints.VALUE_ANTIALIAS_ON);
+			g.drawImage( screen, 0, 0, 1280, 720, null );
+			String text = "FPS: " + round( getAvgFPS(), 2 );
+			g.setColor( Color.WHITE );
+			g.fillRect( 0, 0, 72, 50 );
+			g.setColor( Color.BLACK );
+			g.drawString( text, 5, 20 );
 
-													if (pause) {
-														g.drawString( "PAUSE", 5, 40 );
-													} else if (gravity) { g
-															.drawString( "GRAV ON", 5, 40 ); }
-												}
-											};
-	public BufferedImage screen = new BufferedImage( 1280, 720,
-			BufferedImage.TYPE_INT_RGB );
+			if (pause) {
+				g.drawString( "PAUSE", 5, 40 );
+			} else if (gravity) { g.drawString( "GRAV ON", 5, 40 ); }
+		}
+	};
 
-	public Camera cam = new Camera( new Vec3f( 3, 10, 25 ), 95,
-			screen.getWidth(), screen.getHeight() );
+	public BufferedImage screen = new BufferedImage( 1280, 720, BufferedImage.TYPE_INT_RGB );
+
+	public Camera cam = new Camera( new Vec3f( 3, 10, 25 ), 95, screen.getWidth(),
+			screen.getHeight() );
 
 	public Scene worldScene = new Scene();
 
@@ -288,8 +282,7 @@ public class App implements KeyListener, MouseWheelListener {
 	public int[] pixelGrid;
 
 	{
-		pixelGrid = ((DataBufferInt) screen.getRaster().getDataBuffer())
-				.getData();
+		pixelGrid = ((DataBufferInt) screen.getRaster().getDataBuffer()).getData();
 	}
 
 	public static void main(String[] args) {
@@ -312,12 +305,10 @@ public class App implements KeyListener, MouseWheelListener {
 		// cam.height = 2160;
 		pause = true;
 		Thread.sleep( 1 );
-		BufferedImage img = new BufferedImage( 3840, 2160,
-				BufferedImage.TYPE_INT_RGB );
+		BufferedImage img = new BufferedImage( 3840, 2160, BufferedImage.TYPE_INT_RGB );
 		renderToTarget( img );
 		try {
-			String date = (new Date()).toString().replaceAll( " ", "_" )
-					.replaceAll( ":", "." );
+			String date = (new Date()).toString().replaceAll( " ", "_" ).replaceAll( ":", "." );
 			new File( "./imgs/renders/" ).mkdirs();
 //			File outputfile = new File("./imgs/renders/render_" + date + ".jpg");
 //			ImageIO.write(img, "jpg", outputfile);
@@ -355,8 +346,7 @@ public class App implements KeyListener, MouseWheelListener {
 		jpegParams.setCompressionMode( ImageWriteParam.MODE_EXPLICIT );
 		jpegParams.setCompressionQuality( quality );
 
-		final ImageWriter writer = ImageIO.getImageWritersByFormatName( "jpg" )
-				.next();
+		final ImageWriter writer = ImageIO.getImageWritersByFormatName( "jpg" ).next();
 		// specifies where the jpg image has to be written
 		writer.setOutput( new FileImageOutputStream( new File( location ) ) );
 
@@ -378,25 +368,22 @@ public class App implements KeyListener, MouseWheelListener {
 		// window.repaint();
 	}
 
-	public BufferedImage renderToTarget(BufferedImage target)
-			throws InterruptedException {
+	public BufferedImage renderToTarget(BufferedImage target) throws InterruptedException {
 		float oldWid = cam.width;
 		float oldHeight = cam.height;
 		cam.width = target.getWidth();
 		cam.height = target.getHeight();
 
-		int[] pixels = ((DataBufferInt) target.getRaster().getDataBuffer())
-				.getData();
+		int[] pixels = ((DataBufferInt) target.getRaster().getDataBuffer()).getData();
 
-		List<Thread> renderingThreads = setupRenderingThreads( pixels,
-				target.getWidth(), target.getHeight(), 1 );
+		List<Thread> renderingThreads = setupRenderingThreads( pixels, target.getWidth(),
+				target.getHeight(), 1 );
 
 		for (Thread t : renderingThreads) { t.start(); }
 
 		int cores = Properties.cores;
 
-		for (int x = target.getWidth() / cores * (cores - 1); x < target
-				.getWidth(); x++) {
+		for (int x = target.getWidth() / cores * (cores - 1); x < target.getWidth(); x++) {
 			for (int y = 0; y < target.getHeight(); y++) {
 				Ray r = cam.createRay( x, y );
 				int c = getIntFromVector( trace( r, 0 ) );
@@ -441,30 +428,35 @@ public class App implements KeyListener, MouseWheelListener {
 		toggle = (++toggle) % 4;
 	}
 
-	ThreadHandler thrHnd = new ThreadHandler( 160, 180, screen.getWidth(),
-			screen.getHeight() );
+	ThreadHandler thrHnd = new ThreadHandler( 64, 64, screen.getWidth(), screen.getHeight() );
 
 	private void dynamicRender() {
 		int fps = (int) Math.round( getAvgFPS() );
-		int step = pause ? 1 : (FPS_TARGET - fps > 1 ? FPS_TARGET - fps : 1);
+		int step = Math.min( pause ? 1 : (FPS_TARGET - fps > 1 ? FPS_TARGET - fps : 1), 15 );
 
 		int width = screen.getWidth();
 		int height = screen.getHeight();
 
-		System.out.println( step );
+		// System.out.println( step );
 
-		thrHnd.chunks.forEach( c -> threadPool
-				.submit( () -> renderLoop( c, width, height, step, pixelGrid ) ) );
+		CountDownLatch latch = new CountDownLatch( thrHnd.chunks.size() );
 
-		threadPool.shutdown();
+		thrHnd.chunks.forEach( c -> threadPool.submit( () -> {
+			renderLoop( c, width, height, step, pixelGrid );
+			latch.countDown();
+		} ) );
+
+		// threadPool.shutdown();
 
 		try {
-			threadPool.awaitTermination( 60, TimeUnit.MINUTES );
+			latch.await();
+			Thread.sleep( 1 );
+			// threadPool.awaitTermination( 60, TimeUnit.MINUTES );
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
 
-		threadPool = Executors.newFixedThreadPool( Properties.cores );
+		// threadPool = Executors.newFixedThreadPool( Properties.cores );
 
 //		List<Thread> renderingThreads = thrHnd.setupRenderingThreads( this,
 //				pixelGrid, step );
@@ -516,12 +508,14 @@ public class App implements KeyListener, MouseWheelListener {
 		if (width == screen.getWidth() && height == screen.getHeight()) return;
 		screen = new BufferedImage( width, height, BufferedImage.TYPE_INT_RGB );
 		cam.setDim( width, height );
-		pixelGrid = ((DataBufferInt) screen.getRaster().getDataBuffer())
-				.getData();
+		pixelGrid = ((DataBufferInt) screen.getRaster().getDataBuffer()).getData();
 	}
 
 	public Vec3f trace(Ray r, int depth) {// TODO: make shadows depend on transparency
-		Renderable rend = r.trace( worldScene.objectList, depth );
+		List<Renderable> objects = BVH.intersects( r );
+		System.out.println( objects.size() );
+		if (objects.isEmpty()) return getBackground( r.getDirection() );
+		Renderable rend = r.trace( objects, depth );
 		if (rend == null) return getBackground( r.getDirection() );
 		Vec3f hit = r.getHitPoint();
 		Vec3f color = new Vec3f( 0, 0, 0 );
@@ -529,33 +523,29 @@ public class App implements KeyListener, MouseWheelListener {
 		if (depth < MAX_RAY_DEPTH && rend.getMaterial().getReflectivity() > 0
 				&& rend.getMaterial().getOpacity() < 1) {
 			Vec3f ref = traceReflection( r, rend, hit, depth );
-			Vec3f adjustedRef = ref.mul( rend.getMaterial().getOpacity()
-					* (1 - ambientCoeff) * rend.getMaterial().getReflectivity() );
+			Vec3f adjustedRef = ref.mul( rend.getMaterial().getOpacity() * (1 - ambientCoeff)
+					* rend.getMaterial().getReflectivity() );
 			// refraction
 			Vec3f refractionCol = traceRefraction( r, rend, hit, depth );
-			Vec3f adjustedRefrac = refractionCol.mul(
-					(1 - rend.getMaterial().getOpacity()) * (1 - ambientCoeff) );
+			Vec3f adjustedRefrac = refractionCol
+					.mul( (1 - rend.getMaterial().getOpacity()) * (1 - ambientCoeff) );
 
 			color = base
 					.mul( ambientCoeff * rend.getMaterial().getOpacity()
 							* (1 - rend.getMaterial().getReflectivity()) )
 					.sum( adjustedRef ).sum( adjustedRefrac );
-		} else if (depth < MAX_RAY_DEPTH
-				&& rend.getMaterial().getReflectivity() > 0) { // reflection
+		} else if (depth < MAX_RAY_DEPTH && rend.getMaterial().getReflectivity() > 0) { // reflection
 			Vec3f ref = traceReflection( r, rend, hit, depth );
-			Vec3f adjustedRef = ref.mul(
-					(1 - ambientCoeff) * rend.getMaterial().getReflectivity() );
+			Vec3f adjustedRef = ref.mul( (1 - ambientCoeff) * rend.getMaterial().getReflectivity() );
 
-			color = base
-					.mul( ambientCoeff * (1 - rend.getMaterial().getReflectivity()) )
+			color = base.mul( ambientCoeff * (1 - rend.getMaterial().getReflectivity()) )
 					.sum( adjustedRef );
 		} else if (depth < MAX_RAY_DEPTH && rend.getMaterial().getOpacity() < 1) { // refraction
 			Vec3f refractionCol = traceRefraction( r, rend, hit, depth );
-			Vec3f adjustedRefrac = refractionCol.mul(
-					(1 - rend.getMaterial().getOpacity() * (1 - ambientCoeff)) );
+			Vec3f adjustedRefrac = refractionCol
+					.mul( (1 - rend.getMaterial().getOpacity() * (1 - ambientCoeff)) );
 
-			color = base.mul( ambientCoeff * rend.getMaterial().getOpacity() )
-					.sum( adjustedRefrac );
+			color = base.mul( ambientCoeff * rend.getMaterial().getOpacity() ).sum( adjustedRefrac );
 		} else {
 			color = getDiffuse( r.getDirection(), rend, hit, depth );
 		}
@@ -563,11 +553,8 @@ public class App implements KeyListener, MouseWheelListener {
 	}
 
 	public Vec3f traceReflection(Ray r, Renderable rend, Vec3f hit, int depth) {
-		Vec3f dir = r
-				.getReflectedVector( rend.getNormal( hit, r.getDirection() ) )
-				.normalize();
-		Ray refr = new Ray( dir, hit.sum( dir.mul( 0.01f ) ),
-				rend.getMaterial() );
+		Vec3f dir = r.getReflectedVector( rend.getNormal( hit, r.getDirection() ) ).normalize();
+		Ray refr = new Ray( dir, hit.sum( dir.mul( 0.01f ) ), rend.getMaterial() );
 		return trace( refr, depth + 1 );
 	}
 
@@ -576,19 +563,17 @@ public class App implements KeyListener, MouseWheelListener {
 		Vec3f norm = rend.getNormal( hit, r.getDirection() ).normalize();
 		Material rayStartMat = r.getStartingMaterial();
 		// TODO: calculate the material better.
-		Vec3f refracDir = r.getRefractionVector(
-				rayStartMat.getIOR() / rend.getMaterial().getIOR(), norm );
+		Vec3f refracDir = r.getRefractionVector( rayStartMat.getIOR() / rend.getMaterial().getIOR(),
+				norm );
 		if (refracDir == null)// TODO: replace with TIR
 			return Vec3f.origin();
 		// TODO: make sure this is the correct material
-		Ray refractionRay = new Ray( refracDir, hit.sub( norm.mul( 0.01f ) ),
-				rend.getMaterial() );
+		Ray refractionRay = new Ray( refracDir, hit.sub( norm.mul( 0.01f ) ), rend.getMaterial() );
 		return trace( refractionRay, depth + 1 );
 	}
 
 	private Vec3f getBackground(Vec3f frag) {
-		return Utils.convertVecToCubeUV( worldScene.getSkybox(), frag )
-				.getColor();
+		return Utils.convertVecToCubeUV( worldScene.getSkybox(), frag ).getColor();
 	}
 
 	public static Vec3f rgbIntToVec(int col) {
@@ -599,30 +584,25 @@ public class App implements KeyListener, MouseWheelListener {
 		return new Vec3f( r, g, b );
 	}
 
-	private Vec3f getDiffuse(Vec3f rayDir, Renderable rend, Vec3f hit,
-			int depth) {
+	private Vec3f getDiffuse(Vec3f rayDir, Renderable rend, Vec3f hit, int depth) {
 		Vec3f color = rend.getColor().mul( ambientCoeff );
 		Vec3f lightSamples = new Vec3f( 0, 0, 0 );
 		for (Light l : worldScene.lightList) {
 			Vec3f lvec = hit.vecTo( l.pos ).normalize();
 			Ray shadowRay = new Ray( lvec, hit.sum( lvec.mul( 0.01f ) ) );
 			Renderable obj = shadowRay.trace( worldScene.objectList, depth );
-			if (obj == null || (obj instanceof Sphere
-					&& ((Sphere) obj).center.equals( l.pos ))) {// TODO: fix sun shadow
+			if (obj == null || (obj instanceof Sphere && ((Sphere) obj).center.equals( l.pos ))) {// TODO: fix sun shadow
 				float dot = rend.getNormal( hit, rayDir ).getUnitVec().dot( lvec );
-				if (dot > 0) lightSamples = lightSamples
-						.sum( l.color.mul( l.brightness * dot ) );
+				if (dot > 0) lightSamples = lightSamples.sum( l.color.mul( l.brightness * dot ) );
 				// System.out.println("asd");
 				break;
 			}
 		}
-		return color.sum( lightSamples
-				.mul( (1 - ambientCoeff) / worldScene.lightList.size() ) );
+		return color.sum( lightSamples.mul( (1 - ambientCoeff) / worldScene.lightList.size() ) );
 	}
 
 	public int getIntFromVector(Vec3f col) {
-		return getIntFromColor( (int) (col.x * 255), (int) (col.y * 255),
-				(int) (col.z * 255) );
+		return getIntFromColor( (int) (col.x * 255), (int) (col.y * 255), (int) (col.z * 255) );
 	}
 
 	public void setPixel(int x, int y, int col) {
@@ -630,18 +610,14 @@ public class App implements KeyListener, MouseWheelListener {
 		pixelGrid[(int) (x + y * screen.getWidth())] = col;
 	}
 
-	private void setPixel(int x, int y, Vec3f vec) {
-		setPixel( x, y, getIntFromVector( vec ) );
-	}
+	private void setPixel(int x, int y, Vec3f vec) { setPixel( x, y, getIntFromVector( vec ) ); }
 
 	public void setPixel(int[] pixels, int width, int x, int y, int c) {
 		if (x > width) return;
 		pixels[(int) (x + y * width)] = c;
 	}
 
-	public int getPixel(int x, int y) {
-		return pixelGrid[(int) (x + y * screen.getWidth())];
-	}
+	public int getPixel(int x, int y) { return pixelGrid[(int) (x + y * screen.getWidth())]; }
 
 	public double round(double value, int precision) {
 		double mul = Math.pow( 10, precision );
@@ -720,24 +696,16 @@ public class App implements KeyListener, MouseWheelListener {
 		if (!pause) {
 			if (gravity) {
 				cam.cameraPos.y -= fallSpeed;
-				if (cam.cameraPos.y > camHeightTarget) {
-					fallSpeed += worldScene.gravity / 20f;
-				}
+				if (cam.cameraPos.y > camHeightTarget) { fallSpeed += worldScene.gravity / 20f; }
 				if (cam.cameraPos.y < camHeightTarget) {
 					cam.cameraPos.setY( camHeightTarget );
 					fallSpeed = 0;
 				}
 			}
 			if (keys.contains( KeyEvent.VK_UP )) { cam.cameraAngle.addX( 2.5f ); }
-			if (keys.contains( KeyEvent.VK_DOWN )) {
-				cam.cameraAngle.addX( -2.5f );
-			}
-			if (keys.contains( KeyEvent.VK_RIGHT )) {
-				cam.cameraAngle.addY( -2.5f );
-			}
-			if (keys.contains( KeyEvent.VK_LEFT )) {
-				cam.cameraAngle.addY( 2.5f );
-			}
+			if (keys.contains( KeyEvent.VK_DOWN )) { cam.cameraAngle.addX( -2.5f ); }
+			if (keys.contains( KeyEvent.VK_RIGHT )) { cam.cameraAngle.addY( -2.5f ); }
+			if (keys.contains( KeyEvent.VK_LEFT )) { cam.cameraAngle.addY( 2.5f ); }
 			if (keys.contains( KeyEvent.VK_W )) {
 				Vec3f dir = cam.rotMat.multiply( new Vec3f( 0, 0, -speed ) );
 				if (gravity) dir.removeY();
@@ -749,12 +717,12 @@ public class App implements KeyListener, MouseWheelListener {
 				cam.cameraPos = cam.cameraPos.sum( dir );
 			}
 			if (keys.contains( KeyEvent.VK_A )) {
-				cam.cameraPos = cam.cameraPos.sum(
-						cam.rotMat.multiply( new Vec3f( -speed, 0, 0 ) ).removeY() );
+				cam.cameraPos = cam.cameraPos
+						.sum( cam.rotMat.multiply( new Vec3f( -speed, 0, 0 ) ).removeY() );
 			}
 			if (keys.contains( KeyEvent.VK_D )) {
-				cam.cameraPos = cam.cameraPos.sum(
-						cam.rotMat.multiply( new Vec3f( speed, 0, 0 ) ).removeY() );
+				cam.cameraPos = cam.cameraPos
+						.sum( cam.rotMat.multiply( new Vec3f( speed, 0, 0 ) ).removeY() );
 			}
 			if (keys.contains( KeyEvent.VK_SPACE )) {
 				if (gravity && cam.cameraPos.y == camHeightTarget) {

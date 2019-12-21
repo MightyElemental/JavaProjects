@@ -6,7 +6,7 @@ public class RenderChunk {
 
 	public int x, y;
 
-	public static final int CHUNK_SIZE = 64;
+	public static final int CHUNK_SIZE = 128;
 
 	/** starting and ending times for the render */
 	public long startingTime, finishTime;

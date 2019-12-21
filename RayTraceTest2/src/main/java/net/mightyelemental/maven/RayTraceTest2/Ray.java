@@ -3,15 +3,15 @@ package net.mightyelemental.maven.RayTraceTest2;
 import java.util.List;
 
 import net.mightyelemental.maven.RayTraceTest2.materials.Material;
-import net.mightyelemental.maven.RayTraceTest2.objects.ComplexRenderable;
+import net.mightyelemental.maven.RayTraceTest2.objects.Polyhedron;
 import net.mightyelemental.maven.RayTraceTest2.objects.Renderable;
 
 public class Ray {
 
 	private Vec3f direction, start;
-	public float t0 = Float.MAX_VALUE;
-	public float t1 = Float.MAX_VALUE;
-	public float tnear = Float.MAX_VALUE;
+	public float  t0    = Float.MAX_VALUE;
+	public float  t1    = Float.MAX_VALUE;
+	public float  tnear = Float.MAX_VALUE;
 
 	/** The material the ray starts in. */
 	public Material startMat = Material.AIR;
@@ -22,7 +22,7 @@ public class Ray {
 	}
 
 	public Ray(Vec3f dir, Vec3f start, Material mat) {
-		this(dir, start);
+		this( dir, start );
 		this.startMat = mat;
 	}
 
@@ -39,59 +39,61 @@ public class Ray {
 
 		// System.out.println(dist);
 
-		return direction.cross(v.sub(start)).getLength();
+		return direction.cross( v.sub( start ) ).getLength();
 	}
 
 	public Ray getRayToPoint(Vec3f v) {
-		Vec3f dir = direction.cross(v.sub(start));
+		Vec3f dir = direction.cross( v.sub( start ) );
 		// ray.origin + ray.direction * Vector3.Dot(ray.direction, point - ray.origin)
-		Vec3f sPoint = start.sum(direction.mul(direction.dot(v.sub(start))));
+		Vec3f sPoint = start
+				.sum( direction.mul( direction.dot( v.sub( start ) ) ) );
 
-		return new Ray(dir, sPoint);
+		return new Ray( dir, sPoint );
 	}
 
-	public Vec3f getDirection() {
-		return direction;
-	}
+	public Vec3f getDirection() { return direction; }
 
-	public Vec3f getOrig() {
-		return start;
-	}
+	public Vec3f getOrig() { return start; }
 
 	public Renderable trace(List<Renderable> objects, int depth) {
 		Renderable closest = null;
 		float tnear = Float.MAX_VALUE;
-		for (Renderable o : objects) {
-			if (o.ignoreRay(depth))
-				continue;
+		for (Renderable o : objects) {// TODO: FIX ORDER ISSUE
+			if (o.ignoreRay( depth )) continue;
 			t0 = Float.MAX_VALUE;
 			t1 = Float.MAX_VALUE;
-			if (o instanceof ComplexRenderable)
-				continue;
-			if (!o.intersects(this))
-				continue;
-			if (t0 < 0)
-				t0 = t1;
+			if (o instanceof Polyhedron) {
+//				ComplexRenderable compO = ((ComplexRenderable) o);
+//				if (compO.boundingBox.intersects( this )) {// TODO: FIX PERSPECTIVE ISSUE
+//					List<Renderable> compRends = new ArrayList<Renderable>();
+//					compO.objs.forEach( e -> compRends.add( e ) );
+//					Renderable subRend = trace( compRends, depth );
+//					if (t0 < 0) t0 = t1;
+//					if (t0 < tnear) {
+//						tnear = t0;
+//						closest = subRend;
+//					}
+//				}
+			}
+			if (!o.intersects( this )) continue;
+			if (t0 < 0) t0 = t1;
 			if (t0 < tnear) {
 				tnear = t0;
 				closest = o;
 			}
+
 		}
 		this.tnear = tnear;
 		return closest;
 	}
 
-	public Vec3f getHitPoint() {
-		return start.sum(direction.mul(tnear));
-	}
+	public Vec3f getHitPoint() { return start.sum( direction.mul( tnear ) ); }
 
 	public Vec3f getReflectedVector(Vec3f normal) {
-		return direction.getReflectedVector(normal);
+		return direction.getReflectedVector( normal );
 	}
 
-	public void setOrig(Vec3f pos) {
-		this.start = pos;
-	}
+	public void setOrig(Vec3f pos) { this.start = pos; }
 
 	// ior = n1/n2
 	public Vec3f getRefractionVector(float ior, Vec3f normToObj) {
@@ -115,13 +117,11 @@ public class Ray {
 
 		// from wolfgang: self.direction * eta - inter.normal * (-n_dot_d + eta * n_dot_d);
 		float eta = 2 - ior;
-		float ndt = normToObj.dot(getDirection());
-		return getDirection().mul(eta).sub(normToObj.mul(-ndt + eta * ndt));
+		float ndt = normToObj.dot( getDirection() );
+		return getDirection().mul( eta ).sub( normToObj.mul( -ndt + eta * ndt ) );
 
 	}
 
-	public Material getStartingMaterial() {
-		return startMat;
-	}
+	public Material getStartingMaterial() { return startMat; }
 
 }
