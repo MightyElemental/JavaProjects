@@ -36,6 +36,7 @@ public class BVH {
 		return rends;
 	}
 
+	/** Constructs a binary tree from the top down with the given nodes */
 	public static BVHNode recursiveConstructBVH(BVHNode[] nodes, int depth) {
 		if (nodes.length == 1) return nodes[0];
 		if (nodes.length <= 4) { return BVHNode.merge( nodes ); }
@@ -64,7 +65,7 @@ public class BVH {
 	}
 
 	public static void generateBVHTree(List<Renderable> rends) {
-		int size = (int) Math.ceil( rends.size() / 3.0 );
+//		int size = (int) Math.ceil( rends.size() / 3.0 );
 //		BVHNode[] nodes = new BVHNode[size];
 //		for (int i = 0; i < nodes.length; i++) {
 //			nodes[i] = new BVHNode( rends.get( 3 * i ) );
@@ -83,6 +84,7 @@ public class BVH {
 		topNode = recursiveConstructBVH( nodes, 0 );
 	}
 
+	@Deprecated
 	public static BVHNode[] mergeNodesToTop(BVHNode[] nodes) {// TODO: modify this to actually work
 		if (nodes.length == 1) return nodes;
 		int size = (int) Math.ceil( nodes.length / 2.0 );

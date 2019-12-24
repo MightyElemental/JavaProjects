@@ -172,18 +172,18 @@ public class App implements KeyListener, MouseWheelListener {
 
 	public void setupScene() {
 
-//		for (int i = 0; i < 300; i++) {
-//			// if (ticks % 5 == 0) {
-//			float x = (float) Math.abs( Math.random() - Math.random() ) * 300 - 150;
-//			float z = (float) Math.abs( Math.random() - Math.random() ) * 300 - 150;
-//			float y = (float) Math.abs( Math.random() - Math.random() ) * 30;
-//			Sphere newSphere = new Sphere( new Vec3f( x, y, z ), 5 );
-//			float r = (x + 150) / 300;
-//			newSphere.col = new Vec3f( r, 1 - r, (z + 150) / 300 );
-//			newSphere.setMaterial( 0f, 1f, 1f );
-//			worldScene.add( newSphere );
-//			// }
-//		}
+		for (int i = 0; i < 300; i++) {
+			// if (ticks % 5 == 0) {
+			float x = (float) Math.abs( Math.random() - Math.random() ) * 300 - 150;
+			float z = (float) Math.abs( Math.random() - Math.random() ) * 300 - 150;
+			float y = (float) Math.abs( Math.random() - Math.random() ) * 30;
+			Sphere newSphere = new Sphere( new Vec3f( x, y, z ), 5 );
+			float r = (x + 150) / 300;
+			newSphere.col = new Vec3f( r, 1 - r, (z + 150) / 300 );
+			newSphere.setMaterial( 0f, 1f, 1f );
+			worldScene.add( newSphere );
+			// }
+		}
 
 		// objects.add(new Sphere(0.1f));
 		Sphere s = new Sphere( new Vec3f( 0, 0, 0 ), 6 );
@@ -241,17 +241,18 @@ public class App implements KeyListener, MouseWheelListener {
 		// worldScene.add(new Plane(new Vector3f(1, 0, 0), new Vector3f(20, 0, 0)));
 
 		s5.col = new Vec3f( 0, 1, 0 );
-		//worldScene.add( s5 );
+		// worldScene.add( s5 );
 
 		worldScene.add( camS );
-		cam.setCamObj( camS );
+		orthoCam.setCamObj( camS );
+		perspCam.setCamObj( camS );
 
 		Polyhedron ammo = Utils.getRenderableFromObjFile( "pikachu.obj" ).get();
 		ammo.translate( new Vec3f( 50, -10, -10 ) );
 		ammo.setMaterial( 0f, 1f, 1f );
 		ammo.setColor( new Vec3f( 44 / 255f, 205 / 255f, 138 / 255f ) );
 		ammo.rotate( new Vec3f( -90, 0, 0 ) );
-		worldScene.add( ammo );
+		// worldScene.add( ammo );
 
 		Polyhedron pika = Utils.getRenderableFromObjFile( "pikachu.obj" ).get();
 		pika.translate( new Vec3f( -10, 20, -10 ) );
@@ -259,7 +260,7 @@ public class App implements KeyListener, MouseWheelListener {
 		pika.setColor( new Vec3f( 1, 0, 0 ) );
 		// pika.useRandomColors();
 		pika.rotate( new Vec3f( -90, 0, 0 ) );
-		worldScene.add( pika );
+		//worldScene.add( pika );
 
 		// worldScene.add(new Tube(new Vector3f(0, 1, 0), new Vector3f(0, 2, 4), 0, 2));
 
@@ -298,8 +299,13 @@ public class App implements KeyListener, MouseWheelListener {
 
 	public BufferedImage screen = new BufferedImage( 1280, 720, BufferedImage.TYPE_INT_RGB );
 
-	public Camera cam = new Camera( new Vec3f( 3, 10, 25 ), 95, screen.getWidth(),
-			screen.getHeight() );// TODO: add multiple rays per pixel
+	public PerspectiveCamera perspCam = new PerspectiveCamera( new Vec3f( 3, 10, 25 ), 95,
+			screen.getWidth(), screen.getHeight() );
+
+	public OrthoCamera orthoCam = new OrthoCamera( new Vec3f( 3, 10, 25 ), screen.getWidth(),
+			screen.getHeight(), 16 * 8, 9 * 8 );
+
+	public Camera cam = perspCam;// TODO: add multiple rays per pixel
 
 	public Scene worldScene = new Scene();
 
@@ -386,7 +392,7 @@ public class App implements KeyListener, MouseWheelListener {
 	}
 
 	public void render() throws InterruptedException {
-		cam.calculateStartingMaterial( worldScene.objectList );
+		// cam.calculateStartingMaterial( worldScene.objectList );
 		dynamicRender();
 		// antiAllias();
 		Thread.sleep( 1 );
@@ -561,7 +567,8 @@ public class App implements KeyListener, MouseWheelListener {
 	public void updateScreenSize(int width, int height) {
 		if (width == screen.getWidth() && height == screen.getHeight()) return;
 		screen = new BufferedImage( width, height, BufferedImage.TYPE_INT_RGB );
-		cam.setDim( width, height );
+		perspCam.setResolution( width, height );
+		orthoCam.setResolution( width, height );
 		pixelGrid = ((DataBufferInt) screen.getRaster().getDataBuffer()).getData();
 	}
 
@@ -733,6 +740,12 @@ public class App implements KeyListener, MouseWheelListener {
 			} catch (InterruptedException e1) {
 				e1.printStackTrace();
 			}
+		} else if (event.getKeyCode() == KeyEvent.VK_PERIOD) {
+			if (cam.equals( perspCam )) {
+				cam = orthoCam;
+			} else {
+				cam = perspCam;
+			}
 		}
 	}
 
@@ -749,40 +762,59 @@ public class App implements KeyListener, MouseWheelListener {
 		while (frametimes.size() > 200) { frametimes.remove( 0 ); }
 		if (!pause) {
 			if (gravity) {
-				cam.cameraPos.y -= fallSpeed;
+				perspCam.cameraPos.y -= fallSpeed;
+				orthoCam.cameraPos.y -= fallSpeed;
 				if (cam.cameraPos.y > camHeightTarget) { fallSpeed += worldScene.gravity / 20f; }
 				if (cam.cameraPos.y < camHeightTarget) {
-					cam.cameraPos.setY( camHeightTarget );
+					perspCam.cameraPos.setY( camHeightTarget );
+					orthoCam.cameraPos.setY( camHeightTarget );
 					fallSpeed = 0;
 				}
 			}
-			if (keys.contains( KeyEvent.VK_UP )) { cam.cameraAngle.addX( 2.5f ); }
-			if (keys.contains( KeyEvent.VK_DOWN )) { cam.cameraAngle.addX( -2.5f ); }
-			if (keys.contains( KeyEvent.VK_RIGHT )) { cam.cameraAngle.addY( -2.5f ); }
-			if (keys.contains( KeyEvent.VK_LEFT )) { cam.cameraAngle.addY( 2.5f ); }
+			if (keys.contains( KeyEvent.VK_UP )) {
+				orthoCam.cameraAngle.addX( 2.5f );
+				perspCam.cameraAngle.addX( 2.5f );
+			}
+			if (keys.contains( KeyEvent.VK_DOWN )) {
+				orthoCam.cameraAngle.addX( -2.5f );
+				perspCam.cameraAngle.addX( -2.5f );
+			}
+			if (keys.contains( KeyEvent.VK_RIGHT )) {
+				orthoCam.cameraAngle.addY( -2.5f );
+				perspCam.cameraAngle.addY( -2.5f );
+			}
+			if (keys.contains( KeyEvent.VK_LEFT )) {
+				orthoCam.cameraAngle.addY( 2.5f );
+				perspCam.cameraAngle.addY( 2.5f );
+			}
 			if (keys.contains( KeyEvent.VK_W )) {
 				Vec3f dir = cam.rotMat.multiply( new Vec3f( 0, 0, -speed ) );
 				if (gravity) dir.removeY();
-				cam.cameraPos = cam.cameraPos.sum( dir );
+				perspCam.cameraPos = cam.cameraPos.sum( dir );
+				orthoCam.cameraPos = perspCam.cameraPos;
 			}
 			if (keys.contains( KeyEvent.VK_S )) {
 				Vec3f dir = cam.rotMat.multiply( new Vec3f( 0, 0, speed ) );
 				if (gravity) dir.removeY();
-				cam.cameraPos = cam.cameraPos.sum( dir );
+				perspCam.cameraPos = cam.cameraPos.sum( dir );
+				orthoCam.cameraPos = perspCam.cameraPos;
 			}
 			if (keys.contains( KeyEvent.VK_A )) {
-				cam.cameraPos = cam.cameraPos
+				perspCam.cameraPos = cam.cameraPos
 						.sum( cam.rotMat.multiply( new Vec3f( -speed, 0, 0 ) ).removeY() );
+				orthoCam.cameraPos = perspCam.cameraPos;
 			}
 			if (keys.contains( KeyEvent.VK_D )) {
-				cam.cameraPos = cam.cameraPos
+				perspCam.cameraPos = cam.cameraPos
 						.sum( cam.rotMat.multiply( new Vec3f( speed, 0, 0 ) ).removeY() );
+				orthoCam.cameraPos = perspCam.cameraPos;
 			}
 			if (keys.contains( KeyEvent.VK_SPACE )) {
 				if (gravity && cam.cameraPos.y == camHeightTarget) {
 					fallSpeed = -2;
 				} else {
-					cam.cameraPos.y += speed;
+					perspCam.cameraPos.y += speed;
+					orthoCam.cameraPos.y += speed;
 				}
 			}
 			if (keys.contains( KeyEvent.VK_CONTROL )) {
@@ -790,7 +822,8 @@ public class App implements KeyListener, MouseWheelListener {
 				if (gravity) {
 					speed = 0.2f;
 				} else {
-					cam.cameraPos.y -= speed;
+					perspCam.cameraPos.y -= speed;
+					orthoCam.cameraPos.y -= speed;
 				}
 			} else {
 				camHeightTarget = 5;

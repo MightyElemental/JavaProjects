@@ -1,87 +1,39 @@
 package net.mightyelemental.maven.RayTraceTest2;
 
-import java.util.Vector;
-
-import net.mightyelemental.maven.RayTraceTest2.materials.Material;
 import net.mightyelemental.maven.RayTraceTest2.objects.Renderable;
 
-public class Camera {
+public abstract class Camera {
 
-	public Vec3f cameraPos, cameraAngle;
-	public float fov = 90;
-	Mat4f rotMat;
+	public Vec3f      cameraPos, cameraAngle;
+	public Renderable camObj;
+
+	public Mat4f rotMat;
 
 	public float width, height;
 
-	public Material rayStartingMaterial = Material.AIR;
-
-	public Renderable camObj;
-
-	public Camera(Vec3f pos, float fov, int width, int height) {
-		this.cameraPos = pos;
-		this.fov = fov;
-		this.width = width;
-		this.height = height;
-		cameraAngle = new Vec3f(0, -30, 0);
-		Mat4f rotX = Mat4f.getXRotationDeg(cameraAngle.x);
-		Mat4f rotY = Mat4f.getYRotationDeg(cameraAngle.y);
-		Mat4f rotZ = Mat4f.getZRotationDeg(cameraAngle.z);
-		rotMat = rotX.multiply(rotZ).multiply(rotY);
+	protected void calcRotMat() {
+		Mat4f rotX = Mat4f.getXRotationDeg( cameraAngle.x );
+		Mat4f rotY = Mat4f.getYRotationDeg( cameraAngle.y );
+		Mat4f rotZ = Mat4f.getZRotationDeg( cameraAngle.z );
+		rotMat = rotX.multiply( rotZ ).multiply( rotY );
 	}
 
-	/** Creates a ray based on the pixel coordinates */
-	public Ray createRay(int x, int y) {
+	public abstract Ray createRay(int x, int y);
 
-		if (x == 0 && y == 0) {
-			Mat4f rotX = Mat4f.getXRotationDeg(cameraAngle.x);
-			Mat4f rotY = Mat4f.getYRotationDeg(cameraAngle.y);
-			Mat4f rotZ = Mat4f.getZRotationDeg(cameraAngle.z);
-			rotMat = rotX.multiply(rotZ).multiply(rotY);
-			if (camObj != null) {
-				camObj.setPos(cameraPos);
-			}
-		}
-
-		float invWidth = 1f / width, invHeight = 1f / height;
-		float aspRat = width / ((float) height);
-		float angle = (float) Math.tan(Math.PI * 0.5 * fov / 180.0);
-
-		float xx = (2 * ((x + 0.5f) * invWidth) - 1) * angle * aspRat;
-		float yy = (1 - 2 * ((y + 0.5f) * invHeight)) * angle;
-
-		Vec3f dirVec = new Vec3f(xx, yy, -1).normalize();
-		dirVec = rotMat.multiply(dirVec);
-		// System.out.println(dirVec);
-
-		return new Ray(dirVec, cameraPos);
-	}
-
-	public void calculateStartingMaterial(Vector<Renderable> objs) {
-		for (Renderable rend : objs) {
-			if (rend.isPointWithin(cameraPos)) {
-				rayStartingMaterial = rend.getMaterial();
-				return;
-			}
-		}
-	}
-
-	public void moveTo(float x, float y, float z) {
-		cameraPos.setX(x);
-		cameraPos.setY(y);
-		cameraPos.setZ(z);
-	}
-
-	public Renderable getCamObj() {
-		return camObj;
-	}
+	public Renderable getCamObj() { return camObj; }
 
 	public void setCamObj(Renderable camObj) {
 		this.camObj = camObj;
+		if (camObj != null) { camObj.setPos( cameraPos ); }
 	}
 
-	public void setDim(int width, int height) {
-		this.width = width;
-		this.height = height;
+	public void setResolution(int width, int height) { this.width = width; this.height = height; }
+
+	public void moveTo(float x, float y, float z) {
+		cameraPos.setX( x );
+		cameraPos.setY( y );
+		cameraPos.setZ( z );
+		if (camObj != null) { camObj.setPos( cameraPos ); }
 	}
 
 }
