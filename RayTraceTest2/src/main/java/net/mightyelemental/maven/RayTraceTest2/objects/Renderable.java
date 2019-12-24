@@ -29,16 +29,16 @@ public interface Renderable {
 	 * Used to hide objects until a certain ray bounce count<br>
 	 * Good for hiding objects and only showing them in refractions / reflections
 	 */
-	public default boolean ignoreRay(int depth) {
-		return false;
-	}
+	public default boolean ignoreRay(int depth) { return false; }
 
 	public Vec3f getPos();
 
 	public void setColor(Vec3f vec);
 
+	public default void setColor(float r, float g, float b) { setColor( new Vec3f( r, g, b ) ); }
+
 	public void translate(Vec3f transVec);
-	
+
 	public void rotate(Vec3f rotVec);
 
 	public BoundingBox generateBoundingBox();

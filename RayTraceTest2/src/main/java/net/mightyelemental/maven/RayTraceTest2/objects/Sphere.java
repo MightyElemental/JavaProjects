@@ -69,9 +69,21 @@ public class Sphere implements Renderable {
 	@Override
 	public Material getMaterial() { return mat; }
 
+	/**
+	 * Used to set the {@link Material} of the object
+	 * 
+	 * @param mat - the material to use for the object
+	 */
 	@Override
 	public void setMaterial(Material mat) { this.mat = mat; }
 
+	/**
+	 * Used to set the material of the object
+	 * 
+	 * @param reflec - the reflectivity value ranging from 0-1
+	 * @param opac   - the opacity value ranging from 0-1
+	 * @param ior    - the index of refraction value
+	 */
 	@Override
 	public void setMaterial(float reflec, float opac, float ior) {
 		mat = new Material( reflec, opac, ior );

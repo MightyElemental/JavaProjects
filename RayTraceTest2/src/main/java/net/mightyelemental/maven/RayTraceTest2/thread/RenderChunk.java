@@ -6,17 +6,15 @@ public class RenderChunk {
 
 	public int x, y;
 
-	public static final int CHUNK_SIZE = 128;
+	/** The chunk size for the render chunks */
+	public static final int CHUNK_SIZE = 256;
 
 	/** starting and ending times for the render */
 	public long startingTime, finishTime;
 
 	public RenderChunk(int x, int y) { this.x = x; this.y = y; }
 
-	public void startRender() {
-		startedRender = true;
-		startingTime = System.currentTimeMillis();
-	}
+	public void startRender() { startedRender = true; startingTime = System.currentTimeMillis(); }
 
 	public void endRender() {
 		finishedRender = true;

@@ -24,10 +24,36 @@ public class BVHNode {
 		box = rend.generateBoundingBox();
 	}
 
+	public BVHNode(Renderable... rends) {
+		if (rends == null || rends.length == 0) return;
+		box = rends[0].generateBoundingBox();
+		for (Renderable rend : rends) {
+			box = Utils.mergeBoxes( box, rend.generateBoundingBox() );
+			linkedObjs.add( rend );
+		}
+	}
+
+	public void addObject(Renderable rend) {
+		if (rend == null) return;
+		box = Utils.mergeBoxes( box, rend.generateBoundingBox() );
+		linkedObjs.add( rend );
+	}
+
 	/**
 	 * Allows for nicer calling to {@link BoundingBox#intersects(Ray)}
 	 */
 	public boolean intersects(Ray r) { return box.intersects( r ); }
+
+	public static BVHNode merge(BVHNode[] nodes) {
+		BVHNode node = new BVHNode();
+
+		node.box = nodes[0].box;
+		for (BVHNode n : nodes) {
+			node.box = Utils.mergeBoxes( node.box, n.box );
+			node.linkedObjs.addAll( n.linkedObjs );
+		}
+		return node;
+	}
 
 	public static BVHNode merge(BVHNode n1, BVHNode n2) {
 		BVHNode node = new BVHNode();

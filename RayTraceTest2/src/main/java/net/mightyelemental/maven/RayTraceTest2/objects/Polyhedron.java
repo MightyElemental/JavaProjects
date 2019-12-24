@@ -17,19 +17,21 @@ public class Polyhedron implements Renderable {
 
 	public Polyhedron(List<Triangle> objects) {
 		objs = objects;
-		for (Renderable rend : objs) { rend.setMaterial( mat ); }
+		for (Triangle rend : objs) { rend.setMaterial( mat ); }
+		BoundingBox b = this.generateBoundingBox();
+		origin = b.getCenter();
 	}
 
 	@Override
 	public boolean intersects(final Ray r) {
 		boolean flag = false;
-		for (Renderable rend : objs) { if (rend.intersects( r )) flag = true; }
+		for (Triangle rend : objs) { if (rend.intersects( r )) flag = true; }
 		return flag;
 	}
 
 	@Override
 	public Vec3f getNormal(Vec3f hit, Vec3f rayDir) {
-		for (Renderable rend : objs) {
+		for (Triangle rend : objs) {
 			if (rend.isPointWithin( hit )) return rend.getNormal( hit, rayDir );
 		}
 		return Vec3f.nullVec();
@@ -41,14 +43,12 @@ public class Polyhedron implements Renderable {
 	@Override
 	public void setPos(Vec3f pos) {
 		Vec3f diff = origin.sub( pos );
-		for (Renderable rend : objs) { rend.setPos( rend.getPos().sum( diff ) ); }
+		for (Triangle rend : objs) { rend.setPos( rend.getPos().sum( diff ) ); }
 	}
 
 	@Override
 	public boolean isPointWithin(Vec3f vec) {
-		for (Renderable rend : objs) {
-			if (rend.isPointWithin( vec )) return true;
-		}
+		for (Triangle rend : objs) { if (rend.isPointWithin( vec )) return true; }
 		return false;
 	}
 
@@ -61,35 +61,50 @@ public class Polyhedron implements Renderable {
 	@Override
 	public void setMaterial(Material mat) {
 		this.mat = mat;
-		for (Renderable rend : objs) { rend.setMaterial( mat ); }
+		for (Triangle rend : objs) { rend.setMaterial( mat ); }
 	}
 
+	/**
+	 * Used to set the material of the object
+	 * 
+	 * @param reflec - the reflectivity value ranging from 0-1
+	 * @param opac   - the opacity value ranging from 0-1
+	 * @param ior    - the index of refraction value
+	 */
 	@Override
 	public void setMaterial(float reflec, float opac, float ior) {
 		mat = new Material( reflec, opac, ior );
-		for (Renderable rend : objs) { rend.setMaterial( mat ); }
+		for (Triangle rend : objs) { rend.setMaterial( mat ); }
 	}
 
-	public void setColor(Vec3f vec) {
-		for (Renderable rend : objs) { rend.setColor( vec ); }
+	/**
+	 * Set the color for all tris that make up the polyhedron
+	 * 
+	 * @param col - the color in vector form. Each value should range from 0-1
+	 */
+	public void setColor(Vec3f col) { for (Triangle rend : objs) { rend.setColor( col ); } }
+
+	/** Used to assign a random color to each of the triangles in the polyhedron */
+	public void useRandomColors() {
+		for (Triangle rend : objs) {
+			Vec3f col = new Vec3f( (float) Math.random(), (float) Math.random(),
+					(float) Math.random() );
+			rend.setColor( col );
+		}
 	}
 
 	@Override
 	public void translate(Vec3f transVec) {
-		for (Renderable rend : objs) { rend.translate( transVec ); }
+		for (Triangle rend : objs) { rend.translate( transVec ); }
 	}
 
 	@Override
-	public void rotate(Vec3f rotVec) {
-		for (Renderable rend : objs) { rend.rotate( rotVec ); }
-	}
+	public void rotate(Vec3f rotVec) { for (Triangle rend : objs) { rend.rotate( rotVec ); } }
 
 	@Override
 	public BoundingBox generateBoundingBox() {
-		Vec3f min = new Vec3f( Integer.MAX_VALUE, Integer.MAX_VALUE,
-				Integer.MAX_VALUE );
-		Vec3f max = new Vec3f( Integer.MIN_VALUE, Integer.MIN_VALUE,
-				Integer.MIN_VALUE );
+		Vec3f min = new Vec3f( Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE );
+		Vec3f max = new Vec3f( Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE );
 
 		for (Triangle rend : objs) {
 			Vec3f a[] = {

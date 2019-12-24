@@ -8,7 +8,7 @@ public class Scene {
 	public Vector<Renderable> objectList = new Vector<Renderable>();
 	public Vector<Light>      lightList  = new Vector<Light>();
 
-	public String skyboxLocation = "./imgs/yokohama3/";
+	public String skyboxLocation = "./imgs/skybox2/";
 
 	public float gravity = 9.8f;
 
@@ -18,6 +18,7 @@ public class Scene {
 
 	}
 
+	/** Used to add a renderable object to the world */
 	public void add(Renderable rend) {
 		if (rend instanceof Polyhedron) {
 			objectList.addAll( ((Polyhedron) rend).objs );
@@ -26,16 +27,12 @@ public class Scene {
 		}
 	}
 
-	public void setSkyBox(String skyboxLocation) {
-		this.skyboxLocation = skyboxLocation;
-	}
+	public void setSkyBox(String skyboxLocation) { this.skyboxLocation = skyboxLocation; }
 
 	public void add(Light light) { lightList.add( light ); }
 
 	public String getSkybox() { return skyboxLocation; }
 
-	public void add(Optional<Polyhedron> rend) {
-		if (rend.isPresent()) add( rend.get() );
-	}
+	public void add(Optional<Polyhedron> rend) { if (rend.isPresent()) add( rend.get() ); }
 
 }

@@ -15,8 +15,7 @@ public class ThreadHandler {
 	int screenWidth;
 	int screenHeight;
 
-	public ThreadHandler(int chunkWidth, int chunkHeight, int screenWidth,
-			int screenHeight) {
+	public ThreadHandler(int screenWidth, int screenHeight) {
 		this.screenWidth = screenWidth;
 		this.screenHeight = screenHeight;
 		// defineChunks(chunkWidth, chunkHeight, screenWidth, screenHeight);
@@ -34,11 +33,11 @@ public class ThreadHandler {
 //		}
 //	}
 
-	public List<Thread> setupRenderingThreads(App a, int[] pixels,
-			int pixelSize) {
+	@Deprecated
+	public List<Thread> setupRenderingThreads(App a, int[] pixels, int pixelSize) {
 		for (RenderChunk c : chunks) { c.reset(); }
 		List<Thread> renderingThreads = new ArrayList<Thread>();
-		for (int core = 0; core < Properties.cores / 2; core++) {
+		for (int core = 0; core < Properties.threads / 2; core++) {
 			final int threadNum = core;
 			Thread rt = new Thread( "t" + threadNum ) {
 
@@ -47,19 +46,14 @@ public class ThreadHandler {
 						if (!c.startedRender) {
 							c.startRender();
 
-							for (int x = c.x; x < c.x
-									+ RenderChunk.CHUNK_SIZE; x += pixelSize) {
-								for (int y = c.y; y < c.y
-										+ RenderChunk.CHUNK_SIZE; y += pixelSize) {
+							for (int x = c.x; x < c.x + RenderChunk.CHUNK_SIZE; x += pixelSize) {
+								for (int y = c.y; y < c.y + RenderChunk.CHUNK_SIZE; y += pixelSize) {
 									// System.out.println(x+"|"+y);
 									Ray r = a.cam.createRay( x, y );
 									int col = a.getIntFromVector( a.trace( r, 0 ) );
-									for (int i = 0; i < pixelSize
-											&& x + i < screenWidth; i++) {
-										for (int j = 0; j < pixelSize
-												&& y + j < screenHeight; j++) {
-											a.setPixel( pixels, screenWidth, x + i, y + j,
-													col );
+									for (int i = 0; i < pixelSize && x + i < screenWidth; i++) {
+										for (int j = 0; j < pixelSize && y + j < screenHeight; j++) {
+											a.setPixel( pixels, screenWidth, x + i, y + j, col );
 										}
 									} // TODO: fix issue of not rendering fully
 

@@ -140,8 +140,8 @@ public class Utils {
 		String norm = matcher.group( 3 );
 		// System.out.println(point + "|" + tex + "|" + norm);
 		Vec3f p = vecs.get( Integer.parseInt( point ) - 1 );
-		Vec3f t = getTex( tex, uvVecs );
-		Vec3f n = norms.get( Integer.parseInt( norm ) - 1 );
+		Vec3f t = tex == null ? null : getTex( tex, uvVecs );
+		Vec3f n = norm == null ? null : norms.get( Integer.parseInt( norm ) - 1 );
 		return new PolyPoint( p, t, n );
 	}
 
@@ -281,6 +281,29 @@ public class Utils {
 	public static int getBinTreeNodeCount(int minNodeCount) {
 		int height = (int) Math.floor( log( minNodeCount, 2 ) );
 		return (int) (Math.pow( 2, height + 1 ) - 1);
+	}
+
+	public static double round(double value, int precision) {
+		double mul = Math.pow( 10, precision );
+		return Math.round( value * mul ) / mul;
+	}
+
+	/** Used to get the top half of an array */
+	public static <T> T[] getTopHalf(T[] arr) {
+		if (arr == null) return null;
+		if (arr.length < 1) return arr;
+		int size = Math.floorDiv( arr.length, 2 );
+		T[] newT = Arrays.copyOfRange( arr, size, arr.length );
+		return newT;
+	}
+
+	/** Used to get the bottom half of an array */
+	public static <T> T[] getBottomHalf(T[] arr) {
+		if (arr == null) return null;
+		if (arr.length < 1) return arr;
+		int size = Math.floorDiv( arr.length, 2 );
+		T[] newT = Arrays.copyOfRange( arr, 0, size );
+		return newT;
 	}
 
 }

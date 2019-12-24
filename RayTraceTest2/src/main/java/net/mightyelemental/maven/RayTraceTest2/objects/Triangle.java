@@ -58,10 +58,10 @@ public class Triangle extends Plane {
 		smoothNormal = true;// TODO: change once added feature
 	}
 
-	public void translate(Vec3f transVec) {
-		p1.location = p1.location.sum( transVec );
-		p2.location = p2.location.sum( transVec );
-		p3.location = p3.location.sum( transVec );
+	public void translate(final Vec3f transVec) {
+		p1.location.sumSave( transVec );
+		p2.location.sumSave( transVec );
+		p3.location.sumSave( transVec );
 	}
 
 	@Override

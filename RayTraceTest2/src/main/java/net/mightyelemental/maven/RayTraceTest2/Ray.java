@@ -58,7 +58,7 @@ public class Ray {
 	public Renderable trace(List<Renderable> objects, int depth) {
 		Renderable closest = null;
 		float tnear = Float.MAX_VALUE;
-		for (Renderable o : objects) {// TODO: FIX ORDER ISSUE
+		for (Renderable o : objects) {
 			if (o.ignoreRay( depth )) continue;
 			t0 = Float.MAX_VALUE;
 			t1 = Float.MAX_VALUE;

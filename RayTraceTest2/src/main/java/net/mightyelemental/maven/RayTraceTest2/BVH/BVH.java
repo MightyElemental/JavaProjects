@@ -1,9 +1,12 @@
 package net.mightyelemental.maven.RayTraceTest2.BVH;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 import net.mightyelemental.maven.RayTraceTest2.Ray;
+import net.mightyelemental.maven.RayTraceTest2.Utils;
 import net.mightyelemental.maven.RayTraceTest2.objects.Renderable;
 import net.mightyelemental.maven.RayTraceTest2.objects.Scene;
 
@@ -33,14 +36,51 @@ public class BVH {
 		return rends;
 	}
 
+	public static BVHNode recursiveConstructBVH(BVHNode[] nodes, int depth) {
+		if (nodes.length == 1) return nodes[0];
+		if (nodes.length <= 4) { return BVHNode.merge( nodes ); }
+		Arrays.sort( nodes, Comparator.comparing( a -> getAxisCentroid( (BVHNode) a, depth ) ) );
+
+		BVHNode left = recursiveConstructBVH( Utils.getTopHalf( nodes ), depth + 1 );
+		BVHNode right = recursiveConstructBVH( Utils.getBottomHalf( nodes ), depth + 1 );
+
+		return BVHNode.merge( left, right );
+	}
+
+	private static float getAxisCentroid(BVHNode node, int depth) {
+		switch (depth % 3) {
+		case 0:
+			return node.box.getCenter().x;
+		case 1:
+			return node.box.getCenter().y;
+		case 2:
+			return node.box.getCenter().z;
+		}
+		return node.box.getCenter().x;
+	}
+
 	public static void generateBVHTree(Scene worldScene) {
 		generateBVHTree( worldScene.objectList );
 	}
 
 	public static void generateBVHTree(List<Renderable> rends) {
+		int size = (int) Math.ceil( rends.size() / 3.0 );
+//		BVHNode[] nodes = new BVHNode[size];
+//		for (int i = 0; i < nodes.length; i++) {
+//			nodes[i] = new BVHNode( rends.get( 3 * i ) );
+//			try {
+//				for (int j = 1; j < 3; j++) {
+//					Renderable re = rends.get( 3 * i + j );
+//					nodes[i].addObject( re );
+//				}
+//			} catch (IndexOutOfBoundsException e) {}
+//		}
 		BVHNode[] nodes = new BVHNode[rends.size()];
-		for (int i = 0; i < rends.size(); i++) { nodes[i] = new BVHNode( rends.get( i ) ); }
-		topNode = mergeNodesToTop( nodes )[0];
+		for (int i = 0; i < nodes.length; i++) { nodes[i] = new BVHNode( rends.get( i ) ); }
+
+		// Arrays.sort( nodes, Comparator.comparing( a -> ((BVHNode) a).box.getCenter().x ) );
+		// topNode = mergeNodesToTop( nodes )[0];
+		topNode = recursiveConstructBVH( nodes, 0 );
 	}
 
 	public static BVHNode[] mergeNodesToTop(BVHNode[] nodes) {// TODO: modify this to actually work
