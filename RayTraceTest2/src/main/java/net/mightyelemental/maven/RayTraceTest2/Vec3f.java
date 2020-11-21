@@ -99,9 +99,25 @@ public class Vec3f {
 	public Vec3f removeY() { this.y = 0; return this; }
 
 	public static Vec3f nullVec() { return new Vec3f( Float.NaN, Float.NaN, Float.NaN ); }
+	
+	public boolean isNullVec() {
+		return isNullVec(this);
+	}
 
 	public static boolean isNullVec(Vec3f vec) {
 		return Float.isNaN( vec.x ) && Float.isNaN( vec.y ) && Float.isNaN( vec.z );
 	}
+	
+	public static Vec3f minVec() { return new Vec3f(Float.NEGATIVE_INFINITY, Float.NEGATIVE_INFINITY, Float.NEGATIVE_INFINITY); }
+	
+	public static Vec3f maxVec() { return new Vec3f(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY); }
 
+	public boolean isInfiniteVec() {
+		return Float.isInfinite(x) && Float.isInfinite(y) && Float.isInfinite(z);
+	}
+	
+	public boolean isMinVec() { return isInfiniteVec() && 1/x<=0; }
+	
+	public boolean isMaxVec() { return isInfiniteVec() && 1/x>0; }
+	
 }
