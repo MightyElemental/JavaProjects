@@ -119,8 +119,8 @@ public class Polyhedron implements Renderable {
 				if (pp.z > max.z) { max.z = pp.z; }
 			}
 		}
-		System.out.println( min );
-		System.out.println( max );
+		//System.out.println( min );
+		//System.out.println( max );
 		return new BoundingBox( min, max );
 	}
 
