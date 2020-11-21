@@ -376,6 +376,15 @@ public class App implements KeyListener, MouseWheelListener {
 					System.exit(1);
 				}
 				RenderChunk.CHUNK_SIZE = Integer.parseInt(args[++i]);
+				System.out.printf("Chunk Size: %d\n",RenderChunk.CHUNK_SIZE);
+			}
+			if(args[i].equals("--maxthreads")) {
+				if(args.length-i < 2) {
+					System.err.println("You must have one argument for the maximum number of threads!\n\te.g. --maxthreads 4");
+					System.exit(1);
+				}
+				Properties.threads = Math.min(Integer.parseInt(args[++i]), Properties.threads);
+				System.out.printf("Max threads: %d\n",Properties.threads);
 			}
 		}
 		new App(nogui, seed, pos);
