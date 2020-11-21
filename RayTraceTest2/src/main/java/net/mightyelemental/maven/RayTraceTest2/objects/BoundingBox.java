@@ -8,6 +8,9 @@ public class BoundingBox {
 	public Vec3f min, max;
 
 	public BoundingBox(Vec3f min, Vec3f max) { this.min = min; this.max = max; }
+	
+	private static final BoundingBox nullBox = new BoundingBox(Vec3f.nullVec(), Vec3f.nullVec());
+	private static final BoundingBox infBox = new BoundingBox(Vec3f.minVec(), Vec3f.maxVec());
 
 	/**
 	 * Tests if a ray will intersect with the bounding box
@@ -46,5 +49,13 @@ public class BoundingBox {
 	}
 
 	public Vec3f getCenter() { return min.mul( 0.5f ).sum( max.mul( 0.5f ) ); }
+	
+	public boolean isNull() { return min.isNullVec() || max.isNullVec(); }
+
+	public static BoundingBox nullBox() { return nullBox; }
+	
+	public static BoundingBox infBox() { return infBox; }
+	
+	public boolean isInfinite() { return min.isMinVec() || max.isMaxVec(); } 
 
 }

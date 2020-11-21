@@ -88,6 +88,6 @@ public class Plane implements Renderable {
 	}
 
 	@Override
-	public BoundingBox generateBoundingBox() { return null; }
+	public BoundingBox generateBoundingBox() { return BoundingBox.infBox(); }
 
 }
