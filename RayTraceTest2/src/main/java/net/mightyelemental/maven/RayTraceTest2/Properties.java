@@ -8,7 +8,7 @@ public class Properties {
 
 	private Properties() {}
 
-	public static int threads = Runtime.getRuntime().availableProcessors();
+	public static int threads = Math.min(Runtime.getRuntime().availableProcessors(), 28);
 
 	public static String OS_NAME = System.getProperty( "os.name" );
 

@@ -7,7 +7,7 @@ public class RenderChunk {
 	public int x, y;
 
 	/** The chunk size for the render chunks */
-	public static final int CHUNK_SIZE = 256;
+	public static int CHUNK_SIZE = 128;//256;
 
 	/** starting and ending times for the render */
 	public long startingTime, finishTime;

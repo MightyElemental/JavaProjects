@@ -17,6 +17,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.OptionalDouble;
+import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -68,54 +69,79 @@ public class App implements KeyListener, MouseWheelListener {
 			}
 		}
 	};
+	
+	Random rand;
 
-	public App() {
+	public App(boolean nogui, int randomSeed, float[] cameraPos) {
 		System.out.println( "Thread count: " + Properties.threads );
-		window.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
-		window.setTitle( "A ray tracer" );
-		window.setSize( screen.getWidth(), screen.getHeight() );
-		window.add( pan );
-		window.setVisible( true );
-		window.setLocationRelativeTo( null );
-		window.setResizable( false );
-		window.addKeyListener( this );
-		setupScene();
 		threadPool = Executors.newFixedThreadPool( Properties.threads );
 		// lights.get(0).color = new Vector3f(1,0.5f,1);
-		int ticks = 0;
-		long timeOff = 0;
-		starting.start();
-		while (true) {
-			long t1 = System.currentTimeMillis();
-			// cam.moveTo((float) Math.sin(ticks / 80f) * 10 + 3, 10, 10);
-			// lights.get(0).pos.setX((float) Math.sin(ticks / 60f) * 500);
-			// lights.get(0).pos.setY((float) Math.cos(ticks / 60f) * 500);
-			s5.center.setX( (float) Math.sin( ticks / 30f ) * 10 );
-			s5.center.setZ( (float) Math.cos( ticks / 30f ) * 10 );
-			s5.radius = (float) Math.sin( ticks / 60f ) * 4 + 5;
-
+		
+		rand = new Random(randomSeed);
+		if(cameraPos.length >= 3) {
+			perspCam.cameraPos.x=cameraPos[0];
+			perspCam.cameraPos.y=cameraPos[1];
+			perspCam.cameraPos.z=cameraPos[2];
+		}
+		
+		setupScene();
+		
+		if(nogui) {
 			BVH.generateBVHTree( worldScene );
-			updateControls();
-
 			try {
-				render();
-				// Thread.sleep( 1 );
-				// Thread.sleep( 5 - timeOff > 0 ? Math.min( timeOff, 5 ) : 0 );
+				hqRender();
 			} catch (InterruptedException e) {
 				e.printStackTrace();
+			} finally {
+				System.exit(0);
 			}
-			ticks++;
-			timeOff += System.currentTimeMillis() - t1 - 5;
-			// if ( ticks % 20 == 0 ) {
-			// System.out.println(timeOff / 1000f);
-			// }
-			frametimes.add( System.currentTimeMillis() - t1 );
-			while (pause) {
+		} else {
+			
+			window = new JFrame();
+			window.setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
+			window.setTitle( "A ray tracer" );
+			window.setSize( screen.getWidth(), screen.getHeight() );
+			window.add( pan );
+			window.setVisible( true );
+			window.setLocationRelativeTo( null );
+			window.setResizable( false );
+			window.addKeyListener( this );
+			starting.start();
+			int ticks = 0;
+			long timeOff = 0;
+			
+			while (true) {
+				long t1 = System.currentTimeMillis();
+				// cam.moveTo((float) Math.sin(ticks / 80f) * 10 + 3, 10, 10);
+				// lights.get(0).pos.setX((float) Math.sin(ticks / 60f) * 500);
+				// lights.get(0).pos.setY((float) Math.cos(ticks / 60f) * 500);
+				s5.center.setX( (float) Math.sin( ticks / 30f ) * 10 );
+				s5.center.setZ( (float) Math.cos( ticks / 30f ) * 10 );
+				s5.radius = (float) Math.sin( ticks / 60f ) * 4 + 5;
+	
+				BVH.generateBVHTree( worldScene );
+				updateControls();
+	
 				try {
 					render();
-					Thread.sleep( 500 );
+					// Thread.sleep( 1 );
+					// Thread.sleep( 5 - timeOff > 0 ? Math.min( timeOff, 5 ) : 0 );
 				} catch (InterruptedException e) {
 					e.printStackTrace();
+				}
+				ticks++;
+				timeOff += System.currentTimeMillis() - t1 - 5;
+				// if ( ticks % 20 == 0 ) {
+				// System.out.println(timeOff / 1000f);
+				// }
+				frametimes.add( System.currentTimeMillis() - t1 );
+				while (pause) {
+					try {
+						render();
+						Thread.sleep( 500 );
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
 				}
 			}
 		}
@@ -153,7 +179,6 @@ public class App implements KeyListener, MouseWheelListener {
 
 	public void renderLoop(RenderChunk rc, int screenWidth, int screenHeight, int pixelSize,
 			int[] pixels) {
-
 		for (int x = rc.x; x < screenWidth && x < RenderChunk.CHUNK_SIZE + rc.x; x += pixelSize) {
 			for (int y = 0; y < screenHeight && y < RenderChunk.CHUNK_SIZE + rc.y; y += pixelSize) {
 				Ray r = cam.createRay( x, y );
@@ -168,19 +193,19 @@ public class App implements KeyListener, MouseWheelListener {
 
 	}
 
-	public static final int FPS_TARGET = 30;
+	public static final int FPS_TARGET = 20;
 
 	public void setupScene() {
 
 		for (int i = 0; i < 300; i++) {
 			// if (ticks % 5 == 0) {
-			float x = (float) Math.abs( Math.random() - Math.random() ) * 300 - 150;
-			float z = (float) Math.abs( Math.random() - Math.random() ) * 300 - 150;
-			float y = (float) Math.abs( Math.random() - Math.random() ) * 30;
+			float x = Math.abs( rand.nextFloat() - rand.nextFloat() ) * 200 - 100;
+			float z = Math.abs( rand.nextFloat() - rand.nextFloat() ) * 200 - 100;
+			float y = Math.abs( rand.nextFloat() - rand.nextFloat() ) * 60-15;
 			Sphere newSphere = new Sphere( new Vec3f( x, y, z ), 5 );
 			float r = (x + 150) / 300;
 			newSphere.col = new Vec3f( r, 1 - r, (z + 150) / 300 );
-			newSphere.setMaterial( 0f, 1f, 1f );
+			newSphere.setMaterial( 0.2f, 1f, 1.5f );
 			worldScene.add( newSphere );
 			// }
 		}
@@ -193,7 +218,7 @@ public class App implements KeyListener, MouseWheelListener {
 //		s.opacity = 0.3f;
 //		s.reflectivity = 0f;
 //		s.ior = 1.52f;//4f / 3f;
-		// worldScene.add( s );
+		//worldScene.add( s );
 
 		Sphere s2 = new Sphere( new Vec3f( 0, 5, 12 ), 4 );
 		s2.col = new Vec3f( 1, 0, 1 );
@@ -214,10 +239,10 @@ public class App implements KeyListener, MouseWheelListener {
 		earth.col = new Vec3f( 67, 109, 7 ).mul( 1f / 255f );
 		// worldScene.add(earth);
 
-		Plane p = new Plane( new Vec3f( 0, 1, 0 ), new Vec3f( 0, -2, 0 ) );
+		Plane p = new Plane( new Vec3f( 0, 1, 0 ), new Vec3f( 0, 0, 0 ) );
 		p.reflectivity = 0;
 		p.col = new Vec3f( 255, 109, 0 ).mul( 1f / 255f );
-		// worldScene.add(p);// Floor
+		//worldScene.add(p);// Floor
 
 		// Circle c = new Circle( new Vec3f( 0, 0, 1 ).normalize(), new Vec3f( -10, 40, 0 ), 20 );
 		// worldScene.add( c );
@@ -247,19 +272,19 @@ public class App implements KeyListener, MouseWheelListener {
 		orthoCam.setCamObj( camS );
 		perspCam.setCamObj( camS );
 
-		Polyhedron ammo = Utils.getRenderableFromObjFile( "pikachu.obj" ).get();
-		ammo.translate( new Vec3f( 50, -10, -10 ) );
-		ammo.setMaterial( 0f, 1f, 1f );
-		ammo.setColor( new Vec3f( 44 / 255f, 205 / 255f, 138 / 255f ) );
-		ammo.rotate( new Vec3f( -90, 0, 0 ) );
+//		Polyhedron ammo = Utils.getRenderableFromObjFile( "pikachu.obj" ).get();
+//		ammo.translate( new Vec3f( 50, -10, -10 ) );
+//		ammo.setMaterial( 0f, 1f, 1f );
+//		ammo.setColor( new Vec3f( 44 / 255f, 205 / 255f, 138 / 255f ) );
+//		ammo.rotate( new Vec3f( -90, 0, 0 ) );
 		// worldScene.add( ammo );
 
-		Polyhedron pika = Utils.getRenderableFromObjFile( "pikachu.obj" ).get();
-		pika.translate( new Vec3f( -10, 20, -10 ) );
-		pika.setMaterial( 0.8f, 1f, 1f );
-		pika.setColor( new Vec3f( 1, 0, 0 ) );
-		// pika.useRandomColors();
-		pika.rotate( new Vec3f( -90, 0, 0 ) );
+//		Polyhedron pika = Utils.getRenderableFromObjFile( "pikachu.obj" ).get();
+//		pika.translate( new Vec3f( -10, 20, -10 ) );
+//		pika.setMaterial( 0.2f, 1f, 1f );
+//		pika.setColor( new Vec3f( 1, 0, 0 ) );
+//		pika.useRandomColors();
+//		pika.rotate( new Vec3f( -90, 0, 0 ) );
 		//worldScene.add( pika );
 
 		// worldScene.add(new Tube(new Vector3f(0, 1, 0), new Vector3f(0, 2, 4), 0, 2));
@@ -275,7 +300,7 @@ public class App implements KeyListener, MouseWheelListener {
 
 	public static int MAX_RAY_DEPTH = 5;
 
-	public JFrame window = new JFrame();
+	public JFrame window;
 
 	public JPanel pan = new JPanel() {
 
@@ -299,7 +324,8 @@ public class App implements KeyListener, MouseWheelListener {
 
 	public BufferedImage screen = new BufferedImage( 1280, 720, BufferedImage.TYPE_INT_RGB );
 
-	public PerspectiveCamera perspCam = new PerspectiveCamera( new Vec3f( 3, 10, 25 ), 95,
+	//new Vec3f( 3, 10, 25 )
+	public PerspectiveCamera perspCam = new PerspectiveCamera( new Vec3f( -1,10,23 ), 95,
 			screen.getWidth(), screen.getHeight() );
 
 	public OrthoCamera orthoCam = new OrthoCamera( new Vec3f( 3, 10, 25 ), screen.getWidth(),
@@ -321,7 +347,38 @@ public class App implements KeyListener, MouseWheelListener {
 		// Vector3f vec = new Vector3f(1,2,3);
 		// Mat3f n = Mat3f.getIdentity();
 		// System.out.println(n.multiply(vec));
-		new App();
+		boolean nogui = false;
+		float[] pos = new float[]{-1,10,23};
+		int seed = 64;
+		for(int i = 0; i < args.length; i++) {
+			if(args[i].equals("--nogui")) nogui = true;
+			if(args[i].equals("--pos")) {
+				if(args.length-i < 4) {
+					System.err.println("You must have three arguments for the camera position!\n\te.g. --pos -1.5 10 23");
+					System.exit(1);
+				}
+				for(int j=0;j<3; j++) {
+					i++;
+					pos[j] = Float.parseFloat(args[i]);
+				}
+			}
+			if(args[i].equals("--seed")) {
+				if(args.length-i < 2) {
+					System.err.println("You must have one argument for the random seed!\n\te.g. --seed 64");
+					System.exit(1);
+				}
+				i++;
+				seed = Integer.parseInt(args[i]);
+			}
+			if(args[i].equals("--chunksize")) {
+				if(args.length-i < 2) {
+					System.err.println("You must have one argument for the chunk size!\n\te.g. --chunksize 64");
+					System.exit(1);
+				}
+				RenderChunk.CHUNK_SIZE = Integer.parseInt(args[++i]);
+			}
+		}
+		new App(nogui, seed, pos);
 	}
 
 	public static int getIntFromColor(int Red, int Green, int Blue) {
@@ -339,7 +396,8 @@ public class App implements KeyListener, MouseWheelListener {
 		MAX_RAY_DEPTH = Math.max( MAX_RAY_DEPTH, 10 );// if the default is higher, don't reduce it.
 		pause = true;
 		Thread.sleep( 1 );
-		BufferedImage img = new BufferedImage( 3840, 2160, BufferedImage.TYPE_INT_RGB );
+		//3840, 2160
+		BufferedImage img = new BufferedImage( 1920, 1080, BufferedImage.TYPE_INT_RGB );
 		long t1 = System.currentTimeMillis();
 		renderToTarget( img );
 		System.out.printf( "Time taken to render: %dms\n", System.currentTimeMillis() - t1 );
@@ -349,7 +407,7 @@ public class App implements KeyListener, MouseWheelListener {
 			new File( "./imgs/renders/" ).mkdirs();
 //			File outputfile = new File("./imgs/renders/render_" + date + ".jpg");
 //			ImageIO.write(img, "jpg", outputfile);
-			String path = "./imgs/renders/render_" + date.toLowerCase() + ".jpg";
+			String path = String.format("./imgs/renders/render_%s.jpg",date.toLowerCase());
 			saveImage( img, path, 0.95f );
 			showFileInExplorer( path );
 		} catch (IOException e) {
@@ -415,12 +473,15 @@ public class App implements KeyListener, MouseWheelListener {
 		int chunkCount = thrHnd.chunks.size();
 		CountDownLatch latch = new CountDownLatch( chunkCount );
 		System.out.println( "HQREND: Starting HQ Render..." );
+		
+		long startTime = System.currentTimeMillis();
 
 		thrHnd.chunks.forEach( c -> threadPool.submit( () -> {
 			renderLoop( c, target.getWidth(), target.getHeight(), 1, pixels );
 			latch.countDown();
-			System.out.printf( "HQREND: Completed %d/%d chunks\n", chunkCount - latch.getCount(),
-					chunkCount );
+			long completed = chunkCount - latch.getCount();
+			System.out.printf( "HQREND: Completed %3d/%3d chunks | time avgchnk:%5dms   \r", completed,
+					chunkCount, (System.currentTimeMillis()-startTime)/completed );
 		} ) );
 
 		try {
@@ -430,7 +491,7 @@ public class App implements KeyListener, MouseWheelListener {
 			e.printStackTrace();
 		}
 
-		System.out.printf( "Completed rendering to the %dx%d canvas\n", target.getWidth(),
+		System.out.printf( "\nCompleted rendering to the %dx%d canvas\n", target.getWidth(),
 				target.getHeight() );
 
 		// jjj
@@ -746,6 +807,8 @@ public class App implements KeyListener, MouseWheelListener {
 			} else {
 				cam = perspCam;
 			}
+		}else if (event.getKeyCode() == KeyEvent.VK_C) {
+			System.out.println(cam.cameraPos);
 		}
 	}
 
